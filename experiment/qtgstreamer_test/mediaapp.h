@@ -43,4 +43,3 @@ private:
     QLabel *m_volumeLabel;
     QTimer m_fullScreenTimer;
 };
-#endif
