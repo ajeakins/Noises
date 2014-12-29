@@ -74,6 +74,8 @@ void AudioCueDialog::writeSettings()
 
 	settings.start_fade = m_fade_in_time->value();
 	settings.end_fade = m_fade_out_time->value();
+
+	m_matrix->writeSettings( settings.levels );
 }
 
 void AudioCueDialog::readSettings()
@@ -87,6 +89,8 @@ void AudioCueDialog::readSettings()
 
 	m_fade_in_time->setValue( settings.start_fade );
 	m_fade_out_time->setValue( settings.end_fade );
+
+	m_matrix->readSettings( settings.levels );
 }
 
 void AudioCueDialog::createCueWidgets()

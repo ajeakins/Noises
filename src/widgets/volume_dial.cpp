@@ -42,16 +42,17 @@ float VolumeDial::getMinimumVolume()
 	return ( float )MINIMUM_DB;
 }
 
-float VolumeDial::getValue() const
+float VolumeDial::getVolume() const
 {
 	return m_spin_box->value();
 }
 
-void VolumeDial::setValue( float value_in_db )
+void VolumeDial::setVolume( float value_in_db )
 {
 	int value = ( int )( value_in_db / STEP );
 
 	// TODO: we might be able to design these out...
+
 	m_spin_box->blockSignals( true );
 	m_spin_box->setValue( value_in_db );
 	m_spin_box->blockSignals( false );

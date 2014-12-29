@@ -19,19 +19,48 @@ namespace widgets
 	class MatrixSettings
 	{
 	public:
-		MatrixSettings();
+		MatrixSettings(
+			unsigned int inputs = 2,
+			unsigned int outputs = 2
+			);
 
-		float volume(
+		// setting inputs and outputs causes
+		// volume settings to be reset
+		// TODO make optional?
+
+		// could also provide set function that
+		// does both in one go
+
+		// inputs
+
+		unsigned int getInputs() const;
+		void setInputs( unsigned int inputs );
+
+		// outputs
+
+		unsigned int getOutputs() const;
+		void setOutputs( unsigned int outputs );
+
+		// matrix
+
+		float getVolume(
 			unsigned int input,
-			unsigned int output );
+			unsigned int output ) const;
 
 		void setVolume(
 			unsigned int input,
 			unsigned int output,
 			float volume );
 
+		// stereo link
+		bool getStereoLink() const;
+		void setStereoLink( bool value );
+
 		// to determine mute/stopped state
-		bool isMinimumVolume( float volume );
+		bool isMinimumVolume( float volume ) const;
+
+	private:
+		void initialiseVolumes();
 
 	private:
 		unsigned int m_inputs, m_outputs;
@@ -39,6 +68,7 @@ namespace widgets
 		float m_minimum_value;
 		QVector< QVector< float > > m_volumes;
 
+		bool m_stereo_link;
 	};
 
 	// Matrix Widget
@@ -61,8 +91,8 @@ namespace widgets
 		unsigned int getInputs() const;
 		unsigned int getOutputs() const;
 
-		float getValue( unsigned int input, unsigned int output ) const;
-		void setValue( unsigned int input, unsigned int output, float value );
+		float getVolume( unsigned int input, unsigned int output ) const;
+		void setVolume( unsigned int input, unsigned int output, float value );
 
 		void readSettings( const MatrixSettings& settings );
 		void writeSettings( MatrixSettings& settings ) const;
@@ -80,6 +110,8 @@ namespace widgets
 			unsigned int outputs );
 
 		void clearVolumeGrid();
+
+		VolumeDial* getVolumeDial( unsigned int input, unsigned int output ) const;
 
 	private:
 		struct IndexData

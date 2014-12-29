@@ -21,9 +21,9 @@ namespace widgets
 
 		static float getMinimumVolume();
 
-		float getValue() const;
+		float getVolume() const;
 
-		void setValue( float value );
+		void setVolume( float value );
 
 	Q_SIGNALS:
 		void valueChanged( float value );
