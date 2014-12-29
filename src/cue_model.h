@@ -53,9 +53,6 @@ namespace noises
 		}
 
 	private:
-		QString computeNextCueNumber() const;
-
-	private:
 		CueModelItem* m_root_item;
 	};
 

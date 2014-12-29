@@ -1,6 +1,4 @@
-#pragma  once
-
-#include <QDialog>
+#pragma once
 
 #include <audio/player.h>
 

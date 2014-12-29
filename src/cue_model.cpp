@@ -3,6 +3,8 @@
 #include <QtGui>
 
 #include <cues/audio_cue_model_item.h>
+#include <cues/control_cue_model_item.h>
+
 
 #include "cue_model.h"
 
@@ -87,11 +89,6 @@ bool CueModel::setData(
 	return result;
 }
 
-QString CueModel::computeNextCueNumber() const
-{
-	return QString();
-}
-
 CueModelItem* CueModel::createCue( CueType type )
 {
 	assert( m_root_item );
@@ -110,6 +107,9 @@ CueModelItem* CueModel::createCue( CueType type )
 	{
 	case CueType_Audio:
 		item = new AudioCueModelItem( data, m_root_item );
+		break;
+	case CueType_Control:
+		item = new ControlCueModelItem( data, m_root_item );
 		break;
 	default:
 		assert( false && "Unhandled cue type" );

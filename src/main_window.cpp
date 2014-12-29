@@ -1,3 +1,4 @@
+
 #include <assert.h>
 #include <iostream>
 
@@ -6,6 +7,7 @@
 
 #include <utils/cue.h>
 #include <cue_dialogs/audio_cue_dialog.h>
+#include <cue_dialogs/control_cue_dialog.h>
 
 #include "main_window.h"
 #include "cue_model.h"
@@ -61,7 +63,7 @@ void MainWindow::newShow()
 	std::cout << "newShow" << std::endl;
 }
 
-void MainWindow::newAudioCue()
+CueModelItem* MainWindow::createCue( CueType type )
 {
 	QModelIndex selected_row = m_cue_list->selectionModel()->currentIndex();
 
@@ -92,7 +94,7 @@ void MainWindow::newAudioCue()
 
 	// add the cue
 
-	AudioCueModelItem* cue = ( AudioCueModelItem* )( m_cue_model->createCue( CueType_Audio ) );
+	CueModelItem* cue = m_cue_model->createCue( type );
 	cue->setData( 0, new_number );
 
 	m_cue_model->setCueParent( parent, cue, index + 1 );
@@ -114,8 +116,24 @@ void MainWindow::newAudioCue()
 			QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows );
 	}
 
+	return cue;
+}
+
+void MainWindow::newAudioCue()
+{
+	AudioCueModelItem* cue = dynamic_cast< AudioCueModelItem* >( createCue( CueType_Audio ) );
+
 	// open edit dialog
 	AudioCueDialog dialog( cue, getDataMapper(), this );
+	dialog.exec();
+}
+
+void MainWindow::newControlCue()
+{
+	ControlCueModelItem* cue = dynamic_cast< ControlCueModelItem* >( createCue( CueType_Control ) );
+
+	// open edit dialog
+	ControlCueDialog dialog( cue, getDataMapper(), this );
 	dialog.exec();
 }
 
@@ -152,14 +170,26 @@ void MainWindow::editCue( QModelIndex index )
 	{
 		case CueType_Audio:
 		{
-			AudioCueDialog dialog( (AudioCueModelItem*)item, getDataMapper(), this );
+			AudioCueDialog dialog(
+				( AudioCueModelItem* )item,
+				getDataMapper(),
+				this );
+			dialog.exec();
+			break;
+		}
+		case CueType_Control:
+		{
+			ControlCueDialog dialog(
+				( ControlCueModelItem* )item,
+				getDataMapper(),
+				this );
 			dialog.exec();
 			break;
 		}
 		case CueType_None:
 			return;
 		default:
-			qWarning() << "WARNING: Unknow cue type\n";
+			qWarning() << "WARNING: Unknown cue type\n";
 			break;
 	}
 }
@@ -196,12 +226,17 @@ void MainWindow::createActions()
 
 	// toolbar actions
 
-	m_new_cue_action = new QAction( "&New Audio Cue", this );
-	m_new_cue_action->setShortcuts( QKeySequence::New );
-	m_new_cue_action->setStatusTip( "Create a new audio cue" );
+	m_new_audio_cue_action = new QAction( "&New Audio Cue", this );
+	m_new_audio_cue_action->setStatusTip( "Create a new audio cue" );
 	connect(
-		m_new_cue_action, SIGNAL( triggered() ),
+		m_new_audio_cue_action, SIGNAL( triggered() ),
 		this, SLOT( newAudioCue() ) );
+
+	m_new_control_cue_action = new QAction( "&New Control Cue", this );
+	m_new_control_cue_action->setStatusTip( "Create a new control cue" );
+	connect(
+		m_new_control_cue_action, SIGNAL( triggered() ),
+		this, SLOT( newControlCue() ) );
 
 	// cue actions
 
@@ -229,7 +264,8 @@ void MainWindow::createMenus()
 void MainWindow::createToolBars()
 {
 	m_tool_bar = addToolBar( "Tools" );
-	m_tool_bar->addAction( m_new_cue_action );
+	m_tool_bar->addAction( m_new_audio_cue_action );
+	m_tool_bar->addAction( m_new_control_cue_action );
 }
 
 void MainWindow::createStatusBar()

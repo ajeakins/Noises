@@ -3,6 +3,8 @@
 #include <QMainWindow>
 #include <QTreeView>
 
+#include "types.h"
+
 class QAction;
 class QMenu;
 class QTreeView;
@@ -11,6 +13,7 @@ class QDataWidgetMapper;
 namespace noises
 {
 	class CueModel;
+	class CueModelItem;
 
 	class MainWindow : public QMainWindow
 	{
@@ -29,6 +32,7 @@ namespace noises
 
 		// Toolbar Slots
 		void newAudioCue();
+		void newControlCue();
 
 		// Cue Slots
 		void playCue();
@@ -41,6 +45,8 @@ namespace noises
 		void createStatusBar();
 
 		QDataWidgetMapper* getDataMapper();
+
+		CueModelItem* createCue( CueType type );
 
 	private:
 		// Widgets
@@ -56,7 +62,8 @@ namespace noises
 		QToolBar* m_tool_bar;
 
 		// Toolbar Actions
-		QAction* m_new_cue_action;
+		QAction* m_new_audio_cue_action;
+		QAction* m_new_control_cue_action;
 
 		// Menu Actions
 		QAction* m_new_show_action;
