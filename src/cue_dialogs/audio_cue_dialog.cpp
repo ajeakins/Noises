@@ -127,12 +127,14 @@ void AudioCueDialog::createCueWidgets()
 	m_reset_times_button->setToolTip( "Reset start and end to those in the file" );
 
 	QHBoxLayout* file_options = new QHBoxLayout;
+	file_options->setContentsMargins( 0, 0, 0, 0 );
 	file_options->addWidget( m_play_button );
 	file_options->addWidget( m_stop_button );
 	file_options->addStretch();
 	file_options->addWidget( m_reset_times_button );
 
 	QVBoxLayout* file_layout = new QVBoxLayout();
+	file_layout->setContentsMargins( 0, 0, 0, 0 );
 	file_layout->addWidget( m_file_edit );
 	file_layout->addItem( file_options );
 
@@ -171,6 +173,7 @@ void AudioCueDialog::createCueWidgets()
 	times_grid->addWidget( m_fade_out_time, 1, 3 );
 
 	QHBoxLayout* times_layout = new QHBoxLayout;
+	times_layout->setContentsMargins( 0, 0, 0, 0 );
 	times_layout->addLayout( times_grid );
 	times_layout->addStretch();
 

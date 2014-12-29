@@ -35,6 +35,7 @@ void CueDialog::createWidgets()
 	// genric data from the model
 
 	QGridLayout* generic_data_layout = new QGridLayout;
+	generic_data_layout->setContentsMargins( 0, 0, 0, 0 );
 
 	int column_count = m_mapper->model()->columnCount();
 	for ( int i = 0; i != column_count; ++i )
@@ -75,6 +76,7 @@ void CueDialog::createWidgets()
 		this, SLOT( reject() ) );
 
 	m_layout = new QVBoxLayout;
+	m_layout->setContentsMargins( 0, 0, 0, 0 );
 	m_layout->addWidget( generic_data_group_box );
 
 	QVBoxLayout* wrapping_layout = new QVBoxLayout;
