@@ -53,11 +53,20 @@ int CueModelItem::columnCount() const
 	return m_item_data.count();
 }
 
-QVariant CueModelItem::data( int column ) const
+QVariant CueModelItem::data( int column, int role ) const
 {
 	assert( column < columnCount() );
 
-	return m_item_data.value( column );
+	if ( role == Qt::DisplayRole )
+	{
+		return m_item_data.value( column );
+	}
+	else if ( role == Qt::DecorationRole && column == 0 )
+	{
+		return getIcon();
+	}
+
+	return QVariant();
 }
 
 bool CueModelItem::setData( int column, const QVariant& data )
@@ -81,6 +90,11 @@ int CueModelItem::row() const
 	}
 
 	return 0;
+}
+
+QVariant CueModelItem::getIcon() const
+{
+	return QVariant();
 }
 
 } /* namespace noises */

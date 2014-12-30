@@ -46,13 +46,8 @@ QVariant CueModel::data( const QModelIndex& index, int role ) const
 		return QVariant();
 	}
 
-	if ( role != Qt::DisplayRole )
-	{
-		return QVariant();
-	}
-
 	CueModelItem *item = static_cast< CueModelItem* >( index.internalPointer() );
-	return item->data( index.column() );
+	return item->data( index.column(), role );
 }
 
 CueModelItem* CueModel::itemFromIndex( const QModelIndex& index ) const

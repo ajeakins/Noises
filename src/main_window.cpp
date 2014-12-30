@@ -226,7 +226,7 @@ void MainWindow::createActions()
 
 	// toolbar actions
 
-	m_new_audio_cue_action = new QAction( "&New Audio Cue", this );
+	m_new_audio_cue_action = new QAction( QIcon( ":/images/audio_cue_32x32.png" ), "&New Audio Cue", this );
 	m_new_audio_cue_action->setStatusTip( "Create a new audio cue" );
 	connect(
 		m_new_audio_cue_action, SIGNAL( triggered() ),

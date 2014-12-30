@@ -27,7 +27,7 @@ namespace noises
 
 		int row( CueModelItem* child );
 
-		QVariant data( int column ) const;
+		QVariant data( int column, int role = Qt::DisplayRole ) const;
 		bool setData( int column, const QVariant& data );
 
 		int row() const;
@@ -43,6 +43,9 @@ namespace noises
 		{
 			assert( false && "Cannot execute base item" );
 		}
+
+	protected:
+		virtual QVariant getIcon() const;
 
 	private:
 		QList< QVariant > m_item_data;

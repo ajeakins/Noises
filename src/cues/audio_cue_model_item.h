@@ -48,6 +48,9 @@ namespace noises
 
 		void execute() const;
 
+	protected:
+		virtual QVariant getIcon() const;
+
 	private:
 		AudioCueSettings cue_settings;
 	};

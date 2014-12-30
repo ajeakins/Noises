@@ -23,6 +23,7 @@ AudioCueDialog::AudioCueDialog(
 	m_cue( cue )
 {
 	setWindowTitle( "Edit Audio Cue" );
+	setWindowIcon( QIcon( ":images/audio_cue.png" ) );
 
 	createCueWidgets();
 

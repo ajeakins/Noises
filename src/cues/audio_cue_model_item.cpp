@@ -19,4 +19,10 @@ void AudioCueModelItem::execute() const
 	std::cout << "play audio" << std::endl;
 }
 
+QVariant AudioCueModelItem::getIcon() const
+{
+	QPixmap icon( ":/images/audio_cue_16x16.png" );
+	return icon;
+}
+
 } /* namespace noises */
