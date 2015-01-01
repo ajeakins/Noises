@@ -1,0 +1,150 @@
+
+#include <QCheckBox>
+#include <QDialogButtonBox>
+#include <QLayout>
+#include <QLabel>
+
+#include "preferences.h"
+
+namespace noises
+{
+
+// Preferences
+
+Preferences::Preferences()
+{
+	m_data["test"] = QVariant( true );
+	m_data["test1"] = QVariant( "test" );
+}
+
+void Preferences::getKeys( QList< QString >& keys ) const
+{
+	keys = m_data.keys();
+}
+
+QVariant Preferences::getValue( const QString& key ) const
+{
+	return m_data[key];
+}
+
+void Preferences::setValue(
+	const QString& key,
+	const QVariant& value )
+{
+	m_data[key] = value;
+}
+
+QVariant::Type Preferences::getValueType( const QString& key ) const
+{
+	return m_data[key].type();
+}
+
+// Preferences Dialog
+
+PreferencesDialog::PreferencesDialog(
+	Preferences& preferences,
+	QWidget* parent )
+:
+	QDialog( parent ),
+	m_preferences( preferences )
+{
+	setWindowTitle( "Preferences" );
+
+	createWidgets();
+}
+
+void PreferencesDialog::accept()
+{
+	writeSettings();
+	QDialog::accept();
+}
+
+void PreferencesDialog::createWidgets()
+{
+	QGridLayout* prefs_layout = new QGridLayout;
+
+	QList< QString > keys;
+	m_preferences.getKeys( keys );
+
+	for( int i = 0; i != keys.count(); ++i )
+	{
+		QLabel* label = new QLabel( keys[i], this );
+
+		prefs_layout->addWidget( label, i, 0 );
+
+		QVariant::Type type = m_preferences.getValueType( keys[i] );
+
+		switch( type )
+		{
+			case QVariant::Bool:
+			{
+				QCheckBox* checkbox = new QCheckBox( this );
+				checkbox->setChecked( m_preferences.getValue( keys[i] ).toBool() );
+
+				m_widgets[ keys[i] ] = checkbox;
+
+				prefs_layout->addWidget( checkbox, i, 1 );
+				break;
+			}
+			default:
+			{
+				QString warning( "Uknown preference type " );
+				warning += "[";
+				warning += QVariant::typeToName( type );
+				warning += "]";
+				QLabel* warning_label = new QLabel( warning );
+
+				prefs_layout->addWidget( warning_label, i, 1 );
+
+				break;
+			}
+		}
+	}
+
+	// buttons
+
+	QDialogButtonBox* buttons = new QDialogButtonBox(
+		QDialogButtonBox::Ok | QDialogButtonBox::Cancel );
+
+	connect(
+		buttons, SIGNAL( accepted() ),
+		this, SLOT( accept() ) );
+
+	connect(
+		buttons, SIGNAL( rejected() ),
+		this, SLOT( reject() ) );
+
+	// layout
+
+	QVBoxLayout* layout = new QVBoxLayout;
+	layout->addLayout( prefs_layout );
+	layout->addWidget( buttons );
+
+	setLayout( layout );
+}
+
+void PreferencesDialog::writeSettings()
+{
+	for (
+		WidgetMap::const_iterator itr = m_widgets.begin();
+		itr != m_widgets.end();
+		++itr )
+	{
+		const QString& key = itr.key();
+		QWidget* widget = itr.value();
+
+		switch( m_preferences.getValueType( key ) )
+		{
+			case QVariant::Bool:
+			{
+				bool value = ( ( QCheckBox* )widget )->isChecked();
+				m_preferences.setValue( key, value );
+				break;
+			}
+			default:
+				break;
+		}
+	}
+}
+
+} /* namespace noises */

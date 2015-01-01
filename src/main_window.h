@@ -28,6 +28,9 @@ namespace noises
 	private Q_SLOTS:
 		// Menu Slots
 		void newShow();
+
+		void editPreferences();
+
 		void about();
 
 		// Toolbar Slots
@@ -57,6 +60,7 @@ namespace noises
 		// Menus
 		QMenu* m_file_menu;
 		QMenu* m_help_menu;
+		QMenu* m_edit_menu;
 
 		// Toolbar
 		QToolBar* m_tool_bar;
@@ -68,6 +72,8 @@ namespace noises
 		// Menu Actions
 		QAction* m_new_show_action;
 		QAction* m_exit_action;
+
+		QAction* m_edit_preferences_action;
 
 		QAction* m_about_action;
 		QAction* m_about_qt_action;

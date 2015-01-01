@@ -9,8 +9,10 @@
 #include <cue_dialogs/audio_cue_dialog.h>
 #include <cue_dialogs/control_cue_dialog.h>
 
+#include "application.h"
 #include "main_window.h"
 #include "cue_model.h"
+#include "preferences.h"
 
 namespace noises
 {
@@ -194,6 +196,12 @@ void MainWindow::editCue( QModelIndex index )
 	}
 }
 
+void MainWindow::editPreferences()
+{
+	PreferencesDialog dialog( Application::getPreferences(), this );
+	dialog.exec();
+}
+
 void MainWindow::createActions()
 {
 	// menu actions
@@ -211,6 +219,11 @@ void MainWindow::createActions()
 	connect(
 		m_exit_action, SIGNAL( triggered() ),
 		this, SLOT( close() ) );
+
+	m_edit_preferences_action = new QAction( "Preferences", this );
+	connect(
+		m_edit_preferences_action, SIGNAL( triggered() ),
+		this, SLOT( editPreferences() ) );
 
 	m_about_action = new QAction( "&About", this );
 	m_about_action->setStatusTip( "About noises" );
@@ -253,6 +266,9 @@ void MainWindow::createMenus()
 	m_file_menu->addAction( m_new_show_action );
 	m_file_menu->addSeparator();
 	m_file_menu->addAction( m_exit_action );
+
+	m_edit_menu = menuBar()->addMenu( "&Edit" );
+	m_edit_menu->addAction( m_edit_preferences_action );
 
 	menuBar()->addSeparator();
 
