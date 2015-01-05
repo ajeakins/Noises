@@ -1,4 +1,6 @@
 
+#include <assert.h>
+
 #include <QCheckBox>
 #include <QDialogButtonBox>
 #include <QLayout>
@@ -13,8 +15,12 @@ namespace noises
 
 Preferences::Preferences()
 {
-	m_data["test"] = QVariant( true );
-	m_data["test1"] = QVariant( "test" );
+	m_data["stereo link"] = Preference( true, "Some tooltip" );
+}
+
+bool Preferences::defaultStereoLink() const
+{
+	return m_data["stereo link"].value.toBool();
 }
 
 void Preferences::getKeys( QList< QString >& keys ) const
@@ -24,19 +30,19 @@ void Preferences::getKeys( QList< QString >& keys ) const
 
 QVariant Preferences::getValue( const QString& key ) const
 {
-	return m_data[key];
+	return m_data[key].value;
 }
 
 void Preferences::setValue(
 	const QString& key,
 	const QVariant& value )
 {
-	m_data[key] = value;
+	m_data[key].value = value;
 }
 
 QVariant::Type Preferences::getValueType( const QString& key ) const
 {
-	return m_data[key].type();
+	return m_data[key].value.type();
 }
 
 // Preferences Dialog
@@ -81,7 +87,7 @@ void PreferencesDialog::createWidgets()
 				QCheckBox* checkbox = new QCheckBox( this );
 				checkbox->setChecked( m_preferences.getValue( keys[i] ).toBool() );
 
-				m_widgets[ keys[i] ] = checkbox;
+				m_widgets[keys[i]] = checkbox;
 
 				prefs_layout->addWidget( checkbox, i, 1 );
 				break;
@@ -137,7 +143,10 @@ void PreferencesDialog::writeSettings()
 		{
 			case QVariant::Bool:
 			{
-				bool value = ( ( QCheckBox* )widget )->isChecked();
+				QCheckBox* checkbox = dynamic_cast< QCheckBox* >( widget );
+				assert( checkbox );
+
+				bool value = checkbox->isChecked();
 				m_preferences.setValue( key, value );
 				break;
 			}

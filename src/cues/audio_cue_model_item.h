@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include <application.h>
 #include <widgets/matrix.h>
 
 #include "cue_model_item.h"
@@ -17,7 +18,10 @@ namespace noises
 			end_time( 0.0f ),
 			start_fade( 0.0f ),
 			end_fade( 0.0f )
-		{}
+		{
+			bool link = Application::getPreferences().defaultStereoLink();
+			levels.setStereoLink( link );
+		}
 
 		QString file_name;
 

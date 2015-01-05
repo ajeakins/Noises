@@ -8,9 +8,15 @@ namespace noises
 {
 	class Preferences
 	{
+		friend class PreferencesDialog;
+
 	public:
 		Preferences();
 
+	public:
+		bool defaultStereoLink() const;
+
+	private:
 		void getKeys( QList< QString >& keys ) const;
 
 		QVariant getValue( const QString& key ) const;
@@ -21,7 +27,24 @@ namespace noises
 		QVariant::Type getValueType( const QString& key ) const;
 
 	private:
-		QMap< QString, QVariant > m_data;
+		struct Preference
+		{
+			Preference()
+			{}
+
+			Preference(
+				QVariant _value,
+				QString _tooltip )
+			:
+				value( _value ),
+				tooltip( _tooltip )
+			{}
+
+			QVariant value;
+			QString tooltip;
+		};
+
+		QMap< QString, Preference > m_data;
 	};
 
 	class PreferencesDialog: public QDialog
