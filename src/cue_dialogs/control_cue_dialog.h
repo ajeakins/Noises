@@ -1,11 +1,9 @@
-
 #pragma once
 
 #include <cues/control_cue_model_item.h>
 
 #include "cue_dialog.h"
 
-class QDoubleSpinBox;
 class QDataWidgetMapper;
 
 namespace noises

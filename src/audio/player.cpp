@@ -23,9 +23,11 @@ Player::Player()
 :
 	QObject()
 {
-	//this timer is used to tell the ui to change its position slider & label
-	//every 100 ms, but only when the pipeline is playing
-	connect( &m_positionTimer, SIGNAL( timeout() ), this, SIGNAL( positionChanged() ) );
+	// this timer is used to tell the ui to change its position slider & label
+	// every 100 ms, but only when the pipeline is playing
+	connect(
+		&m_positionTimer, SIGNAL( timeout() ),
+		this, SIGNAL( positionChanged() ) );
 }
 
 Player::~Player()
@@ -36,12 +38,12 @@ Player::~Player()
 	}
 }
 
-void Player::setUri( const QString & uri )
+void Player::setUri( const QString& uri )
 {
 	QString realUri = uri;
 
 	//if uri is not a real uri, assume it is a file path
-	if ( realUri.indexOf( "://" ) < 0)
+	if ( realUri.indexOf( "://" ) < 0 )
 	{
 		realUri = QUrl::fromLocalFile( realUri ).toEncoded();
 	}
@@ -165,22 +167,23 @@ void Player::stop()
 
 void Player::onBusMessage(const QGst::MessagePtr & message)
 {
-	switch ( message->type() ) {
-	case QGst::MessageEos: // End of stream. We reached the end of the file.
-		stop();
-		break;
-	case QGst::MessageError: // Some error occurred.
-		qCritical() << message.staticCast<QGst::ErrorMessage>()->error();
-		stop();
-		break;
-	case QGst::MessageStateChanged: // The element in message->source() has changed state
-		if ( message->source() == m_pipeline )
-		{
-			handlePipelineStateChange( message.staticCast< QGst::StateChangedMessage>() );
-		}
-		break;
-	default:
-		break;
+	switch ( message->type() )
+	{
+		case QGst::MessageEos: // End of stream. We reached the end of the file.
+			stop();
+			break;
+		case QGst::MessageError: // Some error occurred.
+			qCritical() << message.staticCast<QGst::ErrorMessage>()->error();
+			stop();
+			break;
+		case QGst::MessageStateChanged: // The element in message->source() has changed state
+			if ( message->source() == m_pipeline )
+			{
+				handlePipelineStateChange( message.staticCast< QGst::StateChangedMessage>() );
+			}
+			break;
+		default:
+			break;
 	}
 }
 
