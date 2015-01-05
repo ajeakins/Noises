@@ -8,6 +8,7 @@
 #include <utils/cue.h>
 #include <cue_dialogs/audio_cue_dialog.h>
 #include <cue_dialogs/control_cue_dialog.h>
+#include <cue_dialogs/wait_cue_dialog.h>
 
 #include "application.h"
 #include "main_window.h"
@@ -19,6 +20,8 @@ namespace noises
 
 MainWindow::MainWindow()
 {
+	setWindowTitle( "Noises" );
+
 	m_cue_model = new CueModel;
 
 	m_cue_list = new QTreeView;
@@ -139,6 +142,15 @@ void MainWindow::newControlCue()
 	dialog.exec();
 }
 
+void MainWindow::newWaitCue()
+{
+	WaitCueModelItem* cue = dynamic_cast< WaitCueModelItem* >( createCue( CueType_Wait ) );
+
+	// open edit dialog
+	WaitCueDialog dialog( cue, getDataMapper(), this );
+	dialog.exec();
+}
+
 void MainWindow::about()
 {
 	QMessageBox::about(
@@ -206,6 +218,8 @@ void MainWindow::createActions()
 {
 	// menu actions
 
+	// file
+
 	m_new_show_action = new QAction( "&New Show", this );
 	m_new_show_action->setShortcuts( QKeySequence::New );
 	m_new_show_action->setStatusTip( "Create a new show" );
@@ -220,10 +234,14 @@ void MainWindow::createActions()
 		m_exit_action, SIGNAL( triggered() ),
 		this, SLOT( close() ) );
 
+	// edit
+
 	m_edit_preferences_action = new QAction( "Preferences", this );
 	connect(
 		m_edit_preferences_action, SIGNAL( triggered() ),
 		this, SLOT( editPreferences() ) );
+
+	// about
 
 	m_about_action = new QAction( "&About", this );
 	m_about_action->setStatusTip( "About noises" );
@@ -250,6 +268,12 @@ void MainWindow::createActions()
 	connect(
 		m_new_control_cue_action, SIGNAL( triggered() ),
 		this, SLOT( newControlCue() ) );
+
+	m_new_wait_cue_action = new QAction( "&New Wait Cue", this );
+	m_new_wait_cue_action->setStatusTip( "Create a new wait cue" );
+	connect(
+		m_new_wait_cue_action, SIGNAL( triggered() ),
+		this, SLOT( newWaitCue() ) );
 
 	// cue actions
 
@@ -282,6 +306,7 @@ void MainWindow::createToolBars()
 	m_tool_bar = addToolBar( "Tools" );
 	m_tool_bar->addAction( m_new_audio_cue_action );
 	m_tool_bar->addAction( m_new_control_cue_action );
+	m_tool_bar->addAction( m_new_wait_cue_action );
 }
 
 void MainWindow::createStatusBar()

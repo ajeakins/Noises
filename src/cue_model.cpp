@@ -4,7 +4,7 @@
 
 #include <cues/audio_cue_model_item.h>
 #include <cues/control_cue_model_item.h>
-
+#include <cues/wait_cue_model_item.h>
 
 #include "cue_model.h"
 
@@ -100,15 +100,18 @@ CueModelItem* CueModel::createCue( CueType type )
 
 	switch( type )
 	{
-	case CueType_Audio:
-		item = new AudioCueModelItem( data, m_root_item );
-		break;
-	case CueType_Control:
-		item = new ControlCueModelItem( data, m_root_item );
-		break;
-	default:
-		assert( false && "Unhandled cue type" );
-		break;
+		case CueType_Audio:
+			item = new AudioCueModelItem( data, m_root_item );
+			break;
+		case CueType_Control:
+			item = new ControlCueModelItem( data, m_root_item );
+			break;
+		case CueType_Wait:
+			item = new WaitCueModelItem( data, m_root_item );
+			break;
+		default:
+			assert( false && "Unhandled cue type" );
+			break;
 	}
 
 	return item;

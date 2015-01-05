@@ -36,6 +36,7 @@ namespace noises
 		// Toolbar Slots
 		void newAudioCue();
 		void newControlCue();
+		void newWaitCue();
 
 		// Cue Slots
 		void playCue();
@@ -68,6 +69,7 @@ namespace noises
 		// Toolbar Actions
 		QAction* m_new_audio_cue_action;
 		QAction* m_new_control_cue_action;
+		QAction* m_new_wait_cue_action;
 
 		// Menu Actions
 		QAction* m_new_show_action;
