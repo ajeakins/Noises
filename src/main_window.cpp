@@ -49,6 +49,7 @@ MainWindow::MainWindow()
 	createStatusBar();
 
 	m_cue_list->addAction( m_play_cue_action );
+	m_cue_list->addAction( m_stop_all_cues_action );
 
 	resize( 600, 500 );
 }
@@ -213,6 +214,11 @@ void MainWindow::editCue( QModelIndex index )
 	}
 }
 
+void MainWindow::stopAllCues()
+{
+	Application::getAudioManager().stop();
+}
+
 void MainWindow::editPreferences()
 {
 	PreferencesDialog dialog( Application::getPreferences(), this );
@@ -287,6 +293,12 @@ void MainWindow::createActions()
 	connect(
 		m_play_cue_action, SIGNAL( triggered() ),
 		this, SLOT( playCue() ) );
+
+	m_stop_all_cues_action = new QAction( "Play Cue", m_cue_list );
+	m_stop_all_cues_action->setShortcut( QKeySequence( Qt::Key_Escape ) );
+	connect(
+		m_stop_all_cues_action, SIGNAL( triggered() ),
+		this, SLOT( stopAllCues() ) );
 }
 
 void MainWindow::createMenus()

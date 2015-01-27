@@ -14,7 +14,9 @@ namespace noises
 		Preferences();
 
 	public:
-		bool defaultStereoLink() const;
+		bool getDefaultStereoLink() const;
+
+		unsigned int getOutputCount() const;
 
 	private:
 		void getKeys( QList< QString >& keys ) const;

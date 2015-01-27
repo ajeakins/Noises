@@ -33,6 +33,8 @@ namespace noises
 
 		void stop();
 
+		void onFilenameChanged();
+
 	private:
 		void createCueWidgets();
 
@@ -46,9 +48,9 @@ namespace noises
 
 		AudioCueModelItem* m_cue;
 
-		// player
+		// audio player
 
-		audio::Player m_player;
+		audio::Player::Ptr m_player;
 
 		// widgets
 

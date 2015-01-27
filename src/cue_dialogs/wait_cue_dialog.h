@@ -5,6 +5,7 @@
 #include "cue_dialog.h"
 
 class QDataWidgetMapper;
+class QDoubleSpinBox;
 
 namespace noises
 {
@@ -37,6 +38,8 @@ namespace noises
 		WaitCueModelItem* m_cue;
 
 		// widgets
+
+		QDoubleSpinBox* m_wait_time;
 
 	};
 

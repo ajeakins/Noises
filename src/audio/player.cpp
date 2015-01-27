@@ -1,16 +1,9 @@
 
-#include <QDir>
-#include <QUrl>
-#include <QGlib/Connect>
-#include <QGlib/Error>
-#include <QGst/Pipeline>
-#include <QGst/ElementFactory>
-#include <QGst/Bus>
-#include <QGst/Message>
-#include <QGst/Query>
-#include <QGst/ClockTime>
-#include <QGst/Event>
-#include <QGst/StreamVolume>
+#include <iostream>
+
+#include <sndfile.h>
+
+#include <application.h>
 
 #include "player.h"
 
@@ -21,192 +14,70 @@ namespace audio
 
 Player::Player()
 :
-	QObject()
-{
-	// this timer is used to tell the ui to change its position slider & label
-	// every 100 ms, but only when the pipeline is playing
-	connect(
-		&m_positionTimer, SIGNAL( timeout() ),
-		this, SIGNAL( positionChanged() ) );
-}
+	m_is_playing( false ),
+	m_pos( 0 ),
+	m_length( 0 )
+{}
 
 Player::~Player()
+{}
+
+Player::Ptr Player::create()
 {
-	if ( m_pipeline )
-	{
-		m_pipeline->setState( QGst::StateNull );
-	}
+	Ptr player = Ptr( new Player );
+	return player;
 }
 
-void Player::setUri( const QString& uri )
+void Player::setFilename( const QString& filename )
 {
-	QString realUri = uri;
+	std::cout << "Player::setFilename" << std::endl;
 
-	//if uri is not a real uri, assume it is a file path
-	if ( realUri.indexOf( "://" ) < 0 )
-	{
-		realUri = QUrl::fromLocalFile( realUri ).toEncoded();
-	}
-
-	if ( !m_pipeline )
-	{
-		m_pipeline = QGst::ElementFactory::make( "playbin" ).dynamicCast< QGst::Pipeline >();
-		if ( m_pipeline )
-		{
-			//watch the bus for messages
-			QGst::BusPtr bus = m_pipeline->bus();
-			bus->addSignalWatch();
-			QGlib::connect( bus, "message", this, &Player::onBusMessage );
-		}
-		else
-		{
-			qCritical() << "Failed to create the pipeline";
-		}
-	}
-	if ( m_pipeline )
-	{
-		m_pipeline->setProperty( "uri", realUri );
-	}
+	stop();
+	m_filename = filename;
+	readData();
 }
 
-QTime Player::position() const
+void Player::readData()
 {
-	if ( m_pipeline )
+	SF_INFO info;
+	info.format = 0;
+
+	const char* filename_char = qPrintable( m_filename );
+	SNDFILE* file = sf_open( filename_char, SFM_READ, &info );
+
+	if (!file)
 	{
-		QGst::PositionQueryPtr query = QGst::PositionQuery::create( QGst::FormatTime );
-		m_pipeline->query( query );
-		return QGst::ClockTime( query->position() ).toTime();
+		std::cout << "libsndfile error " << filename_char << std::endl;
+		std::cout << sf_strerror(file) << std::endl;
+
+		sf_close( file );
 	}
-	else
-	{
-		return QTime( 0, 0 );
-	}
+
+	m_length = info.channels * info.frames;
+	m_audio_data = new float[m_length];
+
+	sf_readf_float( file, m_audio_data, info.frames );
+	sf_close( file );
 }
 
-void Player::setPosition( const QTime& pos )
+void Player::start()
 {
-	QGst::SeekEventPtr evt = QGst::SeekEvent::create(
-		1.0, QGst::FormatTime, QGst::SeekFlagFlush,
-		QGst::SeekTypeSet, QGst::ClockTime::fromTime(pos),
-		QGst::SeekTypeNone, QGst::ClockTime::None
-	);
-	m_pipeline->sendEvent( evt );
-}
+	if ( m_is_playing )
+	{
+		return;
+	}
 
-int Player::volume() const
-{
-	if ( m_pipeline )
-	{
-		QGst::StreamVolumePtr svp = m_pipeline.dynamicCast< QGst::StreamVolume >();
-		if ( svp )
-		{
-			return svp->volume( QGst::StreamVolumeFormatCubic ) * 10;
-		}
-	}
-	return 0;
-}
-
-void Player::setVolume(int volume)
-{
-	if ( m_pipeline )
-	{
-		QGst::StreamVolumePtr svp = m_pipeline.dynamicCast< QGst::StreamVolume >();
-		if( svp )
-		{
-			svp->setVolume( ( double )volume / 10, QGst::StreamVolumeFormatCubic );
-		}
-	}
-}
-
-QTime Player::length() const
-{
-	if (m_pipeline)
-	{
-		QGst::DurationQueryPtr query = QGst::DurationQuery::create( QGst::FormatTime );
-		m_pipeline->query( query );
-		return QGst::ClockTime( query->duration() ).toTime();
-	}
-	else
-	{
-		return QTime( 0, 0 );
-	}
-}
-
-QGst::State Player::state() const
-{
-	return m_pipeline ? m_pipeline->currentState() : QGst::StateNull;
-}
-
-void Player::play()
-{
-	if ( m_pipeline )
-	{
-		m_pipeline->setState( QGst::StatePlaying );
-	}
-}
-void Player::pause()
-{
-	if ( m_pipeline )
-	{
-		m_pipeline->setState( QGst::StatePaused );
-	}
+	m_is_playing = true;
+	Q_EMIT started( sharedFromThis() );
 }
 
 void Player::stop()
 {
-	if ( m_pipeline )
-	{
-		m_pipeline->setState( QGst::StateNull );
-
-		// once the pipeline stops, the bus is flushed so we will
-		// not receive any StateChangedMessage about this.
-		// so, to inform the ui, we have to emit this signal manually.
-		Q_EMIT stateChanged();
-	}
+	m_is_playing = false;
+	m_pos = 0;
+	Q_EMIT stopped();
 }
 
-void Player::onBusMessage(const QGst::MessagePtr & message)
-{
-	switch ( message->type() )
-	{
-		case QGst::MessageEos: // End of stream. We reached the end of the file.
-			stop();
-			break;
-		case QGst::MessageError: // Some error occurred.
-			qCritical() << message.staticCast<QGst::ErrorMessage>()->error();
-			stop();
-			break;
-		case QGst::MessageStateChanged: // The element in message->source() has changed state
-			if ( message->source() == m_pipeline )
-			{
-				handlePipelineStateChange( message.staticCast< QGst::StateChangedMessage>() );
-			}
-			break;
-		default:
-			break;
-	}
-}
 
-void Player::handlePipelineStateChange( const QGst::StateChangedMessagePtr &scm )
-{
-	switch ( scm->newState() )
-	{
-	case QGst::StatePlaying:
-		// start the timer when the pipeline starts playing
-		m_positionTimer.start( 100 );
-		break;
-	case QGst::StatePaused:
-		// stop the timer when the pipeline pauses
-		if( scm->oldState() == QGst::StatePlaying )
-		{
-			m_positionTimer.stop();
-		}
-		break;
-	default:
-		break;
-	}
-	Q_EMIT stateChanged();
-}
-
-} /* namespace noises */
 } /* namespace audio */
+} /* namespace noises */

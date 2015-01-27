@@ -55,6 +55,22 @@ void WaitCueDialog::readSettings()
 void WaitCueDialog::createCueWidgets()
 {
 	createWidgets();
+
+	QLabel* wait_time_label = new QLabel( "Wait time:", this );
+
+	m_wait_time = new QDoubleSpinBox( this );
+	m_wait_time->setSuffix( "s" );
+
+	QHBoxLayout* layout = new QHBoxLayout();
+	layout->setContentsMargins( 0, 0, 0, 0 );
+
+	layout->addWidget( wait_time_label );
+	layout->addWidget( m_wait_time );
+
+	QGroupBox* times_group_box = new QGroupBox( "Times", this );
+	times_group_box->setLayout( layout );
+
+	m_layout->addWidget( times_group_box );
 }
 
 } /* namespace noises */

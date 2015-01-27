@@ -22,6 +22,11 @@ void FileLineEdit::createWidgets()
 {
 	m_line_edit = new QLineEdit( this );
 
+	connect(
+		m_line_edit, SIGNAL( editingFinished() ),
+		this, SLOT( onEditingFinished() )
+		);
+
 	QIcon icon = QApplication::style()->standardIcon( QStyle::SP_FileIcon );
 	m_edit_button = new QPushButton( this );
 	m_edit_button->setIcon( icon );
@@ -48,7 +53,13 @@ void FileLineEdit::showFileDialog()
 	if ( dialog.result() == QDialog::Accepted && !dialog.selectedFiles().isEmpty() )
 	{
 		m_line_edit->setText( dialog.selectedFiles()[0] );
+		Q_EMIT filenameChanged();
 	}
+}
+
+void FileLineEdit::onEditingFinished()
+{
+	Q_EMIT filenameChanged();
 }
 
 } /* namespace widgets */

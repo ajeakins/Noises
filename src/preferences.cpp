@@ -1,10 +1,13 @@
 
 #include <assert.h>
 
+#include <QtGui>
+
 #include <QCheckBox>
 #include <QDialogButtonBox>
 #include <QLayout>
 #include <QLabel>
+#include <QSpinBox>
 
 #include "preferences.h"
 
@@ -15,12 +18,18 @@ namespace noises
 
 Preferences::Preferences()
 {
+	m_data["output count"] = Preference( (uint)2, "Some tooltip" );
 	m_data["stereo link"] = Preference( true, "Some tooltip" );
 }
 
-bool Preferences::defaultStereoLink() const
+bool Preferences::getDefaultStereoLink() const
 {
 	return m_data["stereo link"].value.toBool();
+}
+
+unsigned int Preferences::getOutputCount() const
+{
+	return m_data["output count"].value.toUInt();
 }
 
 void Preferences::getKeys( QList< QString >& keys ) const
@@ -85,11 +94,23 @@ void PreferencesDialog::createWidgets()
 			case QVariant::Bool:
 			{
 				QCheckBox* checkbox = new QCheckBox( this );
-				checkbox->setChecked( m_preferences.getValue( keys[i] ).toBool() );
+				bool value = m_preferences.getValue( keys[i] ).toBool();
+				checkbox->setChecked( value );
 
 				m_widgets[keys[i]] = checkbox;
 
 				prefs_layout->addWidget( checkbox, i, 1 );
+				break;
+			}
+			case QVariant::Int:
+			{
+				QSpinBox* spinbox = new QSpinBox( this );
+				int value = m_preferences.getValue( keys[i] ).toInt();
+				spinbox->setValue( value );
+
+				m_widgets[keys[i]] = spinbox;
+
+				prefs_layout->addWidget( spinbox, i, 1 );
 				break;
 			}
 			default:
@@ -150,7 +171,17 @@ void PreferencesDialog::writeSettings()
 				m_preferences.setValue( key, value );
 				break;
 			}
+			case QVariant::Int:
+			{
+				QSpinBox* spinbox = dynamic_cast< QSpinBox* >( widget );
+				assert( spinbox );
+
+				int value = spinbox->value();
+				m_preferences.setValue( key, value );
+				break;
+			}
 			default:
+				qWarning() << "WARNING: not writting setting\n";
 				break;
 		}
 	}

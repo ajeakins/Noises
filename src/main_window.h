@@ -3,6 +3,8 @@
 #include <QMainWindow>
 #include <QTreeView>
 
+#include <audio/hub.h>
+
 #include "types.h"
 
 class QAction;
@@ -41,6 +43,7 @@ namespace noises
 		// Cue Slots
 		void playCue();
 		void editCue( QModelIndex index );
+		void stopAllCues();
 
 	private:
 		void createActions();
@@ -82,6 +85,7 @@ namespace noises
 
 		// Cue Actions
 		QAction* m_play_cue_action;
+		QAction* m_stop_all_cues_action;
 	};
 
 } /* namespace noises */

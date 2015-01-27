@@ -28,8 +28,13 @@ namespace widgets
 			m_line_edit->setText( text );
 		}
 
+	Q_SIGNALS:
+		void filenameChanged();
+
 	private Q_SLOTS:
 		void showFileDialog();
+
+		void onEditingFinished();
 
 	private:
 		void createWidgets();

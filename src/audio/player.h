@@ -1,58 +1,82 @@
+
 #pragma once
 
-#include <QTimer>
-#include <QTime>
-#include <QGst/Pipeline>
+#include <QObject>
+#include <QSharedPointer>
+#include <QEnableSharedFromThis>
+
+#include <portaudio.h>
 
 namespace noises
 {
 namespace audio
 {
-	class Player : public QObject
+	class Player: public QObject, public QEnableSharedFromThis< Player >
 	{
 		Q_OBJECT
-
 	public:
-		Player();
+		// Players exist with managed lifetime
+
+		typedef QSharedPointer< Player > Ptr;
+
+		static Ptr create();
 
 		~Player();
 
-		void setUri( const QString& uri);
+		// setup
 
-		QTime position() const;
+		void setFilename( const QString& filename );
 
-		void setPosition( const QTime& pos );
+		// Playback controls
 
-		int volume() const;
-
-		QTime length() const;
-
-		QGst::State state() const;
-
-	public Q_SLOTS:
-		void play();
-
-		void pause();
+		void start();
 
 		void stop();
 
-		void setVolume( int volume );
+		bool isPlaying()
+		{
+			return m_is_playing;
+		}
+
+		// TODO: make private/friend hub
+
+		float data()
+		{
+			float res = 0.0f;
+
+			if ( m_pos < m_length )
+			{
+				res = m_audio_data[m_pos];
+				++m_pos;
+			}
+			else
+			{
+				m_is_playing = false;
+			};
+
+			return res;
+		}
 
 	Q_SIGNALS:
-		void positionChanged();
+		void started( Player::Ptr player );
 
-		void stateChanged();
-
-	private:
-		void onBusMessage( const QGst::MessagePtr& message);
-
-		void handlePipelineStateChange( const QGst::StateChangedMessagePtr& scm );
+		void stopped();
 
 	private:
-		QGst::PipelinePtr m_pipeline;
-		QTimer m_positionTimer;
+		Player();
 
+		void readData();
+
+	private:
+		QString m_filename;
+
+		bool m_is_playing;
+
+		float* m_audio_data;
+		int m_pos;
+		int m_length;
+		int m_channels;
 	};
 
-} /* namespace noises */
 } /* namespace audio */
+} /* namespace noises */

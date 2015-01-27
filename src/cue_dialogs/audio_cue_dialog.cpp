@@ -8,6 +8,7 @@
 #include <QLayout>
 #include <QStyle>
 
+#include <audio/manager.h>
 
 #include "audio_cue_dialog.h"
 
@@ -20,8 +21,11 @@ AudioCueDialog::AudioCueDialog(
 	QWidget* parent )
 :
 	CueDialog( mapper, parent ),
-	m_cue( cue )
+	m_cue( cue ),
+	m_player( audio::Player::create() )
 {
+	Application::getAudioManager().registerPlayer( m_player );
+
 	setWindowTitle( "Edit Audio Cue" );
 	setWindowIcon( QIcon( ":images/audio_cue.png" ) );
 
@@ -38,7 +42,10 @@ AudioCueDialog::AudioCueDialog(
 }
 
 AudioCueDialog::~AudioCueDialog()
-{}
+{
+	m_player->stop();
+	Application::getAudioManager().unregisterPlayer( m_player );
+}
 
 void AudioCueDialog::accept()
 {
@@ -48,20 +55,18 @@ void AudioCueDialog::accept()
 
 void AudioCueDialog::play()
 {
-	QString filename = m_file_edit->text();
-	if ( !filename.isEmpty() )
-	{
-		std::cout << "play " << qPrintable( filename ) << std::endl;
-
-		m_player.stop();
-		m_player.setUri( filename );
-		m_player.play();
-	}
+	m_player->start();
 }
 
 void AudioCueDialog::stop()
 {
-	m_player.stop();
+	m_player->stop();
+}
+
+void AudioCueDialog::onFilenameChanged()
+{
+	std::cout << "onFilenameChanged" << std::endl;
+	m_player->setFilename( m_file_edit->text() );
 }
 
 void AudioCueDialog::writeSettings()
@@ -104,6 +109,10 @@ void AudioCueDialog::createCueWidgets()
 
 	m_file_edit = new widgets::FileLineEdit( this );
 
+	connect(
+		m_file_edit, SIGNAL( filenameChanged() ),
+		this, SLOT( onFilenameChanged() ) );
+
 	m_play_button = new QPushButton( this );
 	icon = QApplication::style()->standardIcon( QStyle::SP_MediaPlay );
 	m_play_button->setIcon( icon );
@@ -114,13 +123,11 @@ void AudioCueDialog::createCueWidgets()
 
 	connect(
 		m_play_button, SIGNAL( released() ),
-		this, SLOT( play() )
-		);
+		this, SLOT( play() ) );
 
 	connect(
 		m_stop_button, SIGNAL( released() ),
-		this, SLOT( stop() )
-		);
+		this, SLOT( stop() ) );
 
 	m_reset_times_button = new QPushButton( this );
 	icon = QApplication::style()->standardIcon( QStyle::SP_BrowserReload );

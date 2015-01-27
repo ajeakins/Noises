@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include <audio/player.h>
 #include <application.h>
 #include <widgets/matrix.h>
 
@@ -19,7 +20,7 @@ namespace noises
 			start_fade( 0.0f ),
 			end_fade( 0.0f )
 		{
-			bool link = Application::getPreferences().defaultStereoLink();
+			bool link = Application::getPreferences().getDefaultStereoLink();
 			levels.setStereoLink( link );
 		}
 
@@ -47,7 +48,7 @@ namespace noises
 
 		AudioCueSettings& getSettings()
 		{
-			return cue_settings;
+			return m_settings;
 		}
 
 		void execute() const;
@@ -56,7 +57,9 @@ namespace noises
 		virtual QVariant getIcon() const;
 
 	private:
-		AudioCueSettings cue_settings;
+		AudioCueSettings m_settings;
+
+		audio::Player::Ptr m_player;
 	};
 
 } /* namespace noises */
