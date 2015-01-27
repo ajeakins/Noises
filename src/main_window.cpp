@@ -3,7 +3,12 @@
 #include <iostream>
 
 #include <QtGui>
+#include <QToolBar>
+#include <QMenu>
+#include <QMenuBar>
+#include <QStatusBar>
 #include <QDataWidgetMapper>
+#include <QMessageBox>
 
 #include <utils/cue.h>
 #include <cue_dialogs/audio_cue_dialog.h>
