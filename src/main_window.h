@@ -3,9 +3,7 @@
 #include <QMainWindow>
 #include <QTreeView>
 
-#include <audio/hub.h>
-
-#include "types.h"
+#include <cues/types.h>
 
 class QAction;
 class QMenu;
@@ -30,6 +28,9 @@ namespace noises
 	private Q_SLOTS:
 		// Menu Slots
 		void newShow();
+		void saveShow();
+		void saveShowAs();
+		void openShow();
 
 		void editPreferences();
 
@@ -39,6 +40,7 @@ namespace noises
 		void newAudioCue();
 		void newControlCue();
 		void newWaitCue();
+		void newGroupCue();
 
 		// Cue Slots
 		void playCue();
@@ -46,6 +48,7 @@ namespace noises
 		void stopAllCues();
 
 	private:
+		void createWidgets();
 		void createActions();
 		void createMenus();
 		void createToolBars();
@@ -73,9 +76,13 @@ namespace noises
 		QAction* m_new_audio_cue_action;
 		QAction* m_new_control_cue_action;
 		QAction* m_new_wait_cue_action;
+		QAction* m_new_group_cue_action;
 
 		// Menu Actions
 		QAction* m_new_show_action;
+		QAction* m_save_show_action;
+		QAction* m_save_show_as_action;
+		QAction* m_open_show_action;
 		QAction* m_exit_action;
 
 		QAction* m_edit_preferences_action;

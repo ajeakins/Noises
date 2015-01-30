@@ -102,7 +102,7 @@ void PreferencesDialog::createWidgets()
 				prefs_layout->addWidget( checkbox, i, 1 );
 				break;
 			}
-			case QVariant::Int:
+			case QVariant::UInt:
 			{
 				QSpinBox* spinbox = new QSpinBox( this );
 				int value = m_preferences.getValue( keys[i] ).toInt();

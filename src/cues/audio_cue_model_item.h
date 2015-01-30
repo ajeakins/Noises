@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <QTime>
+
 #include <audio/player.h>
 #include <application.h>
 #include <widgets/matrix.h>
@@ -14,11 +16,6 @@ namespace noises
 	struct AudioCueSettings
 	{
 		AudioCueSettings()
-		:
-			start_time( 0.0f ),
-			end_time( 0.0f ),
-			start_fade( 0.0f ),
-			end_fade( 0.0f )
 		{
 			bool link = Application::getPreferences().getDefaultStereoLink();
 			levels.setStereoLink( link );
@@ -26,8 +23,8 @@ namespace noises
 
 		QString file_name;
 
-		float start_time, end_time;
-		float start_fade, end_fade;
+		QTime start_time, end_time;
+		QTime start_fade, end_fade;
 
 		widgets::MatrixSettings levels;
 	};

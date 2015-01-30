@@ -9,6 +9,7 @@ namespace noises
 
 CueModelItem::CueModelItem( const QList< QVariant >& item_data, CueModelItem* parent_item )
 :
+	QObject(),
 	m_item_data( item_data ),
 	m_parent_item( parent_item )
 
@@ -77,6 +78,16 @@ bool CueModelItem::setData( int column, const QVariant& data )
 	return true;
 }
 
+Qt::ItemFlags CueModelItem::flags() const
+{
+	Qt::ItemFlags flags =
+		Qt::ItemIsEnabled |
+		Qt::ItemIsSelectable |
+		Qt::ItemIsEditable |
+		Qt::ItemIsDragEnabled;
+	return flags;
+}
+
 CueModelItem* CueModelItem::parent()
 {
 	return m_parent_item;
@@ -95,6 +106,32 @@ int CueModelItem::row() const
 QVariant CueModelItem::getIcon() const
 {
 	return QVariant();
+}
+
+void CueModelItem::readSettings( const Json::Value& root )
+{
+	assert( root.type() == Json::objectValue );
+
+	for ( int i = 0; i != m_item_data.count(); ++i )
+	{
+		m_item_data[i] = root["data"][i].asCString();
+	}
+}
+
+void CueModelItem::writeSettings( Json::Value& root ) const
+{
+	assert( root.type() == Json::objectValue );
+
+	root["type"] = qPrintable( typeToString( getType() ) );
+
+	Json::Value values( Json::arrayValue );
+	for ( auto itr = m_item_data.begin(); itr != m_item_data.end(); ++itr )
+	{
+		Json::Value value( qPrintable( itr->toString() ) );
+		values.append( value );
+	}
+
+	root["data"] = values;
 }
 
 } /* namespace noises */

@@ -1,8 +1,9 @@
 
 #include <QApplication>
 #include <QDataWidgetMapper>
+#include <QDebug>
 #include <QDialogButtonBox>
-#include <QDoubleSpinBox>
+#include <QTimeEdit>
 #include <QGroupBox>
 #include <QLabel>
 #include <QLayout>
@@ -21,10 +22,9 @@ AudioCueDialog::AudioCueDialog(
 	QWidget* parent )
 :
 	CueDialog( mapper, parent ),
-	m_cue( cue ),
-	m_player( audio::Player::create() )
+	m_cue( cue )
 {
-	Application::getAudioManager().registerPlayer( m_player );
+	m_player = Application::getAudioManager().createPlayer( this );
 
 	setWindowTitle( "Edit Audio Cue" );
 	setWindowIcon( QIcon( ":images/audio_cue.png" ) );
@@ -43,8 +43,8 @@ AudioCueDialog::AudioCueDialog(
 
 AudioCueDialog::~AudioCueDialog()
 {
+	std::cout << "~AudioCueDialog" << std::endl;
 	m_player->stop();
-	Application::getAudioManager().unregisterPlayer( m_player );
 }
 
 void AudioCueDialog::accept()
@@ -65,8 +65,12 @@ void AudioCueDialog::stop()
 
 void AudioCueDialog::onFilenameChanged()
 {
-	std::cout << "onFilenameChanged" << std::endl;
 	m_player->setFilename( m_file_edit->text() );
+
+	QTime time( 0, 0, 0, 0 );
+	m_player->getDuration( time );
+	qDebug() << time.toString();
+	m_end_time->setTime( time );
 }
 
 void AudioCueDialog::writeSettings()
@@ -75,11 +79,11 @@ void AudioCueDialog::writeSettings()
 
 	settings.file_name = m_file_edit->text();
 
-	settings.start_time = m_start_time->value();
-	settings.end_time = m_end_time->value();
+	// settings.start_time = m_start_time->value();
+	// settings.end_time = m_end_time->value();
 
-	settings.start_fade = m_fade_in_time->value();
-	settings.end_fade = m_fade_out_time->value();
+	// settings.start_fade = m_fade_in_time->value();
+	// settings.end_fade = m_fade_out_time->value();
 
 	m_matrix->writeSettings( settings.levels );
 }
@@ -90,11 +94,11 @@ void AudioCueDialog::readSettings()
 
 	m_file_edit->setText( settings.file_name );
 
-	m_start_time->setValue( settings.start_time );
-	m_end_time->setValue( settings.end_time );
+	// m_start_time->setValue( settings.start_time );
+	// m_end_time->setValue( settings.end_time );
 
-	m_fade_in_time->setValue( settings.start_fade );
-	m_fade_out_time->setValue( settings.end_fade );
+	// m_fade_in_time->setValue( settings.start_fade );
+	// m_fade_out_time->setValue( settings.end_fade );
 
 	m_matrix->readSettings( settings.levels );
 }
@@ -152,20 +156,20 @@ void AudioCueDialog::createCueWidgets()
 	// times
 
 	QLabel* start_label =  new QLabel( "Start:", this );
-	m_start_time = new QDoubleSpinBox( this );
-	m_start_time->setSuffix( "s" );
+	m_start_time = new QTimeEdit( this );
+	m_start_time->setDisplayFormat( "hh:mm:ss:zzz" );
 
 	QLabel* end_label = new QLabel( "End:", this );
-	m_end_time = new QDoubleSpinBox( this );
-	m_end_time->setSuffix( "s" );
+	m_end_time = new QTimeEdit( this );
+	m_end_time->setDisplayFormat( "hh:mm:ss:zzz" );
 
 	QLabel* fade_in_label = new QLabel( "Fade in:", this );
-	m_fade_in_time = new QDoubleSpinBox( this );
-	m_fade_in_time->setSuffix( "s" );
+	m_fade_in_time = new QTimeEdit( this );
+	m_fade_in_time->setDisplayFormat( "hh:mm:ss:zzz" );
 
 	QLabel* fade_out_label = new QLabel( "Fade out:", this );
-	m_fade_out_time = new QDoubleSpinBox( this );
-	m_fade_out_time->setSuffix( "s" );
+	m_fade_out_time = new QTimeEdit( this );
+	m_fade_out_time->setDisplayFormat( "hh:mm:ss:zzz" );
 
 	QGridLayout* times_grid = new QGridLayout();
 	times_grid->setContentsMargins( 0, 0, 0, 0 );

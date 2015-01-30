@@ -9,7 +9,7 @@
 
 #include "cue_dialog.h"
 
-class QDoubleSpinBox;
+class QTimeEdit;
 class QDataWidgetMapper;
 
 namespace noises
@@ -61,10 +61,10 @@ namespace noises
 
 		QPushButton* m_reset_times_button;
 
-		QDoubleSpinBox* m_start_time;
-		QDoubleSpinBox* m_end_time;
-		QDoubleSpinBox* m_fade_in_time;
-		QDoubleSpinBox* m_fade_out_time;
+		QTimeEdit* m_start_time;
+		QTimeEdit* m_end_time;
+		QTimeEdit* m_fade_in_time;
+		QTimeEdit* m_fade_out_time;
 
 		widgets::Matrix* m_matrix;
 

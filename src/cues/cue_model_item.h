@@ -5,12 +5,15 @@
 #include <QList>
 #include <QVariant>
 
+#include <json/json.h>
+
 #include "types.h"
 
 namespace noises
 {
-	class CueModelItem
+	class CueModelItem: public QObject
 	{
+		Q_OBJECT
 	public:
 		CueModelItem( const QList< QVariant >& item_data, CueModelItem* parent_item = 0 );
 
@@ -30,6 +33,8 @@ namespace noises
 		QVariant data( int column, int role = Qt::DisplayRole ) const;
 		bool setData( int column, const QVariant& data );
 
+		virtual Qt::ItemFlags flags() const;
+
 		int row() const;
 
 		// type of the cue
@@ -44,11 +49,16 @@ namespace noises
 			assert( false && "Cannot execute base item" );
 		}
 
+		virtual void readSettings( const Json::Value& root );
+
+		virtual void writeSettings( Json::Value& root ) const;
+
 	protected:
 		virtual QVariant getIcon() const;
 
 	private:
-		QList< QVariant > m_item_data;
+		typedef QList< QVariant > DataList;
+		DataList m_item_data;
 
 		CueModelItem* m_parent_item;
 		QList< CueModelItem* > m_child_items;

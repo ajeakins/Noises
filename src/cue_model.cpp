@@ -4,6 +4,7 @@
 
 #include <cues/audio_cue_model_item.h>
 #include <cues/control_cue_model_item.h>
+#include <cues/group_cue_model_item.h>
 #include <cues/wait_cue_model_item.h>
 
 #include "cue_model.h"
@@ -109,6 +110,9 @@ CueModelItem* CueModel::createCue( CueType type )
 		case CueType_Wait:
 			item = new WaitCueModelItem( data, m_root_item );
 			break;
+		case CueType_Group:
+			item = new GroupCueModelItem( data, m_root_item );
+			break;
 		default:
 			assert( false && "Unhandled cue type" );
 			break;
@@ -133,7 +137,8 @@ Qt::ItemFlags CueModel::flags( const QModelIndex& index ) const
 		return 0;
 	}
 
-	return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+	CueModelItem *item = static_cast< CueModelItem* >( index.internalPointer() );
+	return item->flags();
 }
 
 QVariant CueModel::headerData(
@@ -213,10 +218,45 @@ int CueModel::rowCount( const QModelIndex& parent ) const
 	}
 	else
 	{
-		parentItem = static_cast<CueModelItem*>(parent.internalPointer());
+		parentItem = static_cast< CueModelItem* >( parent.internalPointer() );
 	}
 
 	return parentItem->childCount();
+}
+
+Qt::DropActions CueModel::supportedDropActions() const
+{
+	return Qt::MoveAction;
+}
+
+void CueModel::readSettings( const Json::Value& root )
+{
+	assert( root.type() == Json::arrayValue );
+
+	for ( unsigned int i = 0; i != root.size(); ++i )
+	{
+		Json::Value cueData = root[i];
+		assert( cueData.type() == Json::objectValue );
+
+		QString type = cueData["type"].asCString();
+
+		CueModelItem* item = createCue( stringToType( type ) );
+		setCueParent( m_root_item, item, m_root_item->childCount() + 1 );
+
+		item->readSettings( cueData );
+	}
+}
+
+void CueModel::writeSettings( Json::Value& root ) const
+{
+	assert( root.type() == Json::arrayValue );
+
+	for ( int i = 0; i != m_root_item->childCount(); ++i )
+	{
+		Json::Value cueData( Json::objectValue );
+		m_root_item->child( i )->writeSettings( cueData );
+		root.append( cueData );
+	}
 }
 
 } /* namespace noises */

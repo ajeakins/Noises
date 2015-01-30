@@ -5,7 +5,9 @@
 #include <QVariant>
 #include <QObject>
 
-#include "types.h"
+#include <json/json.h>
+
+#include <cues/types.h>
 
 namespace noises
 {
@@ -51,6 +53,12 @@ namespace noises
 		{
 			return m_root_item;
 		}
+
+		Qt::DropActions supportedDropActions() const;
+
+		void readSettings( const Json::Value& root );
+
+		void writeSettings( Json::Value& root ) const;
 
 	private:
 		CueModelItem* m_root_item;

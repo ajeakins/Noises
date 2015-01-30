@@ -9,10 +9,14 @@
 #include <QStatusBar>
 #include <QDataWidgetMapper>
 #include <QMessageBox>
+#include <QFileDialog>
+
+#include <json/json.h>
 
 #include <utils/cue.h>
 #include <cue_dialogs/audio_cue_dialog.h>
 #include <cue_dialogs/control_cue_dialog.h>
+#include <cue_dialogs/group_cue_dialog.h>
 #include <cue_dialogs/wait_cue_dialog.h>
 
 #include "application.h"
@@ -27,29 +31,11 @@ MainWindow::MainWindow()
 {
 	setWindowTitle( "Noises" );
 
-	m_cue_model = new CueModel;
-
-	m_cue_list = new QTreeView;
-	m_cue_list->setModel( m_cue_model );
-
-	m_cue_list->setSelectionMode( QAbstractItemView::SingleSelection );
-	m_cue_list->setDragEnabled( true );
-	m_cue_list->setAcceptDrops( true );
-	m_cue_list->setDropIndicatorShown( true );
-
-	connect(
-		m_cue_list, SIGNAL( doubleClicked( QModelIndex ) ),
-		this, SLOT( editCue( QModelIndex ) ) );
-
-	setCentralWidget( m_cue_list );
-
+	createWidgets();
 	createActions();
 	createMenus();
 	createToolBars();
 	createStatusBar();
-
-	m_cue_list->addAction( m_play_cue_action );
-	m_cue_list->addAction( m_stop_all_cues_action );
 
 	resize( 600, 500 );
 }
@@ -70,12 +56,69 @@ void MainWindow::closeEvent( QCloseEvent* event )
 }
 
 void MainWindow::newShow()
+{}
+
+void MainWindow::saveShow()
 {
-	std::cout << "newShow" << std::endl;
+	QString filename = QFileDialog::getSaveFileName (
+		this,
+		"Save Show",
+		QString(),
+		"*.noises" );
+
+	if ( filename.isEmpty() )
+	{
+		return;
+	}
+
+	if ( !filename.endsWith( ".noises" ) )
+	{
+		filename += ".noises";
+	}
+
+	Json::Value root;
+	root["cues"] = Json::Value( Json::arrayValue );
+
+	m_cue_model->writeSettings( root["cues"] );
+
+	QFile file( filename );
+	file.open( QIODevice::WriteOnly );
+
+	Json::StyledWriter writer;
+	file.write( writer.write( root ).c_str() );
+
+	file.close();
+
+}
+
+void MainWindow::saveShowAs()
+{}
+
+void MainWindow::openShow()
+{
+	QString filename = QFileDialog::getOpenFileName(
+		this,
+		"Open Show",
+		QString(),
+		"*.noises" );
+
+	Json::Value root;
+
+	QFile file( filename );
+	file.open( QIODevice::ReadOnly );
+
+	Json::Reader reader;
+	reader.parse( file.readAll().constData(), root );
+
+	file.close();
+
+	m_cue_model->readSettings( root["cues"] );
 }
 
 CueModelItem* MainWindow::createCue( CueType type )
 {
+	std::cout << "createCue" << std::endl;
+
 	QModelIndex selected_row = m_cue_list->selectionModel()->currentIndex();
 
 	CueModelItem* parent;
@@ -134,7 +177,6 @@ void MainWindow::newAudioCue()
 {
 	AudioCueModelItem* cue = dynamic_cast< AudioCueModelItem* >( createCue( CueType_Audio ) );
 
-	// open edit dialog
 	AudioCueDialog dialog( cue, getDataMapper(), this );
 	dialog.exec();
 }
@@ -143,7 +185,6 @@ void MainWindow::newControlCue()
 {
 	ControlCueModelItem* cue = dynamic_cast< ControlCueModelItem* >( createCue( CueType_Control ) );
 
-	// open edit dialog
 	ControlCueDialog dialog( cue, getDataMapper(), this );
 	dialog.exec();
 }
@@ -152,8 +193,15 @@ void MainWindow::newWaitCue()
 {
 	WaitCueModelItem* cue = dynamic_cast< WaitCueModelItem* >( createCue( CueType_Wait ) );
 
-	// open edit dialog
 	WaitCueDialog dialog( cue, getDataMapper(), this );
+	dialog.exec();
+}
+
+void MainWindow::newGroupCue()
+{
+	GroupCueModelItem* cue = dynamic_cast< GroupCueModelItem* >( createCue( CueType_Group ) );
+
+	GroupCueDialog dialog( cue, getDataMapper(), this );
 	dialog.exec();
 }
 
@@ -225,6 +273,25 @@ void MainWindow::editPreferences()
 	dialog.exec();
 }
 
+void MainWindow::createWidgets()
+{
+	m_cue_model = new CueModel;
+
+	m_cue_list = new QTreeView;
+	m_cue_list->setModel( m_cue_model );
+
+	m_cue_list->setSelectionMode( QAbstractItemView::SingleSelection );
+	m_cue_list->setDragEnabled( true );
+	m_cue_list->setAcceptDrops( true );
+	m_cue_list->setDropIndicatorShown( true );
+
+	connect(
+		m_cue_list, SIGNAL( doubleClicked( QModelIndex ) ),
+		this, SLOT( editCue( QModelIndex ) ) );
+
+	setCentralWidget( m_cue_list );
+}
+
 void MainWindow::createActions()
 {
 	// menu actions
@@ -237,6 +304,25 @@ void MainWindow::createActions()
 	connect(
 		m_new_show_action, SIGNAL( triggered() ),
 		this, SLOT( newShow() ) );
+
+	m_save_show_action = new QAction( "&Save Show", this );
+	m_save_show_action->setShortcuts( QKeySequence::Save );
+	m_save_show_action->setStatusTip( "Save show" );
+	connect(
+		m_save_show_action, SIGNAL( triggered() ),
+		this, SLOT( saveShow() ) );
+
+	m_save_show_as_action = new QAction( "&Save Show As", this );
+	m_save_show_as_action->setStatusTip( "Save show as" );
+	connect(
+		m_save_show_as_action, SIGNAL( triggered() ),
+		this, SLOT( saveShowAs() ) );
+
+	m_open_show_action = new QAction( "&Open Show", this );
+	m_open_show_action->setStatusTip( "Open show" );
+	connect(
+		m_open_show_action, SIGNAL( triggered() ),
+		this, SLOT( openShow() ) );
 
 	m_exit_action = new QAction( "E&xit", this );
 	m_exit_action->setShortcuts( QKeySequence::Quit );
@@ -286,6 +372,12 @@ void MainWindow::createActions()
 		m_new_wait_cue_action, SIGNAL( triggered() ),
 		this, SLOT( newWaitCue() ) );
 
+	m_new_group_cue_action = new QAction( "&New Group Cue", this );
+	m_new_group_cue_action->setStatusTip( "Create a new group cue" );
+	connect(
+		m_new_group_cue_action, SIGNAL( triggered() ),
+		this, SLOT( newGroupCue() ) );
+
 	// cue actions
 
 	m_play_cue_action = new QAction( "Play Cue", m_cue_list );
@@ -299,12 +391,21 @@ void MainWindow::createActions()
 	connect(
 		m_stop_all_cues_action, SIGNAL( triggered() ),
 		this, SLOT( stopAllCues() ) );
+
+
+	// setup cue list actions
+
+	m_cue_list->addAction( m_play_cue_action );
+	m_cue_list->addAction( m_stop_all_cues_action );
 }
 
 void MainWindow::createMenus()
 {
 	m_file_menu = menuBar()->addMenu( "&File" );
 	m_file_menu->addAction( m_new_show_action );
+	m_file_menu->addAction( m_open_show_action );
+	m_file_menu->addAction( m_save_show_action );
+	m_file_menu->addAction( m_save_show_as_action );
 	m_file_menu->addSeparator();
 	m_file_menu->addAction( m_exit_action );
 
@@ -324,6 +425,7 @@ void MainWindow::createToolBars()
 	m_tool_bar->addAction( m_new_audio_cue_action );
 	m_tool_bar->addAction( m_new_control_cue_action );
 	m_tool_bar->addAction( m_new_wait_cue_action );
+	m_tool_bar->addAction( m_new_group_cue_action );
 }
 
 void MainWindow::createStatusBar()

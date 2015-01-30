@@ -8,16 +8,13 @@ AudioCueModelItem::AudioCueModelItem(
 	const QList< QVariant >& item_data,
 	CueModelItem* parent_item )
 :
-		CueModelItem( item_data, parent_item ),
-		m_player( audio::Player::create() )
+		CueModelItem( item_data, parent_item )
 {
-	Application::getAudioManager().registerPlayer( m_player );
+	m_player = Application::getAudioManager().createPlayer( this );
 }
 
 AudioCueModelItem::~AudioCueModelItem()
-{
-	Application::getAudioManager().unregisterPlayer( m_player );
-}
+{}
 
 void AudioCueModelItem::execute() const
 {
