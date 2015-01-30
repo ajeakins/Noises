@@ -354,25 +354,35 @@ void MainWindow::createActions()
 
 	// toolbar actions
 
-	m_new_audio_cue_action = new QAction( QIcon( ":/images/audio_cue_32x32.png" ), "&New Audio Cue", this );
+	m_new_audio_cue_action = new QAction(
+		QIcon( ":/images/audio_cue_32x32.png" ),
+		"&New Audio Cue", this );
 	m_new_audio_cue_action->setStatusTip( "Create a new audio cue" );
 	connect(
 		m_new_audio_cue_action, SIGNAL( triggered() ),
 		this, SLOT( newAudioCue() ) );
 
-	m_new_control_cue_action = new QAction( "&New Control Cue", this );
+	m_new_control_cue_action = new QAction(
+		QIcon( ":/images/control_cue_32x32.png" ),
+		"&New Control Cue",
+		this );
 	m_new_control_cue_action->setStatusTip( "Create a new control cue" );
 	connect(
 		m_new_control_cue_action, SIGNAL( triggered() ),
 		this, SLOT( newControlCue() ) );
 
-	m_new_wait_cue_action = new QAction( "&New Wait Cue", this );
+	m_new_wait_cue_action = new QAction(
+		QIcon( ":/images/wait_cue_32x32.png" ),
+		"&New Wait Cue",
+		this );
 	m_new_wait_cue_action->setStatusTip( "Create a new wait cue" );
 	connect(
 		m_new_wait_cue_action, SIGNAL( triggered() ),
 		this, SLOT( newWaitCue() ) );
 
-	m_new_group_cue_action = new QAction( "&New Group Cue", this );
+	m_new_group_cue_action = new QAction(
+		QIcon( ":/images/group_cue_32x32.png" ),
+		"&New Group Cue", this );
 	m_new_group_cue_action->setStatusTip( "Create a new group cue" );
 	connect(
 		m_new_group_cue_action, SIGNAL( triggered() ),

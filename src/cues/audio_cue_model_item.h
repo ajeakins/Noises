@@ -51,7 +51,7 @@ namespace noises
 		void execute() const;
 
 	protected:
-		virtual QVariant getIcon() const;
+		QVariant getIcon() const;
 
 	private:
 		AudioCueSettings m_settings;

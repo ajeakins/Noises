@@ -1,4 +1,6 @@
 
+#include <QPixmap>
+
 #include "group_cue_model_item.h"
 
 namespace noises
@@ -24,6 +26,12 @@ Qt::ItemFlags GroupCueModelItem::flags() const
 	Qt::ItemFlags flags = CueModelItem::flags();
 	flags |= Qt::ItemIsDropEnabled;
 	return flags;
+}
+
+QVariant GroupCueModelItem::getIcon() const
+{
+	QPixmap icon( ":/images/group_cue_16x16.png" );
+	return icon;
 }
 
 } /* namespace noises */

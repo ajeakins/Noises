@@ -83,7 +83,6 @@ Qt::ItemFlags CueModelItem::flags() const
 	Qt::ItemFlags flags =
 		Qt::ItemIsEnabled |
 		Qt::ItemIsSelectable |
-		Qt::ItemIsEditable |
 		Qt::ItemIsDragEnabled;
 	return flags;
 }

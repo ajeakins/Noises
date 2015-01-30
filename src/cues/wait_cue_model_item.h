@@ -23,6 +23,9 @@ namespace noises
 
 		void execute() const;
 
+	protected:
+		QVariant getIcon() const;
+
 	private:
 		// settings
 	};

@@ -1,4 +1,6 @@
 
+#include <QPixmap>
+
 #include "control_cue_model_item.h"
 
 namespace noises
@@ -17,6 +19,12 @@ ControlCueModelItem::~ControlCueModelItem()
 void ControlCueModelItem::execute() const
 {
 	std::cout << "control cue" << std::endl;
+}
+
+QVariant ControlCueModelItem::getIcon() const
+{
+	QPixmap icon( ":/images/control_cue_16x16.png" );
+	return icon;
 }
 
 } /* namespace noises */

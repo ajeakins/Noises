@@ -25,6 +25,9 @@ namespace noises
 
 		Qt::ItemFlags flags() const;
 
+	protected:
+		QVariant getIcon() const;
+
 	private:
 		// settings
 	};

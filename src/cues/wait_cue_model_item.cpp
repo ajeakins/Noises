@@ -1,4 +1,6 @@
 
+#include <QPixmap>
+
 #include "wait_cue_model_item.h"
 
 namespace noises
@@ -17,6 +19,12 @@ WaitCueModelItem::~WaitCueModelItem()
 void WaitCueModelItem::execute() const
 {
 	std::cout << "wait cue" << std::endl;
+}
+
+QVariant WaitCueModelItem::getIcon() const
+{
+	QPixmap icon( ":/images/wait_cue_16x16.png" );
+	return icon;
 }
 
 } /* namespace noises */
