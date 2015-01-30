@@ -1,6 +1,9 @@
 
 #include <iostream>
 
+#include <QThread>
+
+#include "engine.h"
 #include "manager.h"
 
 namespace noises
@@ -11,33 +14,42 @@ namespace audio
 Manager::Manager()
 {
 	m_thread = new QThread();
-	m_hub = new Hub();
+	m_engine = new Engine();
 
-	m_hub->moveToThread( m_thread );
+	m_engine->moveToThread( m_thread );
 
 	connect(
 		m_thread, SIGNAL( started() ),
-		m_hub, SLOT( run() ) );
+		m_engine, SLOT( run() ) );
 
 	connect(
-		m_hub, SIGNAL( finished() ),
+		m_engine, SIGNAL( finished() ),
 		m_thread, SLOT( quit() ) );
 }
 
 Manager::~Manager()
 {}
 
-void Manager::stop()
+Player::Ptr Manager::createPlayer( QObject* parent )
 {
-	m_hub->stop();
-}
+	Player::Ptr player = Player::ManagerHooks::create( parent );
 
-void Manager::registerPlayer( Player::Ptr player )
-{
-	m_players.append( player );
 	connect(
 		player.data(), SIGNAL( started( Player::Ptr ) ),
 		this, SLOT( playerStarted( Player::Ptr ) ) );
+
+	connect(
+		player.data(), SIGNAL( parentDestroyed( Player::Ptr ) ),
+		this, SLOT( unregisterPlayer( Player::Ptr ) ) );
+
+	m_players.append( player );
+
+	return player;
+}
+
+void Manager::stop()
+{
+	m_engine->stop();
 }
 
 void Manager::unregisterPlayer( Player::Ptr player )
@@ -47,10 +59,7 @@ void Manager::unregisterPlayer( Player::Ptr player )
 
 void Manager::playerStarted( Player::Ptr player )
 {
-	std::cout << "playerStarted" << std::endl;
-
-
-	m_hub->registerPlayer( player );
+	m_engine->registerPlayer( player );
 
 	if ( !m_thread->isRunning() )
 	{

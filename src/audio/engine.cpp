@@ -6,7 +6,7 @@
 
 #include <QSet>
 
-#include "hub.h"
+#include "engine.h"
 
 #define SAMPLE_RATE   (44100)
 #define FRAMES_PER_BUFFER  (512)
@@ -16,7 +16,7 @@ namespace noises
 namespace audio
 {
 
-PaStream* Hub::stream;
+PaStream* Engine::stream;
 
 void onError( const PaError& error )
 {
@@ -26,7 +26,7 @@ void onError( const PaError& error )
 	std::cout << "Error message: " << Pa_GetErrorText( error ) << std::endl;
 }
 
-Hub::Hub( QObject* parent )
+Engine::Engine( QObject* parent )
 :
 	QObject( parent )
 {
@@ -40,20 +40,20 @@ Hub::Hub( QObject* parent )
 	}
 }
 
-Hub::~Hub()
+Engine::~Engine()
 {
 	Pa_Terminate();
 }
 
-void Hub::registerPlayer( Player::Ptr player )
+void Engine::registerPlayer( Player::Ptr player )
 {
 	QMutexLocker( &m_playback_data.m_lock );
 	m_playback_data.m_players.append( player );
 }
 
-void Hub::stop()
+void Engine::stop()
 {
-	std::cout << "Hub::stop" << std::endl;
+	std::cout << "Engine::stop" << std::endl;
 	if ( stream )
 	{
 		Pa_StopStream( stream );
@@ -69,14 +69,14 @@ void Hub::stop()
 	m_playback_data.m_players.clear();
 }
 
-void Hub::run()
+void Engine::run()
 {
 	setup();
 
 	Q_EMIT finished();
 }
 
-void Hub::setup()
+void Engine::setup()
 {
 	PaError error;
 
@@ -100,7 +100,7 @@ void Hub::setup()
 		SAMPLE_RATE,
 		FRAMES_PER_BUFFER,
 		paNoFlag,
-		Hub::audioCallback,
+		Engine::audioCallback,
 		&m_playback_data );
 
 	if( error != paNoError )
@@ -132,12 +132,12 @@ void Hub::setup()
 	std::cout << "done" << std::endl;
 }
 
-void Hub::streamFinished( void* /*userData*/ )
+void Engine::streamFinished( void* /*userData*/ )
 {
 	std::cout << "Stream Completed:" << std::endl;
 }
 
-int Hub::audioCallback(
+int Engine::audioCallback(
 	const void* /*inputBuffer*/,
 	void *outputBuffer,
 	unsigned long framesPerBuffer,
@@ -194,11 +194,9 @@ int Hub::audioCallback(
 
 	if ( playback_data->m_players.isEmpty() )
 	{
-		std::cout << "paComplete" << std::endl;
 		return paComplete;
 	}
 
-	std::cout << "paContinue" << std::endl;
 	return paContinue;
 }
 

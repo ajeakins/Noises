@@ -2,7 +2,7 @@
 
 #include <QObject>
 #include <QMutex>
-#include <QVector>
+#include <QList>
 
 #include <portaudio.h>
 
@@ -12,19 +12,19 @@ namespace noises
 {
 namespace audio
 {
-	class Hub: public QObject
+	class Engine: public QObject
 	{
 		Q_OBJECT
 	public:
-		Hub( QObject* parent = 0 );
+		Engine( QObject* parent = 0 );
 
-		~Hub();
+		~Engine();
 
-		//
+		// Add a player to the engine for it to play
 
 		void registerPlayer( Player::Ptr player );
 
-		// stop all players
+		// Stop all players
 
 		void stop();
 

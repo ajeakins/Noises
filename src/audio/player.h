@@ -15,11 +15,15 @@ namespace audio
 	{
 		Q_OBJECT
 	public:
-		// Players exist with managed lifetime
-
 		typedef QSharedPointer< Player > Ptr;
 
-		static Ptr create();
+		class ManagerHooks
+		{
+		private:
+			friend class Manager;
+
+			static Ptr create( QObject* parent );
+		};
 
 		~Player();
 
@@ -27,34 +31,17 @@ namespace audio
 
 		void setFilename( const QString& filename );
 
+		void getDuration( QTime& time ) const;
+
 		// Playback controls
 
 		void start();
 
 		void stop();
 
-		bool isPlaying()
+		bool isPlaying() const
 		{
 			return m_is_playing;
-		}
-
-		// TODO: make private/friend hub
-
-		float data()
-		{
-			float res = 0.0f;
-
-			if ( m_pos < m_length )
-			{
-				res = m_audio_data[m_pos];
-				++m_pos;
-			}
-			else
-			{
-				m_is_playing = false;
-			};
-
-			return res;
 		}
 
 	Q_SIGNALS:
@@ -62,12 +49,25 @@ namespace audio
 
 		void stopped();
 
+		void parentDestroyed( Player::Ptr player );
+
+	private Q_SLOTS:
+		void onParentDestroyed();
+
 	private:
-		Player();
+		friend class ManagerHooks;
+
+		friend class Engine;
+
+		Player( QObject* parent );
 
 		void readData();
 
+		inline float data();
+
 	private:
+		QObject* m_parent;
+
 		QString m_filename;
 
 		bool m_is_playing;
@@ -76,7 +76,26 @@ namespace audio
 		int m_pos;
 		int m_length;
 		int m_channels;
+		int m_sample_rate;
+		int m_frames;
 	};
+
+	float Player::data()
+	{
+		float res = 0.0f;
+
+		if ( m_pos < m_length )
+		{
+			res = m_audio_data[m_pos];
+			++m_pos;
+		}
+		else
+		{
+			m_is_playing = false;
+		};
+
+		return res;
+	}
 
 } /* namespace audio */
 } /* namespace noises */

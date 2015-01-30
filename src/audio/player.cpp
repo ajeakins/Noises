@@ -1,5 +1,9 @@
 
+#include <assert.h>
+
 #include <iostream>
+
+#include <QTime>
 
 #include <sndfile.h>
 
@@ -12,29 +16,55 @@ namespace noises
 namespace audio
 {
 
-Player::Player()
+// Manager Hooks
+
+Player::Ptr Player::ManagerHooks::create( QObject* parent )
+{
+	assert( parent );
+
+	Ptr player = Ptr( new Player( parent ) );
+	return player;
+}
+
+// Player
+
+Player::Player( QObject* parent )
 :
+	QObject(), // don't ask parent to manage lifetime
+	m_parent( parent ),
 	m_is_playing( false ),
+	m_audio_data( 0 ),
 	m_pos( 0 ),
 	m_length( 0 )
-{}
+{
+	std::cout << "Player::Player" << std::endl;
+
+	connect(
+		parent, SIGNAL( destroyed() ),
+		this, SLOT( onParentDestroyed() ) );
+}
 
 Player::~Player()
-{}
-
-Player::Ptr Player::create()
 {
-	Ptr player = Ptr( new Player );
-	return player;
+	std::cout << "Player::~Player" << std::endl;
+
+	delete[] m_audio_data;
 }
 
 void Player::setFilename( const QString& filename )
 {
-	std::cout << "Player::setFilename" << std::endl;
+	if ( filename != m_filename )
+	{
+		stop();
+		m_filename = filename;
+		readData();
+	}
+}
 
-	stop();
-	m_filename = filename;
-	readData();
+void Player::getDuration( QTime& time ) const
+{
+	int timeInMSecs = ( m_frames * 1000 ) / m_sample_rate;
+	time = time.addMSecs( timeInMSecs );
 }
 
 void Player::readData()
@@ -55,6 +85,9 @@ void Player::readData()
 
 	m_length = info.channels * info.frames;
 	m_audio_data = new float[m_length];
+	m_channels = info.channels;
+	m_sample_rate = info.samplerate;
+	m_frames = info.frames;
 
 	sf_readf_float( file, m_audio_data, info.frames );
 	sf_close( file );
@@ -78,6 +111,10 @@ void Player::stop()
 	Q_EMIT stopped();
 }
 
+void Player::onParentDestroyed()
+{
+	Q_EMIT parentDestroyed( sharedFromThis() );
+}
 
 } /* namespace audio */
 } /* namespace noises */
