@@ -118,12 +118,10 @@ void AudioCueDialog::createCueWidgets()
 		this, SLOT( onFilenameChanged() ) );
 
 	m_play_button = new QPushButton( this );
-	icon = QApplication::style()->standardIcon( QStyle::SP_MediaPlay );
-	m_play_button->setIcon( icon );
+	m_play_button->setIcon( QIcon( ":images/play_32x32.png") );
 
 	m_stop_button = new QPushButton( this );
-	icon = QApplication::style()->standardIcon( QStyle::SP_MediaStop );
-	m_stop_button->setIcon( icon );
+	m_stop_button->setIcon( QIcon( ":images/stop_32x32.png") );
 
 	connect(
 		m_play_button, SIGNAL( released() ),
@@ -134,8 +132,7 @@ void AudioCueDialog::createCueWidgets()
 		this, SLOT( stop() ) );
 
 	m_reset_times_button = new QPushButton( this );
-	icon = QApplication::style()->standardIcon( QStyle::SP_BrowserReload );
-	m_reset_times_button->setIcon( icon );
+	m_reset_times_button->setIcon( QIcon( ":images/reload_32x32.png") );
 	m_reset_times_button->setToolTip( "Reset start and end to those in the file" );
 
 	QHBoxLayout* file_options = new QHBoxLayout;

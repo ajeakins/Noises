@@ -8,5 +8,15 @@
 	<file>images/group_cue_32x32.png</file>
 	<file>images/wait_cue_16x16.png</file>
 	<file>images/wait_cue_32x32.png</file>
+	<file>images/play_16x16.png</file>
+	<file>images/play_32x32.png</file>
+	<file>images/pause_16x16.png</file>
+	<file>images/pause_32x32.png</file>
+	<file>images/stop_16x16.png</file>
+	<file>images/stop_32x32.png</file>
+	<file>images/reload_16x16.png</file>
+	<file>images/reload_32x32.png</file>
+	<file>images/folder_16x16.png</file>
+	<file>images/folder_32x32.png</file>
 </qresource>
 </RCC>

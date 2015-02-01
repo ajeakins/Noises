@@ -27,9 +27,8 @@ void FileLineEdit::createWidgets()
 		this, SLOT( onEditingFinished() )
 		);
 
-	QIcon icon = QApplication::style()->standardIcon( QStyle::SP_FileIcon );
 	m_edit_button = new QPushButton( this );
-	m_edit_button->setIcon( icon );
+	m_edit_button->setIcon( QIcon( ":images/folder_32x32.png" ) );
 
 	connect(
 		m_edit_button, SIGNAL( released() ),
