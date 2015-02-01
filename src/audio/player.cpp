@@ -37,8 +37,6 @@ Player::Player( QObject* parent )
 	m_pos( 0 ),
 	m_length( 0 )
 {
-	std::cout << "Player::Player" << std::endl;
-
 	connect(
 		parent, SIGNAL( destroyed() ),
 		this, SLOT( onParentDestroyed() ) );
@@ -46,9 +44,7 @@ Player::Player( QObject* parent )
 
 Player::~Player()
 {
-	std::cout << "Player::~Player" << std::endl;
-
-	delete[] m_audio_data;
+	free( m_audio_data );
 }
 
 void Player::setFilename( const QString& filename )
@@ -84,7 +80,15 @@ void Player::readData()
 	}
 
 	m_length = info.channels * info.frames;
-	m_audio_data = new float[m_length];
+	if ( !m_audio_data )
+	{
+		m_audio_data = ( float* )malloc( m_length * sizeof( float ) );
+	}
+	else
+	{
+		m_audio_data = ( float* )realloc( m_audio_data, m_length * sizeof( float ) );
+	}
+
 	m_channels = info.channels;
 	m_sample_rate = info.samplerate;
 	m_frames = info.frames;
