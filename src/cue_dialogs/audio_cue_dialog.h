@@ -35,12 +35,16 @@ namespace noises
 
 		void onFilenameChanged();
 
+		void resetTimes();
+
 	private:
 		void createCueWidgets();
 
+		void setTimeDisplayFormat( QString format );
+
 		void readSettings();
 
-		void writeSettings();
+		void writeSettings() const;
 
 	private:
 

@@ -3,6 +3,7 @@
 #include <QDataWidgetMapper>
 #include <QDebug>
 #include <QDialogButtonBox>
+#include <QFile>
 #include <QTimeEdit>
 #include <QGroupBox>
 #include <QLabel>
@@ -15,6 +16,10 @@
 
 namespace noises
 {
+
+static const QString secondTimeFormat = "ss.zzz 's'";
+static const QString minuteTimeFormat = "mm'm'::ss.zzz 's'";
+static const QString hourTimeFormat = "hh'h':mm'm':ss:zzz";
 
 AudioCueDialog::AudioCueDialog(
 	AudioCueModelItem* cue,
@@ -43,7 +48,6 @@ AudioCueDialog::AudioCueDialog(
 
 AudioCueDialog::~AudioCueDialog()
 {
-	std::cout << "~AudioCueDialog" << std::endl;
 	m_player->stop();
 }
 
@@ -65,25 +69,44 @@ void AudioCueDialog::stop()
 
 void AudioCueDialog::onFilenameChanged()
 {
-	m_player->setFilename( m_file_edit->text() );
+	QString filepath = m_file_edit->text();
+	QFile file( filepath );
 
-	QTime time( 0, 0, 0, 0 );
-	m_player->getDuration( time );
-	qDebug() << time.toString();
-	m_end_time->setTime( time );
+	m_player->setFilename( filepath );
+	resetTimes();
 }
 
-void AudioCueDialog::writeSettings()
+void AudioCueDialog::resetTimes()
+{
+	QTime time( 0, 0, 0, 0 );
+	m_player->getDuration( time );
+	m_end_time->setTime( time );
+
+	if ( time.hour() > 0 )
+	{
+		setTimeDisplayFormat( hourTimeFormat );
+	}
+	else if ( time.minute() > 0 )
+	{
+		setTimeDisplayFormat( minuteTimeFormat );
+	}
+	else
+	{
+		setTimeDisplayFormat( secondTimeFormat );
+	}
+}
+
+void AudioCueDialog::writeSettings() const
 {
 	AudioCueSettings& settings = m_cue->getSettings();
 
 	settings.file_name = m_file_edit->text();
 
-	// settings.start_time = m_start_time->value();
-	// settings.end_time = m_end_time->value();
+	settings.start_time = m_start_time->time();
+	settings.end_time = m_end_time->time();
 
-	// settings.start_fade = m_fade_in_time->value();
-	// settings.end_fade = m_fade_out_time->value();
+	settings.start_fade = m_fade_in_time->time();
+	settings.end_fade = m_fade_out_time->time();
 
 	m_matrix->writeSettings( settings.levels );
 }
@@ -94,11 +117,11 @@ void AudioCueDialog::readSettings()
 
 	m_file_edit->setText( settings.file_name );
 
-	// m_start_time->setValue( settings.start_time );
-	// m_end_time->setValue( settings.end_time );
+	m_start_time->setTime( settings.start_time );
+	m_end_time->setTime( settings.end_time );
 
-	// m_fade_in_time->setValue( settings.start_fade );
-	// m_fade_out_time->setValue( settings.end_fade );
+	m_fade_in_time->setTime( settings.start_fade );
+	m_fade_out_time->setTime( settings.end_fade );
 
 	m_matrix->readSettings( settings.levels );
 }
@@ -135,6 +158,10 @@ void AudioCueDialog::createCueWidgets()
 	m_reset_times_button->setIcon( QIcon( ":images/reload_32x32.png") );
 	m_reset_times_button->setToolTip( "Reset start and end to those in the file" );
 
+	connect(
+		m_reset_times_button, SIGNAL( released() ),
+		this, SLOT( resetTimes() ) );
+
 	QHBoxLayout* file_options = new QHBoxLayout;
 	file_options->setContentsMargins( 0, 0, 0, 0 );
 	file_options->addWidget( m_play_button );
@@ -154,19 +181,17 @@ void AudioCueDialog::createCueWidgets()
 
 	QLabel* start_label =  new QLabel( "Start:", this );
 	m_start_time = new QTimeEdit( this );
-	m_start_time->setDisplayFormat( "hh:mm:ss:zzz" );
 
 	QLabel* end_label = new QLabel( "End:", this );
 	m_end_time = new QTimeEdit( this );
-	m_end_time->setDisplayFormat( "hh:mm:ss:zzz" );
 
 	QLabel* fade_in_label = new QLabel( "Fade in:", this );
 	m_fade_in_time = new QTimeEdit( this );
-	m_fade_in_time->setDisplayFormat( "hh:mm:ss:zzz" );
 
 	QLabel* fade_out_label = new QLabel( "Fade out:", this );
 	m_fade_out_time = new QTimeEdit( this );
-	m_fade_out_time->setDisplayFormat( "hh:mm:ss:zzz" );
+
+	setTimeDisplayFormat( secondTimeFormat );
 
 	QGridLayout* times_grid = new QGridLayout();
 	times_grid->setContentsMargins( 0, 0, 0, 0 );
@@ -204,6 +229,14 @@ void AudioCueDialog::createCueWidgets()
 	m_layout->addWidget( file_group_box );
 	m_layout->addWidget( times_group_box );
 	m_layout->addWidget( levels_group_box );
+}
+
+void AudioCueDialog::setTimeDisplayFormat( QString format )
+{
+	m_start_time->setDisplayFormat( format );
+	m_end_time->setDisplayFormat( format );
+	m_fade_in_time->setDisplayFormat( format );
+	m_fade_out_time->setDisplayFormat( format );
 }
 
 } /* namespace noises */
