@@ -1,1 +1,23 @@
+
+Next:
+- preferences...
+- settings
+- delete cues
+- proper dynamic channel numbers
+- volume control
+- better play, pause, stop control in audio cue dialog, elapsed/remaining times?
+- refactor model, make less generic probably...
+- data in elapsed/remaining.
+
+Longer term:
+- other cue types
+  - Wait should be easy
+  - Groups, need drag and drop and play behaviour
+  - Control, hard...
+
+Dreams:
+- Audio waveform preview, great for setting start and end, auto find start/end by detecting silence?
+- EQ, reverb.
+
+Attributions:
 icon source: "Open Iconic — www.useiconic.com/open"
