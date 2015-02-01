@@ -21,7 +21,7 @@ WaitCueDialog::WaitCueDialog(
 	CueDialog( mapper, parent ),
 	m_cue( cue )
 {
-	setWindowTitle( "Edit Control Cue" );
+	setWindowTitle( "Edit Wait Cue" );
 
 	createCueWidgets();
 

@@ -18,7 +18,7 @@ CueModel::CueModel( QObject* parent )
 {
 	// Setup header item
 	QList< QVariant > rootData;
-	rootData << "Cue" << "Description" << "Notes";
+	rootData << "Cue" << "Description" << "Notes" << "Remaining" << "Elapsed";
 
 	m_root_item = new CueModelItem( rootData );
 }

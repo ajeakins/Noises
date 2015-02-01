@@ -66,6 +66,7 @@ void MainWindow::saveShow()
 		QString(),
 		"*.noises" );
 
+	// user cancelled
 	if ( filename.isEmpty() )
 	{
 		return;
@@ -102,6 +103,12 @@ void MainWindow::openShow()
 		QString(),
 		"*.noises" );
 
+	// User cancelled
+	if ( filename.isEmpty() )
+	{
+		return;
+	}
+
 	Json::Value root;
 
 	QFile file( filename );
@@ -117,8 +124,6 @@ void MainWindow::openShow()
 
 CueModelItem* MainWindow::createCue( CueType type )
 {
-	std::cout << "createCue" << std::endl;
-
 	QModelIndex selected_row = m_cue_list->selectionModel()->currentIndex();
 
 	CueModelItem* parent;
@@ -216,6 +221,11 @@ void MainWindow::about()
 void MainWindow::playCue()
 {
 	QModelIndex selected_row = m_cue_list->selectionModel()->currentIndex();
+	if ( !selected_row.isValid() )
+	{
+		return;
+	}
+
 	CueModelItem* item = m_cue_model->itemFromIndex( selected_row );
 
 	// execute cue
@@ -249,6 +259,24 @@ void MainWindow::editCue( QModelIndex index )
 		{
 			ControlCueDialog dialog(
 				( ControlCueModelItem* )item,
+				getDataMapper(),
+				this );
+			dialog.exec();
+			break;
+		}
+		case CueType_Wait:
+		{
+			WaitCueDialog dialog(
+				( WaitCueModelItem* )item,
+				getDataMapper(),
+				this );
+			dialog.exec();
+			break;
+		}
+		case CueType_Group:
+		{
+			GroupCueDialog dialog(
+				( GroupCueModelItem* )item,
 				getDataMapper(),
 				this );
 			dialog.exec();
