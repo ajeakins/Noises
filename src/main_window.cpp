@@ -290,6 +290,30 @@ void MainWindow::editCue( QModelIndex index )
 	}
 }
 
+void MainWindow::deleteCue()
+{
+	QMessageBox message(
+		QMessageBox::Question,
+		"Delete Cue",
+		"Are you sure you want to delete?",
+		QMessageBox::Ok | QMessageBox::Cancel,
+		this );
+	int ret = message.exec();
+
+	if ( ret != QMessageBox::Ok )
+	{
+		return;
+	}
+
+	QModelIndex selected_row = m_cue_list->selectionModel()->currentIndex();
+	if ( !selected_row.isValid() )
+	{
+		return;
+	}
+
+	m_cue_model->deleteCue( selected_row );
+}
+
 void MainWindow::stopAllCues()
 {
 	Application::getAudioManager().stop();
@@ -424,6 +448,12 @@ void MainWindow::createActions()
 		m_play_cue_action, SIGNAL( triggered() ),
 		this, SLOT( playCue() ) );
 
+	m_delete_cue_action = new QAction( "Delete Cue", m_cue_list );
+	m_delete_cue_action->setShortcut( QKeySequence( Qt::Key_Delete ) );
+	connect(
+		m_delete_cue_action, SIGNAL( triggered() ),
+		this, SLOT( deleteCue() ) );
+
 	m_stop_all_cues_action = new QAction( "Play Cue", m_cue_list );
 	m_stop_all_cues_action->setShortcut( QKeySequence( Qt::Key_Escape ) );
 	connect(
@@ -434,6 +464,7 @@ void MainWindow::createActions()
 	// setup cue list actions
 
 	m_cue_list->addAction( m_play_cue_action );
+	m_cue_list->addAction( m_delete_cue_action );
 	m_cue_list->addAction( m_stop_all_cues_action );
 }
 

@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <iostream>
 
 #include <QStringList>
 
@@ -30,6 +31,12 @@ void CueModelItem::appendChild( CueModelItem* item )
 void CueModelItem::insertChild( int row, CueModelItem* item )
 {
 	m_child_items.insert( row, item );
+}
+
+void CueModelItem::deleteChild( CueModelItem* item )
+{
+	m_child_items.removeOne( item );
+	item->deleteLater();
 }
 
 int CueModelItem::row( CueModelItem* item )

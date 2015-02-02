@@ -121,6 +121,20 @@ CueModelItem* CueModel::createCue( CueType type )
 	return item;
 }
 
+void CueModel::deleteCue( QModelIndex& child_index )
+{
+	QModelIndex parent_index = parent( child_index );
+
+	CueModelItem* child = itemFromIndex( child_index );
+	CueModelItem* parent = itemFromIndex( parent_index );
+
+	int row = parent->row( child );
+
+	beginRemoveRows( parent_index, row, row );
+	parent->deleteChild( child );
+	endRemoveRows();
+}
+
 void CueModel::setCueParent( CueModelItem* parent, CueModelItem* child, int row )
 {
 	Q_EMIT  layoutAboutToBeChanged();
