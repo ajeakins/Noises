@@ -6,6 +6,8 @@
 
 #include <QSet>
 
+#include <application.h>
+
 #include "engine.h"
 
 #define SAMPLE_RATE   (44100)
@@ -16,7 +18,8 @@ namespace noises
 namespace audio
 {
 
-PaStream* Engine::stream;
+PaStream* Engine::m_stream;
+int Engine::m_channel_count = 0;
 
 void onError( const PaError& error )
 {
@@ -53,10 +56,9 @@ void Engine::registerPlayer( Player::Ptr player )
 
 void Engine::stop()
 {
-	std::cout << "Engine::stop" << std::endl;
-	if ( stream )
+	if ( m_stream )
 	{
-		Pa_StopStream( stream );
+		Pa_StopStream( m_stream );
 	}
 
 	// stop the players
@@ -88,13 +90,15 @@ void Engine::setup()
 		return;
 	}
 
-	outputParameters.channelCount = 2;       /* stereo output */
+	m_channel_count = Application::getPreferences().getOutputCount();
+
+	outputParameters.channelCount = m_channel_count;
 	outputParameters.sampleFormat = paFloat32; /* 32 bit floating point output */
 	outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
 	outputParameters.hostApiSpecificStreamInfo = NULL;
 
 	error = Pa_OpenStream(
-		&stream,
+		&m_stream,
 		NULL, /* no input */
 		&outputParameters,
 		SAMPLE_RATE,
@@ -109,7 +113,7 @@ void Engine::setup()
 		return;
 	}
 
-	error = Pa_StartStream( stream );
+	error = Pa_StartStream( m_stream );
 	if( error != paNoError )
 	{
 		onError( error );
@@ -117,19 +121,17 @@ void Engine::setup()
 	}
 
 	// check every 100ms
-	while( Pa_IsStreamActive( stream ) == 1 )
+	while( Pa_IsStreamActive( m_stream ) == 1 )
 	{
 		Pa_Sleep( 100 );
 	}
 
-	error = Pa_CloseStream( stream );
+	error = Pa_CloseStream( m_stream );
 	if( error != paNoError )
 	{
 		onError( error );
 		return;
 	}
-
-	std::cout << "done" << std::endl;
 }
 
 void Engine::streamFinished( void* /*userData*/ )
@@ -145,8 +147,6 @@ int Engine::audioCallback(
 	PaStreamCallbackFlags /*statusFlags*/,
 	void *userData )
 {
-	//std::cout << "audioCallback" << std::endl;
-
 	typedef QSet< Player::Ptr > PlayerSet;
 
 	PlaybackData* playback_data = ( PlaybackData* )userData;
@@ -156,18 +156,16 @@ int Engine::audioCallback(
 
 	PlayerSet players_to_remove;
 
-	// TODO: take into account channels...
+	// make sure the buffer is zeroed
+	std::fill( out, out + ( framesPerBuffer * m_channel_count ), 0.0f );
+
+	// add each players data to the buffer
 	for( unsigned long i = 0; i != framesPerBuffer; ++i )
 	{
-		float left = 0.0f;
-		float right = 0.0f;
-
 		for ( int j = 0; j != playback_data->m_players.size(); ++j )
 		{
 			Player::Ptr player = playback_data->m_players[j];
-
-			left += player->data();
-			right += player->data();
+			player->addData( out, m_channel_count );
 
 			if ( !player->isPlaying() )
 			{
@@ -175,10 +173,11 @@ int Engine::audioCallback(
 			}
 		}
 
-		*out++ = left;
-		*out++ = right;
+		out += m_channel_count;
 	}
 
+
+	// Cleanup any players that have finished
 	if ( players_to_remove.size() == playback_data->m_players.size() )
 	{
 		playback_data->m_players.clear();

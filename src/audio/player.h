@@ -31,6 +31,13 @@ namespace audio
 
 		void setFilename( const QString& filename );
 
+		void setVolume( widgets::MatrixSettings& settings );
+
+		void setVolume(
+			unsigned int input,
+			unsigned int output,
+			float volume_in_db );
+
 		void getDuration( QTime& time ) const;
 
 		// Playback controls
@@ -80,21 +87,40 @@ namespace audio
 		int m_frames;
 	};
 
-	float Player::data()
-	{
-		float res = 0.0f;
 
-		if ( m_pos < m_length )
+	/**
+	 * Add the players data for it's current position to
+	 * the audio buffer. The buffer is assumed to be managed
+	 * by the engine so the player.
+	 *
+	 * This could probably be optimised alot but
+	 * just getting it working for the moment!
+	 */
+
+	void Player::addData( float* audio, int channels )
+	{
+		if ( !m_is_playing )
 		{
-			res = m_audio_data[m_pos];
+			return;
+		}
+
+		// always make sure pos is incremented by the number
+		// of channels we have
+		for( int i = 0; i != m_channels; ++i )
+		{
+			if ( i != channels )
+			{
+				audio[i] += m_audio_data[m_pos];
+			}
 			++m_pos;
 		}
-		else
+
+		// reached the end of the track
+		if ( m_pos == m_length )
 		{
 			m_is_playing = false;
-		};
-
-		return res;
+			m_pos = 0;
+		}
 	}
 
 } /* namespace audio */

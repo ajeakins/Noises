@@ -124,6 +124,8 @@ void AudioCueDialog::readSettings()
 	m_fade_out_time->setTime( settings.end_fade );
 
 	m_matrix->readSettings( settings.levels );
+	// update output count
+	m_matrix->setOutputs( Application::getPreferences().getOutputCount() );
 }
 
 void AudioCueDialog::createCueWidgets()

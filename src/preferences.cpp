@@ -171,12 +171,12 @@ void PreferencesDialog::writeSettings()
 				m_preferences.setValue( key, value );
 				break;
 			}
-			case QVariant::Int:
+			case QVariant::UInt:
 			{
 				QSpinBox* spinbox = dynamic_cast< QSpinBox* >( widget );
 				assert( spinbox );
 
-				int value = spinbox->value();
+				uint value = spinbox->value();
 				m_preferences.setValue( key, value );
 				break;
 			}

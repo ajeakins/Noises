@@ -60,8 +60,10 @@ float MatrixSettings::getVolume(
 	unsigned int input,
 	unsigned int output ) const
 {
-	assert( input < m_inputs );
-	assert( output < m_outputs );
+	if( input >= m_inputs || output >= m_outputs )
+	{
+		return m_minimum_value;
+	}
 
 	return m_volumes[input][output];
 }
@@ -127,12 +129,18 @@ Matrix::~Matrix()
 
 void Matrix::setInputs( unsigned int inputs )
 {
-	updateVolumeGrid( inputs, getOutputs() );
+	if ( inputs != getInputs() )
+	{
+		updateVolumeGrid( inputs, getOutputs() );
+	}
 }
 
 void Matrix::setOutputs( unsigned int outputs )
 {
-	updateVolumeGrid( outputs, getInputs() );
+	if ( outputs != getOutputs() )
+	{
+		updateVolumeGrid( getInputs(), outputs );
+	}
 }
 
 unsigned int Matrix::getInputs() const

@@ -56,7 +56,8 @@ namespace audio
 			PlayerList m_players;
 		};
 
-		static PaStream* stream;
+		static PaStream* m_stream;
+		static int m_channel_count;
 
 		PlaybackData m_playback_data;
 
