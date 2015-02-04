@@ -15,12 +15,18 @@ namespace noises
 {
 	struct AudioCueSettings
 	{
+	public:
 		AudioCueSettings()
 		{
 			bool link = Application::getPreferences().getDefaultStereoLink();
 			levels.setStereoLink( link );
 		}
 
+		void readSettings( const Json::Value& root );
+
+		void writeSettings( Json::Value& root ) const;
+
+	public:
 		QString file_name;
 
 		QTime start_time, end_time;
@@ -49,6 +55,10 @@ namespace noises
 		}
 
 		void execute() const;
+
+		void readSettings( const Json::Value& root );
+
+		void writeSettings( Json::Value& root ) const;
 
 	protected:
 		QVariant getIcon() const;

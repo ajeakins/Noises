@@ -243,6 +243,85 @@ Qt::DropActions CueModel::supportedDropActions() const
 	return Qt::MoveAction;
 }
 
+QStringList CueModel::mimeTypes() const
+{
+	QStringList types;
+	types << "application/noises.text.cues";
+	return types;
+}
+
+QMimeData* CueModel::mimeData( const QModelIndexList& indexes ) const
+{
+	Json::Value data( Json::arrayValue );
+
+	for ( auto itr = indexes.begin(); itr != indexes.end(); ++itr )
+	{
+		QModelIndex index = *itr;
+		if ( index.isValid() )
+		{
+			CueModelItem* item = itemFromIndex( index );
+
+			Json::Value cueData( Json::objectValue );
+			item->writeSettings( cueData );
+			data.append( cueData );
+		}
+	}
+
+	Json::StyledWriter writer;
+	std::string dataString = writer.write( data );
+
+	QMimeData *mimeData = new QMimeData();
+	QByteArray encodedData( dataString.c_str() );
+
+	mimeData->setData( "application/noises.text.cues", encodedData );
+	return mimeData;
+}
+
+bool CueModel::dropMimeData(
+	const QMimeData* data,
+	Qt::DropAction action,
+	int row,
+	int column,
+	const QModelIndex& parent_index )
+{
+	if ( action == Qt::IgnoreAction )
+	{
+		return true;
+	}
+
+	if ( !data->hasFormat( "application/noises.text.cues" ) )
+	{
+		return false;
+	}
+
+	CueModelItem* parent = itemFromIndex( parent_index );
+
+	QByteArray encodedData = data->data( "application/noises.text.cues" );
+	std::string decodedData( encodedData.data() );
+
+	Json::Value root;
+
+	Json::Reader reader;
+	reader.parse( decodedData, root );
+
+	assert( root.type() == Json::arrayValue );
+
+	for ( unsigned int i = 0; i != root.size(); ++i )
+	{
+		Json::Value cueData = root[i];
+		assert( cueData.type() == Json::objectValue );
+
+		QString type = cueData["type"].asCString();
+
+		CueModelItem* item = createCue( stringToType( type ) );
+		setCueParent( parent, item, m_root_item->childCount() + 1 );
+
+		item->readSettings( cueData );
+	}
+
+    return true;
+ }
+
 void CueModel::readSettings( const Json::Value& root )
 {
 	assert( root.type() == Json::arrayValue );

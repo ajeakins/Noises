@@ -2,6 +2,7 @@
 Next:
 - preferences...
 - settings
+- more saving, need to consider design for adding and removing values
 - proper dynamic channel numbers
 - volume control
 - better play, pause, stop control in audio cue dialog, elapsed/remaining times?
