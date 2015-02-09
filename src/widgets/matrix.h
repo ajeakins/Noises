@@ -98,6 +98,9 @@ namespace widgets
 		void readSettings( const MatrixSettings& settings );
 		void writeSettings( MatrixSettings& settings ) const;
 
+	Q_SIGNALS:
+		void volumeChanged();
+
 	private Q_SLOTS:
 		void valueChanged( float value );
 

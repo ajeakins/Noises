@@ -1,11 +1,14 @@
 
 #pragma once
 
+#include <QDebug>
 #include <QObject>
 #include <QSharedPointer>
 #include <QEnableSharedFromThis>
 
 #include <portaudio.h>
+
+#include <widgets/matrix.h>
 
 namespace noises
 {
@@ -31,12 +34,7 @@ namespace audio
 
 		void setFilename( const QString& filename );
 
-		void setVolume( widgets::MatrixSettings& settings );
-
-		void setVolume(
-			unsigned int input,
-			unsigned int output,
-			float volume_in_db );
+		void setVolume( const widgets::MatrixSettings& settings );
 
 		void getDuration( QTime& time ) const;
 
@@ -68,9 +66,11 @@ namespace audio
 
 		Player( QObject* parent );
 
+		float getVolume( int input, int output );
+
 		void readData();
 
-		inline float data();
+		inline void addData( float* audio_data, int channels );
 
 	private:
 		QObject* m_parent;
@@ -85,6 +85,10 @@ namespace audio
 		int m_channels;
 		int m_sample_rate;
 		int m_frames;
+
+		QVector< QVector< float > > m_volumes;
+		// current number of outputs we have data for
+		int m_outputs;
 	};
 
 
@@ -92,9 +96,6 @@ namespace audio
 	 * Add the players data for it's current position to
 	 * the audio buffer. The buffer is assumed to be managed
 	 * by the engine so the player.
-	 *
-	 * This could probably be optimised alot but
-	 * just getting it working for the moment!
 	 */
 
 	void Player::addData( float* audio, int channels )
@@ -104,16 +105,16 @@ namespace audio
 			return;
 		}
 
-		// always make sure pos is incremented by the number
-		// of channels we have
-		for( int i = 0; i != m_channels; ++i )
+		for( int output = 0; output != channels; ++output )
 		{
-			if ( i != channels )
+			for( int input = 0; input != m_channels; ++input )
 			{
-				audio[i] += m_audio_data[m_pos];
+				audio[output] += getVolume( input, output ) * m_audio_data[m_pos + input];
 			}
-			++m_pos;
 		}
+
+		// increment to next frame
+		m_pos += m_channels;
 
 		// reached the end of the track
 		if ( m_pos == m_length )

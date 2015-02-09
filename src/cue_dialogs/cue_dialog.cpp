@@ -1,4 +1,6 @@
 
+#include <assert.h>
+
 #include <QAbstractItemModel>
 #include <QDataWidgetMapper>
 #include <QDialogButtonBox>
@@ -84,6 +86,14 @@ void CueDialog::createWidgets()
 	wrapping_layout->addWidget( buttons );
 
 	setLayout( wrapping_layout );
+}
+
+QLineEdit* CueDialog::getEditor( int section )
+{
+	QWidget* widget = m_mapper->mappedWidgetAt( section );
+	assert( widget );
+
+	return dynamic_cast< QLineEdit* >( widget );
 }
 
 } /* namespace noises */

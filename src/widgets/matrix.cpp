@@ -217,52 +217,53 @@ void Matrix::writeSettings( MatrixSettings& settings ) const
 
 void Matrix::valueChanged( float value )
 {
-	if ( !m_link->isChecked() )
+	if ( m_link->isChecked() )
 	{
-		return;
+
+		VolumeDial* dial = ( VolumeDial* )sender();
+		IndexDataMap::const_iterator index_data_itr = m_index_map.find( dial );
+		if ( index_data_itr != m_index_map.end() )
+		{
+			unsigned int from_input, from_output, to_input, to_output;
+
+			from_input = index_data_itr->input;
+			from_output = index_data_itr->output;
+
+			if ( ( from_input % 2 ) == 0 && ( from_output % 2 ) == 0 )
+			{
+				to_input = from_input + 1;
+				to_output = from_output + 1;
+			}
+			else if ( ( from_input % 2 ) == 0 || ( from_output % 2 ) == 0 )
+			{
+				return;
+			}
+			else
+			{
+				to_input = from_input - 1;
+				to_output = from_output - 1;
+			}
+
+			// account for labels
+			++to_input;
+			++to_output;
+
+			QLayoutItem* item =  m_volume_grid->itemAtPosition( to_input, to_output );
+			if ( !item )
+			{
+				return;
+			}
+
+			QWidget* widget = item->widget();
+			VolumeDial* to_dial = dynamic_cast< VolumeDial* >( widget );
+			if ( to_dial )
+			{
+				to_dial->setVolume( dial->getVolume() );
+			}
+		}
 	}
 
-	VolumeDial* dial = ( VolumeDial* )sender();
-	IndexDataMap::const_iterator index_data_itr = m_index_map.find( dial );
-	if ( index_data_itr != m_index_map.end() )
-	{
-		unsigned int from_input, from_output, to_input, to_output;
-
-		from_input = index_data_itr->input;
-		from_output = index_data_itr->output;
-
-		if ( ( from_input % 2 ) == 0 && ( from_output % 2 ) == 0 )
-		{
-			to_input = from_input + 1;
-			to_output = from_output + 1;
-		}
-		else if ( ( from_input % 2 ) == 0 || ( from_output % 2 ) == 0 )
-		{
-			return;
-		}
-		else
-		{
-			to_input = from_input - 1;
-			to_output = from_output - 1;
-		}
-
-		// account for labels
-		++to_input;
-		++to_output;
-
-		QLayoutItem* item =  m_volume_grid->itemAtPosition( to_input, to_output );
-		if ( !item )
-		{
-			return;
-		}
-
-		QWidget* widget = item->widget();
-		VolumeDial* to_dial = dynamic_cast< VolumeDial* >( widget );
-		if ( to_dial )
-		{
-			to_dial->setVolume( dial->getVolume() );
-		}
-	}
+	Q_EMIT volumeChanged();
 }
 
 void Matrix::createWidgets(
@@ -329,7 +330,6 @@ void Matrix::updateVolumeGrid(
 			m_index_map[dial] = index_data;
 		}
 	}
-
 }
 
 void Matrix::clearVolumeGrid()

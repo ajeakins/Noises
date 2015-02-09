@@ -3,7 +3,7 @@
 #include <QDataWidgetMapper>
 #include <QDebug>
 #include <QDialogButtonBox>
-#include <QFile>
+#include <QFileInfo>
 #include <QTimeEdit>
 #include <QGroupBox>
 #include <QLabel>
@@ -70,7 +70,9 @@ void AudioCueDialog::stop()
 void AudioCueDialog::onFilenameChanged()
 {
 	QString filepath = m_file_edit->text();
-	QFile file( filepath );
+	QFileInfo file_info( filepath );
+
+	getEditor( 1 )->setText( file_info.baseName() );
 
 	m_player->setFilename( filepath );
 	resetTimes();
@@ -94,6 +96,13 @@ void AudioCueDialog::resetTimes()
 	{
 		setTimeDisplayFormat( secondTimeFormat );
 	}
+}
+
+void AudioCueDialog::volumeChanged()
+{
+	widgets::MatrixSettings settings;
+	m_matrix->writeSettings( settings );
+	m_player->setVolume( settings );
 }
 
 void AudioCueDialog::writeSettings() const
@@ -219,6 +228,10 @@ void AudioCueDialog::createCueWidgets()
 	// audio matrix
 
 	m_matrix = new widgets::Matrix( 2, 2, this );
+
+	connect(
+		m_matrix, SIGNAL( volumeChanged() ),
+		this, SLOT( volumeChanged() ) );
 
 	QHBoxLayout* levels_layout = new QHBoxLayout();
 	levels_layout->addWidget( m_matrix );

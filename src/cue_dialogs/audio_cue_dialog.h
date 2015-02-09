@@ -26,7 +26,7 @@ namespace noises
 
 		virtual ~AudioCueDialog();
 
-	public Q_SLOTS:
+	private Q_SLOTS:
 		virtual void accept();
 
 		void play();
@@ -36,6 +36,8 @@ namespace noises
 		void onFilenameChanged();
 
 		void resetTimes();
+
+		void volumeChanged();
 
 	private:
 		void createCueWidgets();

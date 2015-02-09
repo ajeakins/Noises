@@ -25,6 +25,8 @@ namespace noises
 	protected:
 		void createWidgets();
 
+		QLineEdit* getEditor( int section );
+
 	protected:
 		QLayout* m_layout;
 

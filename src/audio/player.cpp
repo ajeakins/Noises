@@ -1,13 +1,14 @@
 
 #include <assert.h>
 
-#include <iostream>
-
+#include <QDebug>
+#include <QMessageBox>
 #include <QTime>
 
 #include <sndfile.h>
 
 #include <application.h>
+#include <utils/audio.h>
 
 #include "player.h"
 
@@ -57,8 +58,45 @@ void Player::setFilename( const QString& filename )
 	}
 }
 
+void Player::setVolume( const widgets::MatrixSettings& settings )
+{
+	m_outputs = Application::getPreferences().getOutputCount();
+
+	for ( int i = 0; i != m_channels; ++i )
+	{
+		m_volumes[i].resize( m_outputs );
+
+		for ( int j = 0; j != m_outputs; ++j )
+		{
+			float volume = 0.0f;
+
+			float volume_in_db = settings.getVolume( i, j );
+			if ( !settings.isMinimumVolume( volume_in_db ) )
+			{
+				volume = utils::dbToMultiplier( volume_in_db );
+			}
+
+			m_volumes[i][j] = volume;
+		}
+	}
+}
+
+float Player::getVolume( int input, int output )
+{
+	if ( input >= m_channels || output >= m_outputs )
+	{
+		return 0.0f;
+	}
+	return m_volumes[input][output];
+}
+
 void Player::getDuration( QTime& time ) const
 {
+	if ( !m_audio_data )
+	{
+		return;
+	}
+
 	int timeInMSecs = ( m_frames * 1000 ) / m_sample_rate;
 	time = time.addMSecs( timeInMSecs );
 }
@@ -68,25 +106,44 @@ void Player::readData()
 	SF_INFO info;
 	info.format = 0;
 
-	const char* filename_char = qPrintable( m_filename );
-	SNDFILE* file = sf_open( filename_char, SFM_READ, &info );
+	std::string data = m_filename.toStdString();
+	SNDFILE* file = sf_open( data.c_str(), SFM_READ, &info );
 
 	if (!file)
 	{
-		std::cout << "libsndfile error " << filename_char << std::endl;
-		std::cout << sf_strerror(file) << std::endl;
-
-		sf_close( file );
+		QString title = "Unable to Open File";
+		QString message = "Unable to open audio file [%1].\n\n %2";
+		message = message.arg( m_filename, sf_strerror( file ) );
+		QMessageBox::critical( nullptr, title, message );
+		return;
 	}
 
 	m_length = info.channels * info.frames;
 	if ( !m_audio_data )
 	{
 		m_audio_data = ( float* )malloc( m_length * sizeof( float ) );
+		if( !m_audio_data )
+		{
+			QString title = "Unable to Open File";
+			QString message = "Unable to open audio file, memory allocation failed.";
+			QMessageBox::critical( nullptr, title, message );
+			return;
+		}
 	}
 	else
 	{
-		m_audio_data = ( float* )realloc( m_audio_data, m_length * sizeof( float ) );
+		float* new_data = ( float* )realloc( m_audio_data, m_length * sizeof( float ) );
+		if ( !new_data )
+		{
+			free( m_audio_data );
+			m_audio_data = nullptr;
+
+			QString title = "Unable to Open File";
+			QString message = "Unable to open audio file, memory allocation failed.";
+			QMessageBox::critical( nullptr, title, message );
+			return;
+		}
+		m_audio_data = new_data;
 	}
 
 	m_channels = info.channels;
@@ -95,6 +152,8 @@ void Player::readData()
 
 	sf_readf_float( file, m_audio_data, info.frames );
 	sf_close( file );
+
+	m_volumes.resize( m_channels );
 }
 
 void Player::start()
