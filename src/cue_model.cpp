@@ -121,18 +121,24 @@ CueModelItem* CueModel::createCue( CueType type )
 	return item;
 }
 
-void CueModel::deleteCue( QModelIndex& child_index )
+bool CueModel::removeRows( int row, int count, const QModelIndex &parent )
 {
-	QModelIndex parent_index = parent( child_index );
+	CueModelItem* parent_item = parent.isValid() ? itemFromIndex( parent ) : m_root_item;
 
-	CueModelItem* child = itemFromIndex( child_index );
-	CueModelItem* parent = itemFromIndex( parent_index );
+	// check that we can remove the specified rows
+	if ( (row + count) > parent_item->childCount() )
+	{
+		return false;
+	}
 
-	int row = parent->row( child );
-
-	beginRemoveRows( parent_index, row, row );
-	parent->deleteChild( child );
+	beginRemoveRows( parent, row, row + count );
+	for ( int i = row + count; i != row; --i )
+	{
+		parent_item->deleteChild( i - 1 );
+	}
 	endRemoveRows();
+
+	return true;
 }
 
 void CueModel::setCueParent( CueModelItem* parent, CueModelItem* child, int row )
@@ -252,11 +258,20 @@ QStringList CueModel::mimeTypes() const
 
 QMimeData* CueModel::mimeData( const QModelIndexList& indexes ) const
 {
+	qDebug() << indexes.size();
+
 	Json::Value data( Json::arrayValue );
 
 	for ( auto itr = indexes.begin(); itr != indexes.end(); ++itr )
 	{
 		QModelIndex index = *itr;
+
+		// Erm shouldn't need this... Get rid of it :-(
+		if( index.column() != 0 )
+		{
+			continue;
+		}
+
 		if ( index.isValid() )
 		{
 			CueModelItem* item = itemFromIndex( index );
@@ -264,6 +279,8 @@ QMimeData* CueModel::mimeData( const QModelIndexList& indexes ) const
 			Json::Value cueData( Json::objectValue );
 			item->writeSettings( cueData );
 			data.append( cueData );
+
+			qDebug() << "append";
 		}
 	}
 
@@ -314,7 +331,7 @@ bool CueModel::dropMimeData(
 		QString type = cueData["type"].asCString();
 
 		CueModelItem* item = createCue( stringToType( type ) );
-		setCueParent( parent, item, m_root_item->childCount() + 1 );
+		setCueParent( parent, item, parent->childCount() + 1 );
 
 		item->readSettings( cueData );
 	}

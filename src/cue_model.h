@@ -44,7 +44,7 @@ namespace noises
 
 		CueModelItem* createCue( CueType type );
 
-		void deleteCue( QModelIndex& cue );
+		bool removeRows( int row, int count, const QModelIndex &parent = QModelIndex() );
 
 		void setCueParent( CueModelItem* parent, CueModelItem* child, int row );
 

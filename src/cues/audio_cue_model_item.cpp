@@ -15,7 +15,7 @@ void AudioCueSettings::writeSettings( Json::Value& value ) const
 {
 	assert( value.type() == Json::objectValue );
 
-	value["file_name"] = qPrintable( file_name );
+	value["file_name"] = file_name.toStdString();
 }
 
 AudioCueModelItem::AudioCueModelItem(

@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <iostream>
 
+#include <QApplication>
 #include <QtGui>
 #include <QToolBar>
 #include <QMenu>
@@ -311,7 +312,7 @@ void MainWindow::deleteCue()
 		return;
 	}
 
-	m_cue_model->deleteCue( selected_row );
+	m_cue_model->removeRow( selected_row.row(), selected_row.parent() );
 }
 
 void MainWindow::stopAllCues()
@@ -333,7 +334,9 @@ void MainWindow::createWidgets()
 	m_cue_list->setModel( m_cue_model );
 
 	m_cue_list->setSelectionMode( QAbstractItemView::SingleSelection );
+	m_cue_list->setSelectionBehavior( QAbstractItemView::SelectRows );
 	m_cue_list->setDragEnabled( true );
+	m_cue_list->setDragDropMode( QAbstractItemView::InternalMove );
 	m_cue_list->setAcceptDrops( true );
 	m_cue_list->setDropIndicatorShown( true );
 
@@ -354,55 +357,55 @@ void MainWindow::createActions()
 	m_new_show_action->setShortcuts( QKeySequence::New );
 	m_new_show_action->setStatusTip( "Create a new show" );
 	connect(
-		m_new_show_action, SIGNAL( triggered() ),
-		this, SLOT( newShow() ) );
+		m_new_show_action, &QAction::triggered,
+		this, &MainWindow::newShow );
 
 	m_save_show_action = new QAction( "&Save Show", this );
 	m_save_show_action->setShortcuts( QKeySequence::Save );
 	m_save_show_action->setStatusTip( "Save show" );
 	connect(
-		m_save_show_action, SIGNAL( triggered() ),
-		this, SLOT( saveShow() ) );
+		m_save_show_action, &QAction::triggered,
+		this, &MainWindow::saveShow );
 
 	m_save_show_as_action = new QAction( "&Save Show As", this );
 	m_save_show_as_action->setStatusTip( "Save show as" );
 	connect(
-		m_save_show_as_action, SIGNAL( triggered() ),
-		this, SLOT( saveShowAs() ) );
+		m_save_show_as_action, &QAction::triggered,
+		this, &MainWindow::saveShowAs );
 
 	m_open_show_action = new QAction( "&Open Show", this );
 	m_open_show_action->setStatusTip( "Open show" );
 	connect(
-		m_open_show_action, SIGNAL( triggered() ),
-		this, SLOT( openShow() ) );
+		m_open_show_action, &QAction::triggered,
+		this, &MainWindow::openShow );
 
 	m_exit_action = new QAction( "E&xit", this );
 	m_exit_action->setShortcuts( QKeySequence::Quit );
 	m_exit_action->setStatusTip( "Exit the application" );
 	connect(
-		m_exit_action, SIGNAL( triggered() ),
-		this, SLOT( close() ) );
+		m_exit_action, &QAction::triggered,
+		this, &MainWindow::close );
 
 	// edit
 
 	m_edit_preferences_action = new QAction( "Preferences", this );
 	connect(
-		m_edit_preferences_action, SIGNAL( triggered() ),
-		this, SLOT( editPreferences() ) );
+		m_edit_preferences_action, &QAction::triggered,
+		this, &MainWindow::editPreferences );
 
 	// about
 
 	m_about_action = new QAction( "&About", this );
 	m_about_action->setStatusTip( "About noises" );
 	connect(
-		m_about_action, SIGNAL(triggered()),
-		this, SLOT(about()));
+		m_about_action, &QAction::triggered,
+		this, &MainWindow::about );
 
 	m_about_qt_action = new QAction( "About &Qt", this );
 	m_about_qt_action->setStatusTip( "About Qt" );
 	connect(
-		m_about_qt_action, SIGNAL(triggered()),
-		qApp, SLOT(aboutQt()));
+		m_about_qt_action, &QAction::triggered,
+		qApp, &QApplication::aboutQt );
 
 	// toolbar actions
 
@@ -411,8 +414,8 @@ void MainWindow::createActions()
 		"&New Audio Cue", this );
 	m_new_audio_cue_action->setStatusTip( "Create a new audio cue" );
 	connect(
-		m_new_audio_cue_action, SIGNAL( triggered() ),
-		this, SLOT( newAudioCue() ) );
+		m_new_audio_cue_action, &QAction::triggered,
+		this, &MainWindow::newAudioCue );
 
 	m_new_control_cue_action = new QAction(
 		QIcon( ":/images/control_cue_32x32.png" ),
@@ -420,8 +423,8 @@ void MainWindow::createActions()
 		this );
 	m_new_control_cue_action->setStatusTip( "Create a new control cue" );
 	connect(
-		m_new_control_cue_action, SIGNAL( triggered() ),
-		this, SLOT( newControlCue() ) );
+		m_new_control_cue_action, &QAction::triggered,
+		this, &MainWindow::newControlCue );
 
 	m_new_wait_cue_action = new QAction(
 		QIcon( ":/images/wait_cue_32x32.png" ),
@@ -429,37 +432,36 @@ void MainWindow::createActions()
 		this );
 	m_new_wait_cue_action->setStatusTip( "Create a new wait cue" );
 	connect(
-		m_new_wait_cue_action, SIGNAL( triggered() ),
-		this, SLOT( newWaitCue() ) );
+		m_new_wait_cue_action, &QAction::triggered,
+		this, &MainWindow::newWaitCue );
 
 	m_new_group_cue_action = new QAction(
 		QIcon( ":/images/group_cue_32x32.png" ),
 		"&New Group Cue", this );
 	m_new_group_cue_action->setStatusTip( "Create a new group cue" );
 	connect(
-		m_new_group_cue_action, SIGNAL( triggered() ),
-		this, SLOT( newGroupCue() ) );
+		m_new_group_cue_action, &QAction::triggered,
+		this, &MainWindow::newGroupCue );
 
 	// cue actions
 
 	m_play_cue_action = new QAction( "Play Cue", m_cue_list );
 	m_play_cue_action->setShortcut( QKeySequence( Qt::Key_Space ) );
 	connect(
-		m_play_cue_action, SIGNAL( triggered() ),
-		this, SLOT( playCue() ) );
+		m_play_cue_action, &QAction::triggered,
+		this, &MainWindow::playCue );
 
 	m_delete_cue_action = new QAction( "Delete Cue", m_cue_list );
 	m_delete_cue_action->setShortcut( QKeySequence( Qt::Key_Delete ) );
 	connect(
-		m_delete_cue_action, SIGNAL( triggered() ),
-		this, SLOT( deleteCue() ) );
+		m_delete_cue_action, &QAction::triggered,
+		this, &MainWindow::deleteCue );
 
 	m_stop_all_cues_action = new QAction( "Play Cue", m_cue_list );
 	m_stop_all_cues_action->setShortcut( QKeySequence( Qt::Key_Escape ) );
 	connect(
-		m_stop_all_cues_action, SIGNAL( triggered() ),
-		this, SLOT( stopAllCues() ) );
-
+		m_stop_all_cues_action, &QAction::triggered,
+		this, &MainWindow::stopAllCues );
 
 	// setup cue list actions
 

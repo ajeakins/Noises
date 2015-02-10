@@ -26,16 +26,26 @@ CueModelItem::~CueModelItem()
 void CueModelItem::appendChild( CueModelItem* item )
 {
 	m_child_items.append(item);
+	item->m_parent_item = this;
 }
 
 void CueModelItem::insertChild( int row, CueModelItem* item )
 {
 	m_child_items.insert( row, item );
+	item->m_parent_item = this;
 }
 
 void CueModelItem::deleteChild( CueModelItem* item )
 {
 	m_child_items.removeOne( item );
+	item->deleteLater();
+}
+
+void CueModelItem::deleteChild( int row )
+{
+	assert( row < m_child_items.size() );
+
+	CueModelItem* item = m_child_items.takeAt( row );
 	item->deleteLater();
 }
 
@@ -91,6 +101,13 @@ Qt::ItemFlags CueModelItem::flags() const
 		Qt::ItemIsEnabled |
 		Qt::ItemIsSelectable |
 		Qt::ItemIsDragEnabled;
+
+	// enable drop on the root
+	if ( getType() == CueType_None )
+	{
+		flags |= Qt::ItemIsDropEnabled;
+	}
+
 	return flags;
 }
 
@@ -128,12 +145,12 @@ void CueModelItem::writeSettings( Json::Value& root ) const
 {
 	assert( root.type() == Json::objectValue );
 
-	root["type"] = qPrintable( typeToString( getType() ) );
+	root["type"] = typeToString( getType() ).toStdString();
 
 	Json::Value values( Json::arrayValue );
 	for ( auto itr = m_item_data.begin(); itr != m_item_data.end(); ++itr )
 	{
-		Json::Value value( qPrintable( itr->toString() ) );
+		Json::Value value( itr->toString().toStdString() );
 		values.append( value );
 	}
 

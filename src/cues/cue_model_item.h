@@ -31,6 +31,7 @@ namespace noises
 		int row( CueModelItem* child );
 
 		void deleteChild( CueModelItem* child );
+		void deleteChild( int row );
 
 		QVariant data( int column, int role = Qt::DisplayRole ) const;
 		bool setData( int column, const QVariant& data );
