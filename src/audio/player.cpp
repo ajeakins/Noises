@@ -30,7 +30,8 @@ Player::Ptr Player::ManagerHooks::create( QObject* parent )
 Player::Player( QObject* parent )
 :
 	QObject(), // don't ask parent to manage lifetime
-	m_parent( parent )
+	m_parent( parent ),
+	m_outputs( Application::getPreferences().getOutputCount() )
 {
 	connect(
 		parent, &QObject::destroyed,
@@ -84,19 +85,19 @@ float Player::getVolume( int input, int output ) const
 	return m_volumes[input][output];
 }
 
-void Player::getDuration( QTime& time ) const
+QTime Player::getDuration() const
 {
 	if ( !m_audio_data )
 	{
-		return;
+		return QTime();
 	}
 
-	time = timeFromFrames( m_audio_info.frames );
+	return timeFromFrames( m_audio_info.frames );
 }
 
 QTime Player::timeFromFrames( int frames ) const
 {
-	QTime time;
+	QTime time(0, 0, 0);
 
 	// calculate in floating point
 	float timeInMSecs = ( float )frames;
@@ -115,6 +116,9 @@ void Player::readData()
 
 	std::string data = m_filename.toStdString();
 	SNDFILE* file = sf_open( data.c_str(), SFM_READ, &m_audio_info );
+
+	// emit time updated every 100ms
+	m_signal_interval = m_audio_info.samplerate / ( 100 * m_audio_info.channels );
 
 	if (!file)
 	{
@@ -156,7 +160,12 @@ void Player::readData()
 	sf_readf_float( file, m_audio_data, m_audio_info.frames );
 	sf_close( file );
 
+	// TODO: get rid of this...
 	m_volumes.resize( m_audio_info.channels );
+	for ( int i = 0; i != m_audio_info.channels; ++i )
+	{
+		m_volumes[i].resize( m_outputs );
+	}
 }
 
 void Player::start()
@@ -178,7 +187,8 @@ void Player::start()
 void Player::stop()
 {
 	m_is_playing = false;
-	m_pos = 0;
+	m_pos = m_last_pos = 0;
+	Q_EMIT timeUpdated( timeFromFrames( 0 ) );
 	Q_EMIT stopped();
 }
 

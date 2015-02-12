@@ -4,9 +4,6 @@
 
 #include <cues/audio_cue_model_item.h>
 
-#include <widgets/file_line_edit.h>
-#include <widgets/matrix.h>
-
 #include "cue_dialog.h"
 
 class QTimeEdit;
@@ -14,6 +11,12 @@ class QDataWidgetMapper;
 
 namespace noises
 {
+	namespace widgets
+	{
+		class Matrix;
+		class FileLineEdit;
+	}
+
 	class AudioCueDialog: public CueDialog
 	{
 		Q_OBJECT
@@ -35,6 +38,8 @@ namespace noises
 
 		void volumeChanged();
 
+		void playerTimeChanged( const QTime& time );
+
 	private:
 		void createCueWidgets();
 
@@ -53,6 +58,7 @@ namespace noises
 		// audio player
 
 		audio::Player::Ptr m_player;
+		QTime m_duration;
 
 		// widgets
 

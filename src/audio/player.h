@@ -38,7 +38,7 @@ namespace audio
 
 		void setVolume( const widgets::MatrixSettings& settings );
 
-		void getDuration( QTime& time ) const;
+		QTime getDuration() const;
 
 		// Playback controls
 
@@ -91,6 +91,7 @@ namespace audio
 		// audio information
 		SF_INFO m_audio_info;
 		int m_length;
+		int m_signal_interval;
 
 		// volume data
 		QVector< QVector< float > > m_volumes;
@@ -123,16 +124,21 @@ namespace audio
 		// increment to next frame
 		m_pos += m_audio_info.channels;
 
-		if ( m_pos > m_last_pos + 10000 )
+		// send time update
+		if ( m_pos > m_last_pos + m_signal_interval )
 		{
-
+			// Recievers should be in another thread so this should not block
+			Q_EMIT timeUpdated( timeFromFrames( m_pos / m_audio_info.channels ) );
+			m_last_pos = m_pos;
 		}
 
 		// reached the end of the track
 		if ( m_pos == m_length )
 		{
+			Q_EMIT timeUpdated( timeFromFrames( m_pos / m_audio_info.channels ) );
+
 			m_is_playing = false;
-			m_pos = 0;
+			m_pos = m_last_pos = 0;
 		}
 	}
 

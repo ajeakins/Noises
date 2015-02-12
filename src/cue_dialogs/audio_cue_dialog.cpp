@@ -12,6 +12,11 @@
 
 #include <audio/manager.h>
 
+#include <utils/time.h>
+
+#include <widgets/file_line_edit.h>
+#include <widgets/matrix.h>
+
 #include "audio_cue_dialog.h"
 
 namespace noises
@@ -30,6 +35,10 @@ AudioCueDialog::AudioCueDialog(
 	m_cue( cue )
 {
 	m_player = Application::getAudioManager().createPlayer( this );
+
+	connect(
+		m_player.data(), &audio::Player::timeUpdated,
+		this, &AudioCueDialog::playerTimeChanged );
 
 	setWindowTitle( "Edit Audio Cue" );
 	setWindowIcon( QIcon( ":images/audio_cue.png" ) );
@@ -65,20 +74,19 @@ void AudioCueDialog::onFilenameChanged()
 	getEditor( 1 )->setText( file_info.baseName() );
 
 	m_player->setFilename( filepath );
+	m_duration = m_player->getDuration();
 	resetTimes();
 }
 
 void AudioCueDialog::resetTimes()
 {
-	QTime time( 0, 0, 0, 0 );
-	m_player->getDuration( time );
-	m_end_time->setTime( time );
+	m_end_time->setTime( m_duration );
 
-	if ( time.hour() > 0 )
+	if ( m_duration.hour() > 0 )
 	{
 		setTimeDisplayFormat( hourTimeFormat );
 	}
-	else if ( time.minute() > 0 )
+	else if ( m_duration.minute() > 0 )
 	{
 		setTimeDisplayFormat( minuteTimeFormat );
 	}
@@ -93,6 +101,12 @@ void AudioCueDialog::volumeChanged()
 	widgets::MatrixSettings settings;
 	m_matrix->writeSettings( settings );
 	m_player->setVolume( settings );
+}
+
+void AudioCueDialog::playerTimeChanged( const QTime& time )
+{
+	m_elapsed_time->setTime( time );
+	m_remaining_time->setTime( utils::subtract( m_duration, time ) );
 }
 
 void AudioCueDialog::writeSettings() const
@@ -148,11 +162,11 @@ void AudioCueDialog::createCueWidgets()
 
 	// preview
 
-	QLabel* elapsed_label =  new QLabel( "Remaining:", this );
+	QLabel* elapsed_label =  new QLabel( "Elapsed:", this );
 	m_elapsed_time = new QTimeEdit( this );
 	m_elapsed_time->setReadOnly( true );
 
-	QLabel* remaining_label = new QLabel( "Elapsed:", this );
+	QLabel* remaining_label = new QLabel( "Remaining:", this );
 	m_remaining_time = new QTimeEdit( this );
 	m_remaining_time->setReadOnly( true );
 
@@ -262,6 +276,9 @@ void AudioCueDialog::createCueWidgets()
 
 void AudioCueDialog::setTimeDisplayFormat( QString format )
 {
+	m_elapsed_time->setDisplayFormat( format );
+	m_remaining_time->setDisplayFormat( format );
+
 	m_start_time->setDisplayFormat( format );
 	m_end_time->setDisplayFormat( format );
 	m_fade_in_time->setDisplayFormat( format );
