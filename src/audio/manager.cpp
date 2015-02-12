@@ -19,12 +19,12 @@ Manager::Manager()
 	m_engine->moveToThread( m_thread );
 
 	connect(
-		m_thread, SIGNAL( started() ),
-		m_engine, SLOT( run() ) );
+		m_thread, &QThread::started,
+		m_engine, &Engine::run );
 
 	connect(
-		m_engine, SIGNAL( finished() ),
-		m_thread, SLOT( quit() ) );
+		m_engine, &Engine::finished,
+		m_thread, &QThread::quit );
 }
 
 Manager::~Manager()

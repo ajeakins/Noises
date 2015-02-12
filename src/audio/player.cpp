@@ -5,8 +5,6 @@
 #include <QMessageBox>
 #include <QTime>
 
-#include <sndfile.h>
-
 #include <application.h>
 #include <utils/audio.h>
 
@@ -32,15 +30,11 @@ Player::Ptr Player::ManagerHooks::create( QObject* parent )
 Player::Player( QObject* parent )
 :
 	QObject(), // don't ask parent to manage lifetime
-	m_parent( parent ),
-	m_is_playing( false ),
-	m_audio_data( 0 ),
-	m_pos( 0 ),
-	m_length( 0 )
+	m_parent( parent )
 {
 	connect(
-		parent, SIGNAL( destroyed() ),
-		this, SLOT( onParentDestroyed() ) );
+		parent, &QObject::destroyed,
+		[this](){ Q_EMIT parentDestroyed( sharedFromThis() ); } );
 }
 
 Player::~Player()
@@ -62,7 +56,7 @@ void Player::setVolume( const widgets::MatrixSettings& settings )
 {
 	m_outputs = Application::getPreferences().getOutputCount();
 
-	for ( int i = 0; i != m_channels; ++i )
+	for ( int i = 0; i != m_audio_info.channels; ++i )
 	{
 		m_volumes[i].resize( m_outputs );
 
@@ -81,9 +75,9 @@ void Player::setVolume( const widgets::MatrixSettings& settings )
 	}
 }
 
-float Player::getVolume( int input, int output )
+float Player::getVolume( int input, int output ) const
 {
-	if ( input >= m_channels || output >= m_outputs )
+	if ( input >= m_audio_info.channels || output >= m_outputs )
 	{
 		return 0.0f;
 	}
@@ -97,17 +91,30 @@ void Player::getDuration( QTime& time ) const
 		return;
 	}
 
-	int timeInMSecs = ( m_frames * 1000 ) / m_sample_rate;
-	time = time.addMSecs( timeInMSecs );
+	time = timeFromFrames( m_audio_info.frames );
+}
+
+QTime Player::timeFromFrames( int frames ) const
+{
+	QTime time;
+
+	// calculate in floating point
+	float timeInMSecs = ( float )frames;
+	timeInMSecs *= 1000.0f;
+	timeInMSecs /= m_audio_info.samplerate;
+
+	time = time.addMSecs( (int)timeInMSecs );
+
+	return time;
 }
 
 void Player::readData()
 {
-	SF_INFO info;
-	info.format = 0;
+	// indicate to library to fill in the info
+	m_audio_info.format = 0;
 
 	std::string data = m_filename.toStdString();
-	SNDFILE* file = sf_open( data.c_str(), SFM_READ, &info );
+	SNDFILE* file = sf_open( data.c_str(), SFM_READ, &m_audio_info );
 
 	if (!file)
 	{
@@ -118,7 +125,7 @@ void Player::readData()
 		return;
 	}
 
-	m_length = info.channels * info.frames;
+	m_length = m_audio_info.channels * m_audio_info.frames;
 	if ( !m_audio_data )
 	{
 		m_audio_data = ( float* )malloc( m_length * sizeof( float ) );
@@ -146,19 +153,20 @@ void Player::readData()
 		m_audio_data = new_data;
 	}
 
-	m_channels = info.channels;
-	m_sample_rate = info.samplerate;
-	m_frames = info.frames;
-
-	sf_readf_float( file, m_audio_data, info.frames );
+	sf_readf_float( file, m_audio_data, m_audio_info.frames );
 	sf_close( file );
 
-	m_volumes.resize( m_channels );
+	m_volumes.resize( m_audio_info.channels );
 }
 
 void Player::start()
 {
 	if ( m_is_playing )
+	{
+		return;
+	}
+
+	if ( !m_audio_data )
 	{
 		return;
 	}
@@ -172,11 +180,6 @@ void Player::stop()
 	m_is_playing = false;
 	m_pos = 0;
 	Q_EMIT stopped();
-}
-
-void Player::onParentDestroyed()
-{
-	Q_EMIT parentDestroyed( sharedFromThis() );
 }
 
 } /* namespace audio */

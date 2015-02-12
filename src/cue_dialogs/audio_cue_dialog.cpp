@@ -18,8 +18,8 @@ namespace noises
 {
 
 static const QString secondTimeFormat = "ss.zzz 's'";
-static const QString minuteTimeFormat = "mm'm'::ss.zzz 's'";
-static const QString hourTimeFormat = "hh'h':mm'm':ss:zzz";
+static const QString minuteTimeFormat = "mm'm' ss.zzz 's'";
+static const QString hourTimeFormat = "hh'h' mm'm' ss.zzz";
 
 AudioCueDialog::AudioCueDialog(
 	AudioCueModelItem* cue,
@@ -55,16 +55,6 @@ void AudioCueDialog::accept()
 {
 	writeSettings();
 	CueDialog::accept();
-}
-
-void AudioCueDialog::play()
-{
-	m_player->start();
-}
-
-void AudioCueDialog::stop()
-{
-	m_player->stop();
 }
 
 void AudioCueDialog::onFilenameChanged()
@@ -143,50 +133,63 @@ void AudioCueDialog::createCueWidgets()
 
 	// file
 
-	QIcon icon;
-
 	m_file_edit = new widgets::FileLineEdit( this );
 
 	connect(
 		m_file_edit, SIGNAL( filenameChanged() ),
 		this, SLOT( onFilenameChanged() ) );
 
-	m_play_button = new QPushButton( this );
-	m_play_button->setIcon( QIcon( ":images/play_32x32.png") );
-
-	m_stop_button = new QPushButton( this );
-	m_stop_button->setIcon( QIcon( ":images/stop_32x32.png") );
-
-	connect(
-		m_play_button, SIGNAL( released() ),
-		this, SLOT( play() ) );
-
-	connect(
-		m_stop_button, SIGNAL( released() ),
-		this, SLOT( stop() ) );
-
-	m_reset_times_button = new QPushButton( this );
-	m_reset_times_button->setIcon( QIcon( ":images/reload_32x32.png") );
-	m_reset_times_button->setToolTip( "Reset start and end to those in the file" );
-
-	connect(
-		m_reset_times_button, SIGNAL( released() ),
-		this, SLOT( resetTimes() ) );
-
-	QHBoxLayout* file_options = new QHBoxLayout;
-	file_options->setContentsMargins( 0, 0, 0, 0 );
-	file_options->addWidget( m_play_button );
-	file_options->addWidget( m_stop_button );
-	file_options->addStretch();
-	file_options->addWidget( m_reset_times_button );
-
 	QVBoxLayout* file_layout = new QVBoxLayout();
 	file_layout->setContentsMargins( 0, 0, 0, 0 );
 	file_layout->addWidget( m_file_edit );
-	file_layout->addItem( file_options );
 
 	QGroupBox* file_group_box = new QGroupBox( "File", this );
 	file_group_box->setLayout( file_layout );
+
+	// preview
+
+	QLabel* elapsed_label =  new QLabel( "Remaining:", this );
+	m_elapsed_time = new QTimeEdit( this );
+	m_elapsed_time->setReadOnly( true );
+
+	QLabel* remaining_label = new QLabel( "Elapsed:", this );
+	m_remaining_time = new QTimeEdit( this );
+	m_remaining_time->setReadOnly( true );
+
+	m_play_button = new QPushButton( this );
+	m_play_button->setIcon( QIcon( ":images/play_32x32.png" ) );
+
+	m_stop_button = new QPushButton( this );
+	m_stop_button->setIcon( QIcon( ":images/stop_32x32.png" ) );
+
+	connect(
+		m_play_button, &QPushButton::released,
+		[this](){ m_player->start(); } );
+
+	connect(
+		m_stop_button, &QPushButton::released,
+		[this](){ m_player->stop(); } );
+
+	QGridLayout* preview_times_grid = new QGridLayout();
+	preview_times_grid->setContentsMargins( 0, 0, 0, 0 );
+
+	preview_times_grid->addWidget( remaining_label, 0, 0 );
+	preview_times_grid->addWidget( m_remaining_time, 0, 1 );
+	preview_times_grid->addWidget( elapsed_label, 0, 2 );
+	preview_times_grid->addWidget( m_elapsed_time, 0, 3 );
+
+	QHBoxLayout* preview_buttons = new QHBoxLayout;
+	preview_buttons->setContentsMargins( 0, 0, 0, 0 );
+	preview_buttons->addWidget( m_play_button );
+	preview_buttons->addWidget( m_stop_button );
+	preview_buttons->addStretch();
+
+	QVBoxLayout* preview_layout = new QVBoxLayout;
+	preview_layout->addLayout( preview_times_grid );
+	preview_layout->addLayout( preview_buttons );
+
+	QGroupBox* preview_group_box = new QGroupBox( "Preview", this );
+	preview_group_box->setLayout( preview_layout );
 
 	// times
 
@@ -204,6 +207,14 @@ void AudioCueDialog::createCueWidgets()
 
 	setTimeDisplayFormat( secondTimeFormat );
 
+	m_reset_times_button = new QPushButton( this );
+	m_reset_times_button->setIcon( QIcon( ":images/reload_32x32.png") );
+	m_reset_times_button->setToolTip( "Reset start and end to those in the file" );
+
+	connect(
+		m_reset_times_button, SIGNAL( released() ),
+		this, SLOT( resetTimes() ) );
+
 	QGridLayout* times_grid = new QGridLayout();
 	times_grid->setContentsMargins( 0, 0, 0, 0 );
 
@@ -211,6 +222,8 @@ void AudioCueDialog::createCueWidgets()
 	times_grid->addWidget( m_start_time, 0, 1 );
 	times_grid->addWidget( end_label, 0, 2 );
 	times_grid->addWidget( m_end_time, 0, 3 );
+
+	times_grid->addWidget( m_reset_times_button, 0, 4 );
 
 	times_grid->addWidget( fade_in_label, 1, 0 );
 	times_grid->addWidget( m_fade_in_time, 1, 1 );
@@ -242,6 +255,7 @@ void AudioCueDialog::createCueWidgets()
 	levels_group_box->setLayout( levels_layout );
 
 	m_layout->addWidget( file_group_box );
+	m_layout->addWidget( preview_group_box );
 	m_layout->addWidget( times_group_box );
 	m_layout->addWidget( levels_group_box );
 }

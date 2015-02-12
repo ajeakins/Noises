@@ -29,10 +29,6 @@ namespace noises
 	private Q_SLOTS:
 		virtual void accept();
 
-		void play();
-
-		void stop();
-
 		void onFilenameChanged();
 
 		void resetTimes();
@@ -64,6 +60,9 @@ namespace noises
 
 		QPushButton* m_play_button;
 		QPushButton* m_stop_button;
+
+		QTimeEdit* m_remaining_time;
+		QTimeEdit* m_elapsed_time;
 
 		QPushButton* m_reset_times_button;
 

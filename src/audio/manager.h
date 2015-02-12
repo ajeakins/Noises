@@ -42,8 +42,8 @@ namespace audio
 	private:
 		QList< Player::Ptr > m_players;
 
-		QThread* m_thread;
-		Engine* m_engine;
+		QThread* m_thread = nullptr;
+		Engine* m_engine = nullptr;
 
 	};
 

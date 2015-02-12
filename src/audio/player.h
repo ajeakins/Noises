@@ -4,9 +4,11 @@
 #include <QDebug>
 #include <QObject>
 #include <QSharedPointer>
+#include <QTime>
 #include <QEnableSharedFromThis>
 
 #include <portaudio.h>
+#include <sndfile.h>
 
 #include <widgets/matrix.h>
 
@@ -54,10 +56,9 @@ namespace audio
 
 		void stopped();
 
-		void parentDestroyed( Player::Ptr player );
+		void timeUpdated( QTime time );
 
-	private Q_SLOTS:
-		void onParentDestroyed();
+		void parentDestroyed( Player::Ptr player );
 
 	private:
 		friend class ManagerHooks;
@@ -66,9 +67,11 @@ namespace audio
 
 		Player( QObject* parent );
 
-		float getVolume( int input, int output );
+		float getVolume( int input, int output ) const;
 
 		void readData();
+
+		QTime timeFromFrames( int frames ) const;
 
 		inline void addData( float* audio_data, int channels );
 
@@ -77,15 +80,19 @@ namespace audio
 
 		QString m_filename;
 
-		bool m_is_playing;
+		// playback state
+		bool m_is_playing = false;
+		int m_pos = 0 ;
+		int m_last_pos = 0;
 
-		float* m_audio_data;
-		int m_pos;
+		// audio data
+		float* m_audio_data = nullptr;
+
+		// audio information
+		SF_INFO m_audio_info;
 		int m_length;
-		int m_channels;
-		int m_sample_rate;
-		int m_frames;
 
+		// volume data
 		QVector< QVector< float > > m_volumes;
 		// current number of outputs we have data for
 		int m_outputs;
@@ -107,14 +114,19 @@ namespace audio
 
 		for( int output = 0; output != channels; ++output )
 		{
-			for( int input = 0; input != m_channels; ++input )
+			for( int input = 0; input != m_audio_info.channels; ++input )
 			{
 				audio[output] += getVolume( input, output ) * m_audio_data[m_pos + input];
 			}
 		}
 
 		// increment to next frame
-		m_pos += m_channels;
+		m_pos += m_audio_info.channels;
+
+		if ( m_pos > m_last_pos + 10000 )
+		{
+
+		}
 
 		// reached the end of the track
 		if ( m_pos == m_length )

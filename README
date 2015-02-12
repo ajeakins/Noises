@@ -1,0 +1,3 @@
+README
+------
+- prefer Qt5 style signals and slots where possible.

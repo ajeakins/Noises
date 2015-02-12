@@ -40,6 +40,7 @@ void CueDialog::createWidgets()
 	generic_data_layout->setContentsMargins( 0, 0, 0, 0 );
 
 	int column_count = m_mapper->model()->columnCount();
+	column_count = 3;
 	for ( int i = 0; i != column_count; ++i )
 	{
 		QAbstractItemModel* model = m_mapper->model();
