@@ -4,18 +4,14 @@
 namespace noises
 {
 
-void AudioCueSettings::readSettings( const Json::Value& value )
+void AudioCueSettings::readSettings( const QJsonObject& value )
 {
-	assert( value.type() == Json::objectValue );
-
-	file_name = value["file_name"].asCString();
+	file_name = value["file_name"].toString( "" );
 }
 
-void AudioCueSettings::writeSettings( Json::Value& value ) const
+void AudioCueSettings::writeSettings( QJsonObject& value ) const
 {
-	assert( value.type() == Json::objectValue );
-
-	value["file_name"] = file_name.toStdString();
+	value["file_name"] = file_name;
 }
 
 AudioCueModelItem::AudioCueModelItem(
@@ -45,19 +41,19 @@ QVariant AudioCueModelItem::getIcon() const
 	return icon;
 }
 
-void AudioCueModelItem::readSettings( const Json::Value& root )
+void AudioCueModelItem::readSettings( const QJsonObject& settings )
 {
-	CueModelItem::readSettings( root );
-	m_settings.readSettings( root["audio-settings"] );
+	CueModelItem::readSettings( settings );
+	m_settings.readSettings( settings["audio-settings"].toObject() );
 }
 
-void AudioCueModelItem::writeSettings( Json::Value& root ) const
+void AudioCueModelItem::writeSettings( QJsonObject& settings ) const
 {
-	CueModelItem::writeSettings( root );
+	CueModelItem::writeSettings( settings );
 
-	Json::Value audioSettings( Json::objectValue );
+	QJsonObject audioSettings;
 	m_settings.writeSettings( audioSettings );
-	root["audio-settings"] = audioSettings;
+	settings["audio-settings"] = audioSettings;
 
 }
 

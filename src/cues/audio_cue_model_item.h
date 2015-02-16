@@ -22,9 +22,9 @@ namespace noises
 			levels.setStereoLink( link );
 		}
 
-		void readSettings( const Json::Value& root );
+		void readSettings( const QJsonObject& root );
 
-		void writeSettings( Json::Value& root ) const;
+		void writeSettings( QJsonObject& root ) const;
 
 	public:
 		QString file_name;
@@ -56,9 +56,9 @@ namespace noises
 
 		void execute() const;
 
-		void readSettings( const Json::Value& root );
+		void readSettings( const QJsonObject& settings );
 
-		void writeSettings( Json::Value& root ) const;
+		void writeSettings( QJsonObject& settings ) const;
 
 	protected:
 		QVariant getIcon() const;

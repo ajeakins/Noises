@@ -4,8 +4,7 @@
 
 #include <QList>
 #include <QVariant>
-
-#include <json/json.h>
+#include <QJsonObject>
 
 #include "types.h"
 
@@ -52,9 +51,12 @@ namespace noises
 			assert( false && "Cannot execute base item" );
 		}
 
-		virtual void readSettings( const Json::Value& root );
+		virtual void readSettings( const QJsonObject& settings );
 
-		virtual void writeSettings( Json::Value& root ) const;
+		virtual void writeSettings( QJsonObject& settings ) const;
+
+	Q_SIGNALS:
+		void dataChanged( CueModelItem* item );
 
 	protected:
 		virtual QVariant getIcon() const;

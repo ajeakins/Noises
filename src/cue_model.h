@@ -5,7 +5,7 @@
 #include <QVariant>
 #include <QObject>
 
-#include <json/json.h>
+#include <QJsonArray>
 
 #include <cues/types.h>
 
@@ -69,9 +69,12 @@ namespace noises
 			int column,
 			const QModelIndex& parent );
 
-		void readSettings( const Json::Value& root );
+		void readSettings( const QJsonArray& settings );
 
-		void writeSettings( Json::Value& root ) const;
+		void writeSettings( QJsonArray& settings ) const;
+
+	private Q_SLOTS:
+		void itemDataChanged( CueModelItem* item );
 
 	private:
 		CueModelItem* m_root_item;

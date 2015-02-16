@@ -2,6 +2,10 @@
 
 #include <QtGui>
 
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
+
 #include <cues/audio_cue_model_item.h>
 #include <cues/control_cue_model_item.h>
 #include <cues/group_cue_model_item.h>
@@ -258,9 +262,7 @@ QStringList CueModel::mimeTypes() const
 
 QMimeData* CueModel::mimeData( const QModelIndexList& indexes ) const
 {
-	qDebug() << indexes.size();
-
-	Json::Value data( Json::arrayValue );
+	QJsonArray data;
 
 	for ( auto itr = indexes.begin(); itr != indexes.end(); ++itr )
 	{
@@ -275,22 +277,18 @@ QMimeData* CueModel::mimeData( const QModelIndexList& indexes ) const
 		if ( index.isValid() )
 		{
 			CueModelItem* item = itemFromIndex( index );
+			QJsonObject cueData;
 
-			Json::Value cueData( Json::objectValue );
 			item->writeSettings( cueData );
-			data.append( cueData );
-
-			qDebug() << "append";
+			data.push_back( cueData );
 		}
 	}
 
-	Json::StyledWriter writer;
-	std::string dataString = writer.write( data );
+	QJsonDocument document( data );
 
 	QMimeData *mimeData = new QMimeData();
-	QByteArray encodedData( dataString.c_str() );
+	mimeData->setData( "application/noises.text.cues", document.toJson() );
 
-	mimeData->setData( "application/noises.text.cues", encodedData );
 	return mimeData;
 }
 
@@ -311,24 +309,17 @@ bool CueModel::dropMimeData(
 		return false;
 	}
 
+	QByteArray encodedData = data->data( "application/noises.text.cues" );
+	QJsonDocument document = QJsonDocument::fromJson( encodedData );
+	const QJsonArray cues = document.array();
+
 	CueModelItem* parent = itemFromIndex( parent_index );
 
-	QByteArray encodedData = data->data( "application/noises.text.cues" );
-	std::string decodedData( encodedData.data() );
-
-	Json::Value root;
-
-	Json::Reader reader;
-	reader.parse( decodedData, root );
-
-	assert( root.type() == Json::arrayValue );
-
-	for ( unsigned int i = 0; i != root.size(); ++i )
+	for( auto itr = cues.begin(); itr != cues.end(); ++itr )
 	{
-		Json::Value cueData = root[i];
-		assert( cueData.type() == Json::objectValue );
+		QJsonObject cueData = itr->toObject();
 
-		QString type = cueData["type"].asCString();
+		QString type = cueData["type"].toString(); // error handling
 
 		CueModelItem* item = createCue( stringToType( type ) );
 		setCueParent( parent, item, parent->childCount() + 1 );
@@ -337,18 +328,26 @@ bool CueModel::dropMimeData(
 	}
 
     return true;
- }
+}
 
-void CueModel::readSettings( const Json::Value& root )
+void CueModel::itemDataChanged( CueModelItem* item )
 {
-	assert( root.type() == Json::arrayValue );
+	QModelIndex index = createIndex( 0, 0, item );
+	Q_EMIT dataChanged( index, index );
+}
 
-	for ( unsigned int i = 0; i != root.size(); ++i )
+void CueModel::readSettings( const QJsonArray& settings )
+{
+	for( auto itr = settings.begin(); itr != settings.end(); ++itr )
 	{
-		Json::Value cueData = root[i];
-		assert( cueData.type() == Json::objectValue );
+		QJsonValue value = *itr;
+		if ( !value.isObject() )
+		{
+			continue; // warn here...
+		}
 
-		QString type = cueData["type"].asCString();
+		QJsonObject cueData = value.toObject();
+		QString type = cueData["type"].toString();
 
 		CueModelItem* item = createCue( stringToType( type ) );
 		setCueParent( m_root_item, item, m_root_item->childCount() + 1 );
@@ -357,15 +356,13 @@ void CueModel::readSettings( const Json::Value& root )
 	}
 }
 
-void CueModel::writeSettings( Json::Value& root ) const
+void CueModel::writeSettings( QJsonArray& settings ) const
 {
-	assert( root.type() == Json::arrayValue );
-
 	for ( int i = 0; i != m_root_item->childCount(); ++i )
 	{
-		Json::Value cueData( Json::objectValue );
+		QJsonObject cueData;
 		m_root_item->child( i )->writeSettings( cueData );
-		root.append( cueData );
+		settings.push_back( cueData );
 	}
 }
 

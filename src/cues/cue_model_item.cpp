@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include <QStringList>
+#include <QJsonArray>
 
 #include "cue_model_item.h"
 
@@ -131,30 +132,28 @@ QVariant CueModelItem::getIcon() const
 	return QVariant();
 }
 
-void CueModelItem::readSettings( const Json::Value& root )
+void CueModelItem::readSettings( const QJsonObject& settings )
 {
-	assert( root.type() == Json::objectValue );
+	QJsonArray data = settings.value( "data" ).toArray();
 
 	for ( int i = 0; i != m_item_data.count(); ++i )
 	{
-		m_item_data[i] = root["data"][i].asCString();
+		m_item_data[i] = data[i].toString();
 	}
 }
 
-void CueModelItem::writeSettings( Json::Value& root ) const
+void CueModelItem::writeSettings( QJsonObject& settings ) const
 {
-	assert( root.type() == Json::objectValue );
+	settings.insert( "type", typeToString( getType() ) );
 
-	root["type"] = typeToString( getType() ).toStdString();
-
-	Json::Value values( Json::arrayValue );
+	QJsonArray values;
 	for ( auto itr = m_item_data.begin(); itr != m_item_data.end(); ++itr )
 	{
-		Json::Value value( itr->toString().toStdString() );
+		QJsonValue value( itr->toString() );
 		values.append( value );
 	}
 
-	root["data"] = values;
+	settings["data"] = values;
 }
 
 } /* namespace noises */

@@ -12,7 +12,8 @@
 #include <QMessageBox>
 #include <QFileDialog>
 
-#include <json/json.h>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 #include <utils/cue.h>
 #include <cue_dialogs/audio_cue_dialog.h>
@@ -78,19 +79,17 @@ void MainWindow::saveShow()
 		filename += ".noises";
 	}
 
-	Json::Value root;
-	root["cues"] = Json::Value( Json::arrayValue );
+	QJsonArray cues;
+	m_cue_model->writeSettings( cues );
 
-	m_cue_model->writeSettings( root["cues"] );
+	QJsonObject root;
+	root["cues"] = cues;
 
-	QFile file( filename );
+	QFile file( filename ); // scoped
 	file.open( QIODevice::WriteOnly );
 
-	Json::StyledWriter writer;
-	file.write( writer.write( root ).c_str() );
-
-	file.close();
-
+	QJsonDocument document( root );
+	file.write( document.toJson() );
 }
 
 void MainWindow::saveShowAs()
@@ -110,17 +109,24 @@ void MainWindow::openShow()
 		return;
 	}
 
-	Json::Value root;
-
-	QFile file( filename );
+	QFile file( filename ); // scoped
 	file.open( QIODevice::ReadOnly );
 
-	Json::Reader reader;
-	reader.parse( file.readAll().constData(), root );
+	QJsonDocument document = QJsonDocument::fromJson( file.readAll() );
+	if ( !document.isObject() )
+	{
+		QMessageBox::critical( this, "Errror Loading File", "Unable to load show file." );
+		return;
+	}
 
-	file.close();
+	QJsonObject object = document.object();
 
-	m_cue_model->readSettings( root["cues"] );
+	// load cues
+	QJsonValue cues = object.value( "cues" );
+	if ( cues.isArray() )
+	{
+		m_cue_model->readSettings( cues.toArray() );
+	}
 }
 
 CueModelItem* MainWindow::createCue( CueType type )
