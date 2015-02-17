@@ -1,7 +1,8 @@
+
 #include <assert.h>
-#include <iostream>
 
 #include <QStringList>
+
 #include <QJsonArray>
 
 #include "cue_model_item.h"
@@ -9,7 +10,9 @@
 namespace noises
 {
 
-CueModelItem::CueModelItem( const QList< QVariant >& item_data, CueModelItem* parent_item )
+CueModelItem::CueModelItem(
+	const QList< QVariant >& item_data,
+	CueModelItem* parent_item )
 :
 	QObject(),
 	m_item_data( item_data ),

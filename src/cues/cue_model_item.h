@@ -4,6 +4,7 @@
 
 #include <QList>
 #include <QVariant>
+
 #include <QJsonObject>
 
 #include "types.h"
@@ -14,7 +15,9 @@ namespace noises
 	{
 		Q_OBJECT
 	public:
-		CueModelItem( const QList< QVariant >& item_data, CueModelItem* parent_item = 0 );
+		CueModelItem(
+			const QList< QVariant >& item_data,
+			CueModelItem* parent_item = nullptr );
 
 		virtual ~CueModelItem();
 

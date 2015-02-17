@@ -1,4 +1,6 @@
 
+#include <QPixmap>
+
 #include <utils/time.h>
 
 #include "audio_cue_model_item.h"

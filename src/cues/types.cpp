@@ -17,10 +17,11 @@ namespace noises
 			return "Wait";
 		case CueType_Group:
 			return "Group";
-		default:
-			assert( false && "Unhandled cue type" );
-			break;
+		case CueType_None:
+			return "None";
 		}
+
+		return "";
 	}
 
 	CueType stringToType( const QString& type )

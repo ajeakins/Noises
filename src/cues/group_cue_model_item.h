@@ -1,9 +1,6 @@
 #pragma once
 
-#include <iostream>
-
 #include "cue_model_item.h"
-#include "types.h"
 
 namespace noises
 {
@@ -12,7 +9,7 @@ namespace noises
 	public:
 		GroupCueModelItem(
 			const QList< QVariant >& item_data,
-			CueModelItem* parent_item = 0 );
+			CueModelItem* parent_item = nullptr );
 
 		virtual ~GroupCueModelItem();
 

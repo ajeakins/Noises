@@ -17,9 +17,7 @@ ControlCueModelItem::~ControlCueModelItem()
 {}
 
 void ControlCueModelItem::execute() const
-{
-	std::cout << "control cue" << std::endl;
-}
+{}
 
 QVariant ControlCueModelItem::getIcon() const
 {

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <iostream>
-
 #include <QTime>
 
 #include <audio/player.h>
@@ -40,7 +38,7 @@ namespace noises
 	public:
 		AudioCueModelItem(
 			const QList< QVariant >& item_data,
-			CueModelItem* parent_item = 0 );
+			CueModelItem* parent_item = nullptr );
 
 		virtual ~AudioCueModelItem();
 

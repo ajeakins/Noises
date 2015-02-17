@@ -17,9 +17,7 @@ WaitCueModelItem::~WaitCueModelItem()
 {}
 
 void WaitCueModelItem::execute() const
-{
-	std::cout << "wait cue" << std::endl;
-}
+{}
 
 QVariant WaitCueModelItem::getIcon() const
 {
