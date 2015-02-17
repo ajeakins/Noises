@@ -15,10 +15,16 @@ Longer term:
   - Wait should be easy
   - Groups, need drag and drop and play behaviour
   - Control, hard...
+- show mode
+  - disable editing
+  - giant warning on loss of focus
 
 Dreams:
 - Audio waveform preview, great for setting start and end, auto find start/end by detecting silence?
-- EQ, reverb.
+- In order of easyness... High/lowpas, EQ, reverb.
+- Surround panning.
+- Timing localisations.
+- GUI for configuring speaker locations?
 
 Attributions:
 icon source: "Open Iconic — www.useiconic.com/open"
