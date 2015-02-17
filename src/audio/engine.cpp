@@ -102,7 +102,7 @@ void Engine::setup()
 		NULL, /* no input */
 		&outputParameters,
 		SAMPLE_RATE,
-		FRAMES_PER_BUFFER,
+		paFramesPerBufferUnspecified /*FRAMES_PER_BUFFER*/,
 		paNoFlag,
 		Engine::audioCallback,
 		&m_playback_data );
