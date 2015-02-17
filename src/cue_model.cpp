@@ -122,6 +122,11 @@ CueModelItem* CueModel::createCue( CueType type )
 			break;
 	}
 
+	connect(
+		item, &CueModelItem::dataChanged,
+		this, &CueModel::itemDataChanged
+		);
+
 	return item;
 }
 

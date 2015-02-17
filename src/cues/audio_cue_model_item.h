@@ -60,11 +60,19 @@ namespace noises
 
 		void writeSettings( QJsonObject& settings ) const;
 
+		// Shouldn't need this
+		void updatePlayer();
+
 	protected:
 		QVariant getIcon() const;
 
+	private Q_SLOTS:
+		void playerTimeChanged( const QTime& time );
+
 	private:
 		AudioCueSettings m_settings;
+		QTime m_duration;
+		QString m_time_format;
 
 		audio::Player::Ptr m_player;
 	};

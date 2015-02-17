@@ -22,10 +22,6 @@
 namespace noises
 {
 
-static const QString secondTimeFormat = "ss.zzz 's'";
-static const QString minuteTimeFormat = "mm'm' ss.zzz 's'";
-static const QString hourTimeFormat = "hh'h' mm'm' ss.zzz";
-
 AudioCueDialog::AudioCueDialog(
 	AudioCueModelItem* cue,
 	QDataWidgetMapper* mapper,
@@ -81,19 +77,7 @@ void AudioCueDialog::onFilenameChanged()
 void AudioCueDialog::resetTimes()
 {
 	m_end_time->setTime( m_duration );
-
-	if ( m_duration.hour() > 0 )
-	{
-		setTimeDisplayFormat( hourTimeFormat );
-	}
-	else if ( m_duration.minute() > 0 )
-	{
-		setTimeDisplayFormat( minuteTimeFormat );
-	}
-	else
-	{
-		setTimeDisplayFormat( secondTimeFormat );
-	}
+	setTimeDisplayFormat( utils::timeFormat( m_duration ) );
 }
 
 void AudioCueDialog::volumeChanged()
@@ -122,6 +106,8 @@ void AudioCueDialog::writeSettings() const
 	settings.end_fade = m_fade_out_time->time();
 
 	m_matrix->writeSettings( settings.levels );
+
+	m_cue->updatePlayer();
 }
 
 void AudioCueDialog::readSettings()
@@ -227,7 +213,7 @@ void AudioCueDialog::createCueWidgets()
 	QLabel* fade_out_label = new QLabel( "Fade out:", this );
 	m_fade_out_time = new QTimeEdit( this );
 
-	setTimeDisplayFormat( secondTimeFormat );
+	setTimeDisplayFormat( utils::defaultTimeFormat() );
 
 	m_reset_times_button = new QPushButton( this );
 	m_reset_times_button->setIcon( QIcon( ":images/reload_32x32.png") );
