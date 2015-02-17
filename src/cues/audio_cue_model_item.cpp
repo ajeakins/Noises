@@ -1,4 +1,6 @@
 
+#include <utils/time.h>
+
 #include "audio_cue_model_item.h"
 
 namespace noises
@@ -7,11 +9,30 @@ namespace noises
 void AudioCueSettings::readSettings( const QJsonObject& value )
 {
 	file_name = value["file_name"].toString( "" );
+
+	start_time = utils::timeFromMsecs( value["start_time"].toInt() );
+	end_time = utils::timeFromMsecs( value["end_time"].toInt() );
+
+	start_fade = utils::timeFromMsecs( value["start_fade"].toInt() );
+	end_fade = utils::timeFromMsecs( value["end_fade"].toInt() );
+
+	QJsonObject levelSettings = value["levels"].toObject();
+	levels.readSettings( levelSettings );
 }
 
 void AudioCueSettings::writeSettings( QJsonObject& value ) const
 {
 	value["file_name"] = file_name;
+
+	value["start_time"] = utils::timeToMsecs( start_time );
+	value["end_time"] = utils::timeToMsecs( end_time );
+
+	value["start_fade"] = utils::timeToMsecs( start_fade );
+	value["end_fade"] = utils::timeToMsecs( end_fade );
+
+	QJsonObject levelSettings;
+	levels.writeSettings( levelSettings );
+	value["levels"] = levelSettings;
 }
 
 AudioCueModelItem::AudioCueModelItem(

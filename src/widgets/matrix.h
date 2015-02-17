@@ -9,6 +9,8 @@
 #include <QVector>
 #include <QWidget>
 
+#include <QJsonObject>
+
 namespace noises
 {
 namespace widgets
@@ -59,6 +61,10 @@ namespace widgets
 
 		// to determine mute/stopped state
 		bool isMinimumVolume( float volume ) const;
+
+		void readSettings( const QJsonObject& settings );
+
+		void writeSettings( QJsonObject& settings ) const;
 
 	private:
 		void initialiseVolumes();

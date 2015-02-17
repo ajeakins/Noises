@@ -3,6 +3,9 @@
 
 #include <QLabel>
 
+#include <QJsonArray>
+#include <QJsonValue>
+
 #include "volume_dial.h"
 
 #include "matrix.h"
@@ -106,6 +109,48 @@ void MatrixSettings::initialiseVolumes()
 			m_volumes[i][j] = m_minimum_value;
 		}
 	}
+}
+
+void MatrixSettings::readSettings( const QJsonObject& settings )
+{
+	m_inputs = settings["inputs"].toInt();
+	m_outputs = settings["outputs"].toInt();
+
+	const QJsonArray volumes = settings["volumes"].toArray();
+
+	m_volumes.resize( m_inputs );
+	for ( unsigned int i = 0; i != m_inputs; ++i )
+	{
+		m_volumes[i].resize( m_outputs );
+		const QJsonArray data = volumes[i].toArray();
+
+		for ( unsigned int j = 0; j != m_outputs; ++j )
+		{
+			m_volumes[i][j] = data[j].toDouble();
+		}
+	}
+}
+
+void MatrixSettings::writeSettings( QJsonObject& settings ) const
+{
+	settings.insert( "inputs", ( int )m_inputs );
+	settings.insert( "outputs", ( int )m_outputs );
+
+	QJsonArray volumes;
+
+	for ( unsigned int i = 0; i != m_inputs; ++i )
+	{
+		QJsonArray data;
+
+		for ( unsigned int j = 0; j != m_outputs; ++j )
+		{
+			data.push_back( ( double )m_volumes[i][j] );
+		}
+
+		volumes.push_back( data );
+	}
+
+	settings.insert( "volumes", volumes );
 }
 
 // Matrix Widgets
