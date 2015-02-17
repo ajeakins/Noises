@@ -65,6 +65,7 @@ namespace noises
 		widgets::FileLineEdit* m_file_edit;
 
 		QPushButton* m_play_button;
+		QPushButton* m_pause_button;
 		QPushButton* m_stop_button;
 
 		QTimeEdit* m_remaining_time;

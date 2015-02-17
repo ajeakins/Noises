@@ -184,6 +184,12 @@ void Player::start()
 	Q_EMIT started( sharedFromThis() );
 }
 
+void Player::pause()
+{
+	m_is_playing = false;
+	Q_EMIT stopped();
+}
+
 void Player::stop()
 {
 	m_is_playing = false;

@@ -44,6 +44,8 @@ namespace audio
 
 		void start();
 
+		void pause();
+
 		void stop();
 
 		bool isPlaying() const

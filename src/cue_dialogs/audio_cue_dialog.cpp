@@ -173,12 +173,19 @@ void AudioCueDialog::createCueWidgets()
 	m_play_button = new QPushButton( this );
 	m_play_button->setIcon( QIcon( ":images/play_32x32.png" ) );
 
+	m_pause_button = new QPushButton( this );
+	m_pause_button->setIcon( QIcon( ":images/pause_32x32.png" ) );
+
 	m_stop_button = new QPushButton( this );
 	m_stop_button->setIcon( QIcon( ":images/stop_32x32.png" ) );
 
 	connect(
 		m_play_button, &QPushButton::released,
 		[this](){ m_player->start(); } );
+
+	connect(
+		m_pause_button, &QPushButton::released,
+		[this](){ m_player->pause(); } );
 
 	connect(
 		m_stop_button, &QPushButton::released,
@@ -195,6 +202,7 @@ void AudioCueDialog::createCueWidgets()
 	QHBoxLayout* preview_buttons = new QHBoxLayout;
 	preview_buttons->setContentsMargins( 0, 0, 0, 0 );
 	preview_buttons->addWidget( m_play_button );
+	preview_buttons->addWidget( m_pause_button );
 	preview_buttons->addWidget( m_stop_button );
 	preview_buttons->addStretch();
 
