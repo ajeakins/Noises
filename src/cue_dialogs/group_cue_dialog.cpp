@@ -1,12 +1,5 @@
 
-#include <QApplication>
-#include <QDataWidgetMapper>
-#include <QDialogButtonBox>
-#include <QDoubleSpinBox>
-#include <QGroupBox>
-#include <QLabel>
-#include <QLayout>
-#include <QStyle>
+#include <cues/group_cue_model_item.h>
 
 #include "group_cue_dialog.h"
 

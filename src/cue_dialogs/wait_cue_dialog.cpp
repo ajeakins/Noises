@@ -1,12 +1,10 @@
 
-#include <QApplication>
-#include <QDataWidgetMapper>
-#include <QDialogButtonBox>
 #include <QDoubleSpinBox>
 #include <QGroupBox>
 #include <QLabel>
 #include <QLayout>
-#include <QStyle>
+
+#include <cues/wait_cue_model_item.h>
 
 #include "wait_cue_dialog.h"
 

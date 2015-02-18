@@ -1,13 +1,4 @@
 
-#include <QApplication>
-#include <QDataWidgetMapper>
-#include <QDialogButtonBox>
-#include <QDoubleSpinBox>
-#include <QGroupBox>
-#include <QLabel>
-#include <QLayout>
-#include <QStyle>
-
 #include "control_cue_dialog.h"
 
 namespace noises

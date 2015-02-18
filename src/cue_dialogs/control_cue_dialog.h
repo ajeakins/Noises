@@ -1,13 +1,13 @@
 #pragma once
 
-#include <cues/control_cue_model_item.h>
-
 #include "cue_dialog.h"
 
 class QDataWidgetMapper;
 
 namespace noises
 {
+	class ControlCueModelItem;
+
 	class ControlCueDialog: public CueDialog
 	{
 		Q_OBJECT
@@ -16,7 +16,7 @@ namespace noises
 		ControlCueDialog(
 			ControlCueModelItem* cue,
 			QDataWidgetMapper* mapper,
-			QWidget* parent = 0 );
+			QWidget* parent = nullptr );
 
 		virtual ~ControlCueDialog();
 

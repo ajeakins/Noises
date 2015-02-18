@@ -2,8 +2,6 @@
 
 #include <audio/player.h>
 
-#include <cues/audio_cue_model_item.h>
-
 #include "cue_dialog.h"
 
 class QTimeEdit;
@@ -11,6 +9,8 @@ class QDataWidgetMapper;
 
 namespace noises
 {
+	class AudioCueModelItem;
+
 	namespace widgets
 	{
 		class Matrix;
@@ -25,7 +25,7 @@ namespace noises
 		AudioCueDialog(
 			AudioCueModelItem* cue,
 			QDataWidgetMapper* mapper,
-			QWidget* parent = 0 );
+			QWidget* parent = nullptr );
 
 		virtual ~AudioCueDialog();
 

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cues/wait_cue_model_item.h>
-
 #include "cue_dialog.h"
 
 class QDataWidgetMapper;
@@ -9,6 +7,8 @@ class QDoubleSpinBox;
 
 namespace noises
 {
+	class WaitCueModelItem;
+
 	class WaitCueDialog: public CueDialog
 	{
 		Q_OBJECT
@@ -17,7 +17,7 @@ namespace noises
 		WaitCueDialog(
 			WaitCueModelItem* cue,
 			QDataWidgetMapper* mapper,
-			QWidget* parent = 0 );
+			QWidget* parent = nullptr );
 
 		virtual ~WaitCueDialog();
 

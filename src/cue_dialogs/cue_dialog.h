@@ -1,7 +1,5 @@
 #pragma once
 
-#include <iostream>
-
 #include <QDialog>
 #include <QLineEdit>
 
@@ -15,7 +13,9 @@ namespace noises
 		Q_OBJECT
 
 	public:
-		CueDialog( QDataWidgetMapper* mapper, QWidget* parent = 0 );
+		CueDialog(
+			QDataWidgetMapper* mapper,
+			QWidget* parent = nullptr );
 
 		virtual ~CueDialog();
 

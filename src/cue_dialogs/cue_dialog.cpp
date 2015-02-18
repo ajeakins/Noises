@@ -14,7 +14,9 @@
 namespace noises
 {
 
-CueDialog::CueDialog( QDataWidgetMapper* mapper, QWidget* parent )
+CueDialog::CueDialog(
+	QDataWidgetMapper* mapper,
+	QWidget* parent )
 :
 	QDialog( parent ),
 	m_mapper( mapper )

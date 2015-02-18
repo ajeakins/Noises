@@ -1,16 +1,14 @@
 
-#include <QApplication>
 #include <QDataWidgetMapper>
-#include <QDebug>
-#include <QDialogButtonBox>
 #include <QFileInfo>
 #include <QTimeEdit>
 #include <QGroupBox>
 #include <QLabel>
 #include <QLayout>
-#include <QStyle>
 
 #include <audio/manager.h>
+
+#include <cues/audio_cue_model_item.h>
 
 #include <utils/time.h>
 

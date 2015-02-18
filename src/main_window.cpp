@@ -16,6 +16,13 @@
 #include <QJsonObject>
 
 #include <utils/cue.h>
+
+#include <cues/audio_cue_model_item.h>
+#include <cues/control_cue_model_item.h>
+#include <cues/cue_model_item.h>
+#include <cues/group_cue_model_item.h>
+#include <cues/wait_cue_model_item.h>
+
 #include <cue_dialogs/audio_cue_dialog.h>
 #include <cue_dialogs/control_cue_dialog.h>
 #include <cue_dialogs/group_cue_dialog.h>
