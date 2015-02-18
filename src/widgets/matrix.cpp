@@ -260,7 +260,7 @@ void Matrix::writeSettings( MatrixSettings& settings ) const
 	settings.setStereoLink( m_link->isChecked() );
 }
 
-void Matrix::valueChanged( float value )
+void Matrix::valueChanged( float /*value*/ )
 {
 	if ( m_link->isChecked() )
 	{

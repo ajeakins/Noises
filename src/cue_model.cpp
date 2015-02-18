@@ -300,8 +300,8 @@ QMimeData* CueModel::mimeData( const QModelIndexList& indexes ) const
 bool CueModel::dropMimeData(
 	const QMimeData* data,
 	Qt::DropAction action,
-	int row,
-	int column,
+	int /*row*/,
+	int /*column*/,
 	const QModelIndex& parent_index )
 {
 	if ( action == Qt::IgnoreAction )

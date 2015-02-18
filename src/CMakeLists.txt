@@ -22,7 +22,14 @@ INCLUDE_DIRECTORIES(
 
 SET( CMAKE_CXX_FLAGS ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS} )
 
-ADD_DEFINITIONS( ${QT_DEFINITIONS} -Wall -Werror -std=c++11 -O2 )
+ADD_DEFINITIONS(
+	${QT_DEFINITIONS}
+	-Wall
+	-Wextra
+	-Wpedantic
+	-Werror
+	-std=c++11
+	-O2 )
 
 QT5_ADD_RESOURCES( noises_RESOURCES_RCC ${noises_RESOURCES} )
 

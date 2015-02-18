@@ -11,6 +11,8 @@ namespace widgets
 {
 
 FileLineEdit::FileLineEdit( QWidget* parent )
+:
+	QWidget( parent )
 {
 	createWidgets();
 }

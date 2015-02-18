@@ -51,8 +51,7 @@ namespace noises
 
 	class PreferencesDialog: public QDialog
 	{
-		Q_OBJECT;
-
+		Q_OBJECT
 	public:
 		PreferencesDialog(
 			Preferences& preferences,
