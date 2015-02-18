@@ -18,5 +18,6 @@
 	<file>images/reload_32x32.png</file>
 	<file>images/folder_16x16.png</file>
 	<file>images/folder_32x32.png</file>
+	<file>images/noises_icon_64x64.png</file>
 </qresource>
 </RCC>
