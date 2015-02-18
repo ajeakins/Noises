@@ -46,6 +46,8 @@ MainWindow::MainWindow()
 	createToolBars();
 	createStatusBar();
 
+	loadSettings();
+
 	resize( 600, 500 );
 }
 
@@ -61,7 +63,19 @@ QDataWidgetMapper* MainWindow::getDataMapper()
 void MainWindow::closeEvent( QCloseEvent* event )
 {
 	// check state and confirm
+	saveSettings();
+
 	event->accept();
+}
+
+void MainWindow::saveSettings()
+{
+	QSettings settings( "Noises", "Noises" );
+}
+
+void MainWindow::loadSettings()
+{
+	QSettings settings( "Noises", "Noises" );
 }
 
 void MainWindow::newShow()

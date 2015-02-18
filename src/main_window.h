@@ -55,6 +55,9 @@ namespace noises
 		void createToolBars();
 		void createStatusBar();
 
+		void saveSettings();
+		void loadSettings();
+
 		QDataWidgetMapper* getDataMapper();
 
 		CueModelItem* createCue( CueType type );
