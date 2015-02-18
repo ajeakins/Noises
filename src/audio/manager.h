@@ -34,6 +34,11 @@ namespace audio
 
 		void stop();
 
+	Q_SIGNALS:
+		void started();
+
+		void stopped();
+
 	private Q_SLOTS:
 		void playerStarted( Player::Ptr player );
 

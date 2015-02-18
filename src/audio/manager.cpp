@@ -25,6 +25,9 @@ Manager::Manager()
 	connect(
 		m_engine, &Engine::finished,
 		m_thread, &QThread::quit );
+	connect(
+		m_engine, &Engine::finished,
+		[this](){ Q_EMIT stopped(); } );
 }
 
 Manager::~Manager()
@@ -64,6 +67,7 @@ void Manager::playerStarted( Player::Ptr player )
 	if ( !m_thread->isRunning() )
 	{
 		m_thread->start();
+		Q_EMIT started();
 	}
 }
 
