@@ -1,7 +1,5 @@
-
 #pragma once
 
-#include <QDebug>
 #include <QObject>
 #include <QSharedPointer>
 #include <QTime>

@@ -10,8 +10,8 @@
 
 #include "engine.h"
 
-#define SAMPLE_RATE   (44100)
-#define FRAMES_PER_BUFFER  (512)
+#define SAMPLE_RATE			(44100)
+#define FRAMES_PER_BUFFER	(512)
 
 namespace noises
 {
@@ -99,10 +99,10 @@ void Engine::setup()
 
 	error = Pa_OpenStream(
 		&m_stream,
-		NULL, /* no input */
+		NULL, /*no input*/
 		&outputParameters,
 		SAMPLE_RATE,
-		paFramesPerBufferUnspecified /*FRAMES_PER_BUFFER*/,
+		paFramesPerBufferUnspecified /*frames per buffer*/,
 		paNoFlag,
 		Engine::audioCallback,
 		&m_playback_data );

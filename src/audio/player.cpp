@@ -1,7 +1,6 @@
 
 #include <assert.h>
 
-#include <QDebug>
 #include <QMessageBox>
 #include <QTime>
 
@@ -201,7 +200,7 @@ void Player::addData(
 		// send time update
 		if ( m_pos > m_last_pos + m_signal_interval )
 		{
-			// Recievers should be in another thread so this should not block
+			// recievers should be in another thread so this should not block
 			Q_EMIT timeUpdated( timeFromFrames( m_pos / m_audio_info.channels ) );
 			m_last_pos = m_pos;
 		}
@@ -209,7 +208,7 @@ void Player::addData(
 		// reached the end of the track
 		if ( m_pos == m_length )
 		{
-			Q_EMIT timeUpdated( timeFromFrames( m_pos / m_audio_info.channels ) );
+			Q_EMIT timeUpdated( QTime( 0, 0, 0 ) );
 
 			m_is_playing = false;
 			m_pos = m_last_pos = 0;

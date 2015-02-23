@@ -16,7 +16,7 @@ namespace audio
 	{
 		Q_OBJECT
 	public:
-		Engine( QObject* parent = 0 );
+		Engine( QObject* parent = nullptr );
 
 		~Engine();
 

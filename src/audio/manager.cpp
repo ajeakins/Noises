@@ -1,6 +1,4 @@
 
-#include <iostream>
-
 #include <QThread>
 
 #include "engine.h"
@@ -11,7 +9,9 @@ namespace noises
 namespace audio
 {
 
-Manager::Manager()
+Manager::Manager( QObject* parent )
+:
+	QObject( parent )
 {
 	m_thread = new QThread();
 	m_engine = new Engine();

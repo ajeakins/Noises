@@ -69,7 +69,9 @@ void AudioCueDialog::onFilenameChanged()
 
 	m_player->setFilename( filepath );
 	m_duration = m_player->getDuration();
+
 	resetTimes();
+	playerTimeChanged( QTime( 0, 0, 0 ) );
 }
 
 void AudioCueDialog::resetTimes()

@@ -1,16 +1,16 @@
 #pragma once
 
 /**
- * Manages and set of Players, players are requested
- * by users who then interact with them via their member
- * methods. The player keeps track of it's parent which is
- * imutable and notifies the Manager when its parent is delted.
+ * The manager is the hub for the interaction with the audio system.
+ *
+ * The manages acts a factory for players, players are requested
+ * by users who then interact with them via their member methods.
+ * The manager listens to signals from these member methods and
+ * manages the interaction with the audio engine.
  */
 
 #include <QObject>
 #include <QList>
-
-#include <portaudio.h>
 
 #include "player.h"
 
@@ -26,7 +26,7 @@ namespace audio
 	{
 		Q_OBJECT
 	public:
-		Manager();
+		Manager( QObject* parent = nullptr );
 
 		~Manager();
 
