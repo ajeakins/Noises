@@ -37,8 +37,6 @@ namespace audio
 	private:
 		void setup();
 
-		static void streamFinished( void* userData );
-
 		static int audioCallback(
 			const void *inputBuffer,
 			void *outputBuffer,

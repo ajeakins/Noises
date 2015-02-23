@@ -134,60 +134,29 @@ void Engine::setup()
 	}
 }
 
-void Engine::streamFinished( void* /*userData*/ )
-{
-	std::cout << "Stream Completed:" << std::endl;
-}
-
 int Engine::audioCallback(
 	const void* /*inputBuffer*/,
-	void *outputBuffer,
+	void* outputBuffer,
 	unsigned long framesPerBuffer,
 	const PaStreamCallbackTimeInfo* /*timeInfo*/,
 	PaStreamCallbackFlags /*statusFlags*/,
-	void *userData )
+	void* userData )
 {
-	typedef QSet< Player::Ptr > PlayerSet;
-
 	PlaybackData* playback_data = ( PlaybackData* )userData;
-	float* out = ( float* )outputBuffer;
-
 	QMutexLocker( &playback_data->m_lock );
 
-	PlayerSet players_to_remove;
-
-	// make sure the buffer is zeroed
+	float* out = ( float* )outputBuffer;
 	std::fill( out, out + ( framesPerBuffer * m_channel_count ), 0.0f );
 
-	// add each players data to the buffer
-	for( unsigned long i = 0; i != framesPerBuffer; ++i )
+	QMutableListIterator< Player::Ptr > itr( playback_data->m_players );
+	while ( itr.hasNext() )
 	{
-		for ( int j = 0; j != playback_data->m_players.size(); ++j )
+		Player::Ptr player = itr.next();
+		player->addData( out, framesPerBuffer, m_channel_count );
+
+		if ( !player->isPlaying() )
 		{
-			Player::Ptr player = playback_data->m_players[j];
-			player->addData( out, m_channel_count );
-
-			if ( !player->isPlaying() )
-			{
-				players_to_remove.insert( player );
-			}
-		}
-
-		out += m_channel_count;
-	}
-
-
-	// Cleanup any players that have finished
-	if ( players_to_remove.size() == playback_data->m_players.size() )
-	{
-		playback_data->m_players.clear();
-	}
-	else if ( !players_to_remove.isEmpty() )
-	{
-		PlayerSet::const_iterator itr = players_to_remove.begin();
-		for ( ; itr != players_to_remove.end(); ++itr )
-		{
-			playback_data->m_players.removeOne( *itr );
+			itr.remove();
 		}
 	}
 

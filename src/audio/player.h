@@ -75,7 +75,10 @@ namespace audio
 
 		QTime timeFromFrames( int frames ) const;
 
-		inline void addData( float* audio_data, int channels );
+		void addData(
+			float* audio_data,
+			int frames,
+			int channels );
 
 	private:
 		QObject* m_parent;
@@ -100,49 +103,6 @@ namespace audio
 		// current number of outputs we have data for
 		int m_outputs;
 	};
-
-
-	/**
-	 * Add the players data for it's current position to
-	 * the audio buffer. The buffer is assumed to be managed
-	 * by the engine so the player.
-	 */
-
-	void Player::addData( float* audio, int channels )
-	{
-		if ( !m_is_playing )
-		{
-			return;
-		}
-
-		for( int output = 0; output != channels; ++output )
-		{
-			for( int input = 0; input != m_audio_info.channels; ++input )
-			{
-				audio[output] += getVolume( input, output ) * m_audio_data[m_pos + input];
-			}
-		}
-
-		// increment to next frame
-		m_pos += m_audio_info.channels;
-
-		// send time update
-		if ( m_pos > m_last_pos + m_signal_interval )
-		{
-			// Recievers should be in another thread so this should not block
-			Q_EMIT timeUpdated( timeFromFrames( m_pos / m_audio_info.channels ) );
-			m_last_pos = m_pos;
-		}
-
-		// reached the end of the track
-		if ( m_pos == m_length )
-		{
-			Q_EMIT timeUpdated( timeFromFrames( m_pos / m_audio_info.channels ) );
-
-			m_is_playing = false;
-			m_pos = m_last_pos = 0;
-		}
-	}
 
 } /* namespace audio */
 } /* namespace noises */
