@@ -40,6 +40,7 @@ Player::Player( QObject* parent )
 Player::~Player()
 {
 	free( m_audio_data );
+	m_audio_data = nullptr;
 }
 
 void Player::setFilename( const QString& filename )
@@ -54,6 +55,11 @@ void Player::setFilename( const QString& filename )
 
 void Player::setVolume( const widgets::MatrixSettings& settings )
 {
+	if ( !m_audio_data )
+	{
+		return;
+	}
+
 	m_outputs = Application::getPreferences().getOutputCount();
 
 	for ( int i = 0; i != m_audio_info.channels; ++i )
@@ -77,7 +83,10 @@ void Player::setVolume( const widgets::MatrixSettings& settings )
 
 float Player::getVolume( int input, int output ) const
 {
-	if ( input >= m_audio_info.channels || output >= m_outputs )
+	if (
+		!m_audio_data ||
+		input >= m_audio_info.channels ||
+		output >= m_outputs )
 	{
 		return 0.0f;
 	}
@@ -98,12 +107,17 @@ QTime Player::timeFromFrames( int frames ) const
 {
 	QTime time(0, 0, 0);
 
+	if ( !m_audio_data )
+	{
+		return time;
+	}
+
 	// calculate in floating point
 	float timeInMSecs = ( float )frames;
 	timeInMSecs *= 1000.0f;
 	timeInMSecs /= m_audio_info.samplerate;
 
-	time = time.addMSecs( (int)timeInMSecs );
+	time = time.addMSecs( ( int )timeInMSecs );
 
 	return time;
 }
@@ -116,10 +130,7 @@ void Player::readData()
 	std::string data = m_filename.toStdString();
 	SNDFILE* file = sf_open( data.c_str(), SFM_READ, &m_audio_info );
 
-	// emit time updated every 100ms
-	m_signal_interval = m_audio_info.samplerate / ( 100 * m_audio_info.channels );
-
-	if (!file)
+	if ( !file )
 	{
 		QString title = "Unable to Open File";
 		QString message = "Unable to open audio file [%1].\n\n %2";
@@ -155,6 +166,9 @@ void Player::readData()
 		}
 		m_audio_data = new_data;
 	}
+
+	// emit time updated every 100ms
+	m_signal_interval = m_audio_info.samplerate / ( 100 * m_audio_info.channels );
 
 	sf_readf_float( file, m_audio_data, m_audio_info.frames );
 	sf_close( file );
@@ -242,7 +256,7 @@ void Player::stop()
 {
 	m_is_playing = false;
 	m_pos = m_last_pos = 0;
-	Q_EMIT timeUpdated( timeFromFrames( 0 ) );
+	Q_EMIT timeUpdated( QTime( 0, 0, 0 ) );
 	Q_EMIT stopped();
 }
 

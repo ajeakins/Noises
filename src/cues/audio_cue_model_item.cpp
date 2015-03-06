@@ -73,15 +73,23 @@ void AudioCueModelItem::updatePlayer()
 	m_duration = m_player->getDuration();
 
 	m_time_format = utils::timeFormat( m_duration );
-	playerTimeChanged( QTime() );
+	playerTimeChanged( QTime( 0, 0, 0 ) );
 }
 
 void AudioCueModelItem::playerTimeChanged( const QTime& time )
 {
-	QTime remaining = utils::subtract( m_duration, time );
+	QTime remaining;
+	if ( utils::isZero( m_duration ) )
+	{
+		remaining = QTime( 0, 0, 0 );
+	}
+	else
+	{
+		remaining = utils::subtract( m_duration, time );
+	}
 
-	setData( 3, time.toString( m_time_format ) );
-	setData( 4, remaining.toString( m_time_format ) );
+	setData( 3, remaining.toString( m_time_format ) );
+	setData( 4, time.toString( m_time_format ) );
 
 	Q_EMIT dataChanged( this );
 }

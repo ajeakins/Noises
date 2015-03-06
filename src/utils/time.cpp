@@ -31,10 +31,24 @@ QString defaultTimeFormat()
 	return secondTimeFormat;
 }
 
+bool isZero( const QTime& time )
+{
+	if (
+		time.msec() != 0 ||
+		time.second() != 0 ||
+		time.minute() != 0 ||
+		time.hour() != 0
+		)
+	{
+		return false;
+	}
+
+	return true;
+}
+
 int timeToMsecs( const QTime& time )
 {
-	int msecs = 0;
-	msecs += time.msec();
+	int msecs = time.msec();
 	msecs += time.second() * 1000;
 	msecs += time.minute() * 60 * 1000;
 	msecs += time.hour() * 60 * 60 * 1000;

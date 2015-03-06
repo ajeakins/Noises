@@ -65,7 +65,9 @@ void AudioCueDialog::onFilenameChanged()
 	QString filepath = m_file_edit->text();
 	QFileInfo file_info( filepath );
 
-	getEditor( 1 )->setText( file_info.baseName() );
+	QString cue_name = file_info.baseName();
+	cue_name.replace( "_", " " );
+	getEditor( 1 )->setText( cue_name );
 
 	m_player->setFilename( filepath );
 	m_duration = m_player->getDuration();
@@ -123,8 +125,10 @@ void AudioCueDialog::readSettings()
 	m_fade_out_time->setTime( settings.end_fade );
 
 	m_matrix->readSettings( settings.levels );
-	// update output count
 	m_matrix->setOutputs( Application::getPreferences().getOutputCount() );
+
+	m_player->setFilename( settings.file_name );
+	volumeChanged();
 }
 
 void AudioCueDialog::createCueWidgets()

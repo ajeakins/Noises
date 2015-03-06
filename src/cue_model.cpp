@@ -337,8 +337,11 @@ bool CueModel::dropMimeData(
 
 void CueModel::itemDataChanged( CueModelItem* item )
 {
-	QModelIndex index = createIndex( 0, 0, item );
-	Q_EMIT dataChanged( index, index );
+	// TODO need to compute row relative to parent
+	int row = item->parent()->row( item );
+	QModelIndex from = this->index( row, 0 );
+	QModelIndex to = this->index( row, item->columnCount() );
+	Q_EMIT dataChanged( from, to );
 }
 
 void CueModel::readSettings( const QJsonArray& settings )

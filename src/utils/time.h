@@ -12,6 +12,8 @@ namespace utils
 
 	QString defaultTimeFormat();
 
+	bool isZero( const QTime& time );
+
 	// conversions
 
 	int timeToMsecs( const QTime& time );
