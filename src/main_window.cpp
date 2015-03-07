@@ -32,6 +32,7 @@
 #include "main_window.h"
 #include "cue_model.h"
 #include "preferences.h"
+#include "progress_delegate.h"
 
 namespace noises
 {
@@ -366,6 +367,10 @@ void MainWindow::createWidgets()
 	m_cue_list->setDragDropMode( QAbstractItemView::InternalMove );
 	m_cue_list->setAcceptDrops( true );
 	m_cue_list->setDropIndicatorShown( true );
+
+	m_progress_delegate = new ProgressDelegate();
+	m_cue_list->setItemDelegateForColumn( 3, m_progress_delegate );
+	m_cue_list->setItemDelegateForColumn( 4, m_progress_delegate );
 
 	connect(
 		m_cue_list, SIGNAL( doubleClicked( QModelIndex ) ),

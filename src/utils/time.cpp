@@ -69,5 +69,10 @@ QTime subtract( const QTime& lhs, const QTime& rhs )
 	return time;
 }
 
+float percentage( const QTime& numerator, const QTime& denominator )
+{
+	return ( ( float )timeToMsecs( numerator ) ) * 100.0f / ( ( float )timeToMsecs( denominator ) );
+}
+
 } /* namspace noises */
 } /* namespace utils */

@@ -14,6 +14,7 @@ namespace noises
 {
 	class CueModel;
 	class CueModelItem;
+	class ProgressDelegate;
 
 	class MainWindow : public QMainWindow
 	{
@@ -67,6 +68,8 @@ namespace noises
 		QTreeView* m_cue_list;
 		CueModel* m_cue_model;
 		QString m_current_show_file;
+
+		ProgressDelegate* m_progress_delegate;
 
 		// Menus
 		QMenu* m_file_menu;

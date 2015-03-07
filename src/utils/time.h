@@ -24,5 +24,7 @@ namespace utils
 
 	QTime subtract( const QTime& lhs, const QTime& rhs );
 
+	float percentage( const QTime& numerator, const QTime& denominator );
+
 } /* namspace noises */
 } /* namespace utils */

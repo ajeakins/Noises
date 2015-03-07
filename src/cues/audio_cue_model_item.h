@@ -58,6 +58,15 @@ namespace noises
 
 		void writeSettings( QJsonObject& settings ) const;
 
+		// TODO: move these up class hiearchy, should be shared amoungst all cues
+		// that have the concept of duration
+
+		float getProgress() const;
+
+		const QString& getTimeFormat() const { return m_time_format; }
+
+		const QTime& getDuration() const { return m_duration; }
+
 		// Shouldn't need this
 		void updatePlayer();
 
