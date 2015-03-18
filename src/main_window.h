@@ -32,6 +32,7 @@ namespace noises
 		void saveShow();
 		void saveShowAs();
 		void openShow();
+		void openShow( const QString& file_name );
 
 		void editPreferences();
 
@@ -59,11 +60,15 @@ namespace noises
 		void saveSettings();
 		void loadSettings();
 
+		void updateWindowTitle();
+
 		QDataWidgetMapper* getDataMapper();
 
 		CueModelItem* createCue( CueType type );
 
 	private:
+		QString m_current_file_name;
+
 		// Widgets
 		QTreeView* m_cue_list;
 		CueModel* m_cue_model;

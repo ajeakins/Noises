@@ -39,8 +39,6 @@ namespace noises
 
 MainWindow::MainWindow()
 {
-	setWindowTitle( "Noises" );
-
 	createWidgets();
 	createActions();
 	createMenus();
@@ -48,6 +46,8 @@ MainWindow::MainWindow()
 	createStatusBar();
 
 	loadSettings();
+
+	updateWindowTitle();
 
 	resize( 600, 500 );
 }
@@ -72,17 +72,55 @@ void MainWindow::closeEvent( QCloseEvent* event )
 void MainWindow::saveSettings()
 {
 	QSettings settings( "Noises", "Noises" );
+	settings.setValue( "filename", m_current_file_name );
 }
 
 void MainWindow::loadSettings()
 {
 	QSettings settings( "Noises", "Noises" );
+	QString file_name = settings.value( "filename", "" ).toString();
+	if ( !file_name.isEmpty() )
+	{
+		openShow( file_name );
+	}
+}
+
+void MainWindow::updateWindowTitle()
+{
+	QString title = "Noises";
+	if ( !m_current_file_name.isEmpty() )
+	{
+		title += " - ";
+		title += m_current_file_name;
+	}
+
+	setWindowTitle( title );
 }
 
 void MainWindow::newShow()
 {}
 
 void MainWindow::saveShow()
+{
+	if ( m_current_file_name.isEmpty() )
+	{
+		saveShowAs();
+	}
+
+	QJsonArray cues;
+	m_cue_model->writeSettings( cues );
+
+	QJsonObject root;
+	root["cues"] = cues;
+
+	QFile file( m_current_file_name ); // scoped
+	file.open( QIODevice::WriteOnly );
+
+	QJsonDocument document( root );
+	file.write( document.toJson() );
+}
+
+void MainWindow::saveShowAs()
 {
 	QString filename = QFileDialog::getSaveFileName (
 		this,
@@ -101,21 +139,11 @@ void MainWindow::saveShow()
 		filename += ".noises";
 	}
 
-	QJsonArray cues;
-	m_cue_model->writeSettings( cues );
+	m_current_file_name = filename;
+	updateWindowTitle();
 
-	QJsonObject root;
-	root["cues"] = cues;
-
-	QFile file( filename ); // scoped
-	file.open( QIODevice::WriteOnly );
-
-	QJsonDocument document( root );
-	file.write( document.toJson() );
+	saveShow();
 }
-
-void MainWindow::saveShowAs()
-{}
 
 void MainWindow::openShow()
 {
@@ -131,7 +159,15 @@ void MainWindow::openShow()
 		return;
 	}
 
-	QFile file( filename ); // scoped
+	openShow( filename );
+}
+
+void MainWindow::openShow( const QString& file_name )
+{
+	m_current_file_name = file_name;
+	updateWindowTitle();
+
+	QFile file( file_name ); // scoped
 	file.open( QIODevice::ReadOnly );
 
 	QJsonDocument document = QJsonDocument::fromJson( file.readAll() );
@@ -409,7 +445,7 @@ void MainWindow::createActions()
 	m_open_show_action->setStatusTip( "Open show" );
 	connect(
 		m_open_show_action, &QAction::triggered,
-		this, &MainWindow::openShow );
+		this, [this](){openShow();} );
 
 	m_exit_action = new QAction( "E&xit", this );
 	m_exit_action->setShortcuts( QKeySequence::Quit );
