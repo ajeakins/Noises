@@ -5,6 +5,7 @@
 #include <QGroupBox>
 #include <QLabel>
 #include <QLayout>
+#include <QTabWidget>
 
 #include <audio/manager.h>
 
@@ -251,6 +252,11 @@ void AudioCueDialog::createCueWidgets()
 	QGroupBox* times_group_box = new QGroupBox( "Times", this );
 	times_group_box->setLayout( times_layout );
 
+
+	// detailed setings tabbed
+
+	QTabWidget* tabs = new QTabWidget( this );
+
 	// audio matrix
 
 	m_matrix = new widgets::Matrix( 2, 2, this );
@@ -262,15 +268,16 @@ void AudioCueDialog::createCueWidgets()
 	QHBoxLayout* levels_layout = new QHBoxLayout();
 	levels_layout->addWidget( m_matrix );
 	levels_layout->addStretch();
-	levels_layout->setContentsMargins( 0, 0, 0, 0 );
 
-	QGroupBox* levels_group_box = new QGroupBox( "Levels", this );
-	levels_group_box->setLayout( levels_layout );
+	QWidget* levels_widget = new QWidget( this );
+	levels_widget->setLayout( levels_layout );
+
+	tabs->addTab( levels_widget, "Levels" );
 
 	m_layout->addWidget( file_group_box );
 	m_layout->addWidget( preview_group_box );
 	m_layout->addWidget( times_group_box );
-	m_layout->addWidget( levels_group_box );
+	m_layout->addWidget( tabs );
 }
 
 void AudioCueDialog::setTimeDisplayFormat( QString format )
