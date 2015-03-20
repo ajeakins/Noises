@@ -16,7 +16,6 @@ FILE( GLOB_RECURSE noises_SOURCES *.cpp )
 SET( noises_RESOURCES data/resources.qrc )
 
 INCLUDE_DIRECTORIES(
-	${CMAKE_CURRENT_SOURCE_DIR}/third_party
 	${Qt5Widgets_INCLUDE_DIRS}
 	${PORTAUDIO_INCLUDE_DIRS} )
 

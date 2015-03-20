@@ -31,11 +31,13 @@ void ProgressDelegate::paint(
 		QString time_string = index.data().toString();
 		QTime time = QTime::fromString( time_string, audio_cue->getTimeFormat() );
 
+		float percentage = utils::percentage( time, audio_cue->getDuration() );
+
 		QStyleOptionProgressBar progressBarOption;
 		progressBarOption.rect = option.rect;
 		progressBarOption.minimum = 0;
 		progressBarOption.maximum = 100;
-		progressBarOption.progress = utils::percentage( time, audio_cue->getDuration() );
+		progressBarOption.progress = percentage;
 		progressBarOption.text = time_string;
 		progressBarOption.textVisible = true;
 

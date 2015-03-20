@@ -18,16 +18,19 @@ namespace noises
 namespace audio
 {
 
+namespace
+{
+	void onError( const PaError& error )
+	{
+		Pa_Terminate();
+		std::cout << "An error occured while using the portaudio stream" << std::endl;
+		std::cout << "Error number: " << error << std::endl;
+		std::cout << "Error message: " << Pa_GetErrorText( error ) << std::endl;
+	}
+}
+
 PaStream* Engine::m_stream;
 int Engine::m_channel_count = 0;
-
-void onError( const PaError& error )
-{
-	Pa_Terminate();
-	std::cout << "An error occured while using the portaudio stream" << std::endl;
-	std::cout << "Error number: " << error << std::endl;
-	std::cout << "Error message: " << Pa_GetErrorText( error ) << std::endl;
-}
 
 Engine::Engine( QObject* parent )
 :
@@ -61,11 +64,9 @@ void Engine::stop()
 		Pa_StopStream( m_stream );
 	}
 
-	// stop the players
-	PlayerList::iterator itr = m_playback_data.m_players.begin();
-	for ( ; itr !=  m_playback_data.m_players.end(); ++itr )
+	for ( Player::Ptr player : m_playback_data.m_players )
 	{
-		( **itr ).stop();
+		player->stop();
 	}
 
 	m_playback_data.m_players.clear();
@@ -102,7 +103,7 @@ void Engine::setup()
 		NULL, /*no input*/
 		&outputParameters,
 		SAMPLE_RATE,
-		paFramesPerBufferUnspecified /*frames per buffer*/,
+		/*paFramesPerBufferUnspecified*/ FRAMES_PER_BUFFER,
 		paNoFlag,
 		Engine::audioCallback,
 		&m_playback_data );

@@ -68,9 +68,8 @@ void CueDialog::createWidgets()
 	generic_data_group_box->setLayout( generic_data_layout );
 
 	// buttons
-
-	QDialogButtonBox* buttons = new QDialogButtonBox(
-		QDialogButtonBox::Ok | QDialogButtonBox::Cancel );
+	auto available_buttons = QDialogButtonBox::Ok | QDialogButtonBox::Cancel;
+	QDialogButtonBox* buttons = new QDialogButtonBox( available_buttons );
 
 	connect(
 		buttons, SIGNAL( accepted() ),

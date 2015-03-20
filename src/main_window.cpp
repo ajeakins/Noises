@@ -164,11 +164,17 @@ void MainWindow::openShow()
 
 void MainWindow::openShow( const QString& file_name )
 {
-	m_current_file_name = file_name;
-	updateWindowTitle();
-
 	QFile file( file_name ); // scoped
 	file.open( QIODevice::ReadOnly );
+
+	if ( !file.isOpen() )
+	{
+		QMessageBox::critical( this, "Errror Loading File", "Unable to load show file." );
+		return;
+	}
+
+	m_current_file_name = file_name;
+	updateWindowTitle();
 
 	QJsonDocument document = QJsonDocument::fromJson( file.readAll() );
 	if ( !document.isObject() )

@@ -67,6 +67,7 @@ void AudioCueDialog::onFilenameChanged()
 
 	QString cue_name = file_info.baseName();
 	cue_name.replace( "_", " " );
+
 	getEditor( 1 )->setText( cue_name );
 
 	m_player->setFilename( filepath );
