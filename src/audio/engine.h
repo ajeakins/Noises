@@ -28,37 +28,38 @@ namespace audio
 
 		void stop();
 
+		bool isRunning()
+		{
+			return is_running;
+		}
+
 	Q_SIGNALS:
 		void finished();
 
 	public slots:
-		void run();
+		void start();
 
 	private:
-		void setup();
-
 		static int audioCallback(
-			const void *inputBuffer,
-			void *outputBuffer,
+			const void* inputBuffer,
+			void* outputBuffer,
 			unsigned long framesPerBuffer,
 			const PaStreamCallbackTimeInfo* timeInfo,
 			PaStreamCallbackFlags statusFlags,
-			void *userData );
+			void* userData );
+
+		static void finishedCallback( void* userData );
 
 	private:
 		typedef QList< Player::Ptr > PlayerList;
 
-		struct PlaybackData
-		{
-			QMutex m_lock;
-			PlayerList m_players;
-		};
-
 		static PaStream* m_stream;
 		static int m_channel_count;
 
-		PlaybackData m_playback_data;
+		bool is_running = false;
 
+		QMutex m_players_lock;
+		PlayerList m_players;
 	};
 
 } /* namespace audio */

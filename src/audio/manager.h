@@ -13,6 +13,7 @@
 #include <QList>
 
 #include "player.h"
+#include "engine.h"
 
 class QThread;
 
@@ -47,9 +48,7 @@ namespace audio
 	private:
 		QList< Player::Ptr > m_players;
 
-		QThread* m_thread = nullptr;
-		Engine* m_engine = nullptr;
-
+		Engine m_engine;
 	};
 
 } /* namespace audio */

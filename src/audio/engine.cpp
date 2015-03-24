@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <iostream>
 
-#include <QSet>
 
 #include <application.h>
 
@@ -53,8 +52,8 @@ Engine::~Engine()
 
 void Engine::registerPlayer( Player::Ptr player )
 {
-	QMutexLocker( &m_playback_data.m_lock );
-	m_playback_data.m_players.append( player );
+	QMutexLocker lock( &m_players_lock );
+	m_players.append( player );
 }
 
 void Engine::stop()
@@ -64,22 +63,15 @@ void Engine::stop()
 		Pa_StopStream( m_stream );
 	}
 
-	for ( Player::Ptr player : m_playback_data.m_players )
+	for ( Player::Ptr player : m_players )
 	{
 		player->stop();
 	}
 
-	m_playback_data.m_players.clear();
+	m_players.clear();
 }
 
-void Engine::run()
-{
-	setup();
-
-	Q_EMIT finished();
-}
-
-void Engine::setup()
+void Engine::start()
 {
 	PaError error;
 
@@ -94,7 +86,7 @@ void Engine::setup()
 	m_channel_count = Application::getPreferences().getOutputCount();
 
 	outputParameters.channelCount = m_channel_count;
-	outputParameters.sampleFormat = paFloat32; /* 32 bit floating point output */
+	outputParameters.sampleFormat = paFloat32;
 	outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
 	outputParameters.hostApiSpecificStreamInfo = NULL;
 
@@ -106,7 +98,15 @@ void Engine::setup()
 		/*paFramesPerBufferUnspecified*/ FRAMES_PER_BUFFER,
 		paNoFlag,
 		Engine::audioCallback,
-		&m_playback_data );
+		this );
+
+	if( error != paNoError )
+	{
+		onError( error );
+		return;
+	}
+
+	Pa_SetStreamFinishedCallback(m_stream, Engine::finishedCallback);
 
 	if( error != paNoError )
 	{
@@ -121,18 +121,7 @@ void Engine::setup()
 		return;
 	}
 
-	// check every 100ms
-	while( Pa_IsStreamActive( m_stream ) == 1 )
-	{
-		Pa_Sleep( 100 );
-	}
-
-	error = Pa_CloseStream( m_stream );
-	if( error != paNoError )
-	{
-		onError( error );
-		return;
-	}
+	is_running = true;
 }
 
 int Engine::audioCallback(
@@ -143,13 +132,13 @@ int Engine::audioCallback(
 	PaStreamCallbackFlags /*statusFlags*/,
 	void* userData )
 {
-	PlaybackData* playback_data = ( PlaybackData* )userData;
-	QMutexLocker( &playback_data->m_lock );
+	Engine* engine = static_cast< Engine* >( userData );
+	QMutexLocker( &engine->m_players_lock );
 
 	float* out = ( float* )outputBuffer;
 	std::fill( out, out + ( framesPerBuffer * m_channel_count ), 0.0f );
 
-	QMutableListIterator< Player::Ptr > itr( playback_data->m_players );
+	QMutableListIterator< Player::Ptr > itr( engine->m_players );
 	while ( itr.hasNext() )
 	{
 		Player::Ptr player = itr.next();
@@ -161,12 +150,19 @@ int Engine::audioCallback(
 		}
 	}
 
-	if ( playback_data->m_players.isEmpty() )
+	if ( engine->m_players.isEmpty() )
 	{
 		return paComplete;
 	}
 
 	return paContinue;
+}
+
+void Engine::finishedCallback( void* userData )
+{
+	Engine* engine = static_cast< Engine* >( userData );
+	engine->is_running = false;
+	Q_EMIT engine->finished();
 }
 
 } /* namespace audio */

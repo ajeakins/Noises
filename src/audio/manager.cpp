@@ -1,7 +1,4 @@
 
-#include <QThread>
-
-#include "engine.h"
 #include "manager.h"
 
 namespace noises
@@ -13,20 +10,8 @@ Manager::Manager( QObject* parent )
 :
 	QObject( parent )
 {
-	m_thread = new QThread();
-	m_engine = new Engine();
-
-	m_engine->moveToThread( m_thread );
-
 	connect(
-		m_thread, &QThread::started,
-		m_engine, &Engine::run );
-
-	connect(
-		m_engine, &Engine::finished,
-		m_thread, &QThread::quit );
-	connect(
-		m_engine, &Engine::finished,
+		&m_engine, &Engine::finished,
 		[this](){ Q_EMIT stopped(); } );
 }
 
@@ -52,7 +37,7 @@ Player::Ptr Manager::createPlayer( QObject* parent )
 
 void Manager::stop()
 {
-	m_engine->stop();
+	m_engine.stop();
 }
 
 void Manager::unregisterPlayer( Player::Ptr player )
@@ -62,11 +47,10 @@ void Manager::unregisterPlayer( Player::Ptr player )
 
 void Manager::playerStarted( Player::Ptr player )
 {
-	m_engine->registerPlayer( player );
-
-	if ( !m_thread->isRunning() )
+	m_engine.registerPlayer( player );
+	if ( !m_engine.isRunning() )
 	{
-		m_thread->start();
+		m_engine.start();
 		Q_EMIT started();
 	}
 }
