@@ -2,12 +2,15 @@
 #include <assert.h>
 
 #include <QAbstractItemModel>
+#include <QComboBox>
 #include <QDataWidgetMapper>
 #include <QDialogButtonBox>
 #include <QGroupBox>
 #include <QLabel>
 #include <QLayout>
 #include <QLineEdit>
+
+#include <cue_model.h>
 
 #include "cue_dialog.h"
 
@@ -36,17 +39,16 @@ void CueDialog::createWidgets()
 	// take ownership of the mapper
 	m_mapper->setParent( this );
 
-	// genric data from the model
+	// generic data from the model
 
 	QGridLayout* generic_data_layout = new QGridLayout;
 	generic_data_layout->setContentsMargins( 0, 0, 0, 0 );
 
-	int column_count = m_mapper->model()->columnCount();
-	column_count = 3;
-	for ( int i = 0; i != column_count; ++i )
-	{
-		QAbstractItemModel* model = m_mapper->model();
+	QAbstractItemModel* model = m_mapper->model();
 
+	int i = Column_Cue;
+	for ( ; i <= Column_Notes; ++i )
+	{
 		QVariant header_data = model->headerData( i, Qt::Horizontal );
 		QLabel* label = new QLabel( header_data.toString() );
 
@@ -63,6 +65,33 @@ void CueDialog::createWidgets()
 		generic_data_layout->addWidget( label, i, 0 );
 		generic_data_layout->addWidget( editor, i, 1 );
 	}
+
+	//
+	// TODO make more generic :-( ----------------------------------------------
+	//
+
+	QVariant header_data = model->headerData( Column_PostAction, Qt::Horizontal );
+	QLabel* post_action_label = new QLabel( header_data.toString() );
+
+	QComboBox* post_action_editor = new QComboBox( this );
+	m_mapper->addMapping( post_action_editor, Column_PostAction );
+
+	post_action_editor->addItem(
+		postActionToString( PostAction_Advance ),
+		PostAction_Advance );
+	post_action_editor->addItem(
+		postActionToString( PostAction_AdvanceAndPlay ),
+		PostAction_AdvanceAndPlay );
+
+	QModelIndex index = model->index( m_mapper->currentIndex(), Column_PostAction );
+	post_action_editor->setCurrentIndex( model->data( index ).toInt() );
+
+	generic_data_layout->addWidget( post_action_label, i, 0 );
+	generic_data_layout->addWidget( post_action_editor, i, 1 );
+
+	//
+	// TODO --------------------------------------------------------------------
+	//
 
 	QGroupBox* generic_data_group_box = new QGroupBox( "Cue" );
 	generic_data_group_box->setLayout( generic_data_layout );

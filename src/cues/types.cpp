@@ -47,4 +47,18 @@ namespace noises
 		return CueType_None;
 	}
 
+	QString postActionToString( PostAction action )
+	{
+		switch( action )
+		{
+		case PostAction_Advance:
+			return "Advance";
+		case PostAction_AdvanceAndPlay:
+			return "Advance and Play";
+		}
+
+		assert( false && "Unhandled action type" );
+		return "";
+	}
+
 } /* noises */

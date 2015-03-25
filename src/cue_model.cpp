@@ -22,7 +22,7 @@ CueModel::CueModel( QObject* parent )
 {
 	// Setup header item
 	QList< QVariant > rootData;
-	rootData << "Cue" << "Description" << "Notes" << "Remaining" << "Elapsed";
+	rootData << "Cue" << "Description" << "Notes" << "Remaining" << "Elapsed" << "Post Action";
 
 	m_root_item = new CueModelItem( rootData );
 }
@@ -96,10 +96,14 @@ CueModelItem* CueModel::createCue( CueType type )
 
 	// fill data
 	QList< QVariant > data;
-	for ( int i = 0; i != columnCount(); ++i )
+	for ( int i = 0; i <= Column_Notes; ++i )
 	{
 		data.push_back( "" );
 	}
+
+	data.push_back( "" );
+	data.push_back( "" );
+	data.push_back( 0 );
 
 	CueModelItem* item = 0;
 

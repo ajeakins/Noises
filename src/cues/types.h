@@ -17,4 +17,12 @@ namespace noises
 
 	CueType stringToType( const QString& type );
 
+	enum PostAction
+	{
+		PostAction_Advance,
+		PostAction_AdvanceAndPlay
+	};
+
+	QString postActionToString( PostAction action );
+
 } /* noises */
