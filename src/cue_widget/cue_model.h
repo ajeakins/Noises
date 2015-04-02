@@ -11,20 +11,6 @@
 
 namespace noises
 {
-	// TODO: propagate this and couple it with the actual data...
-	// also might not belong here really...
-	enum Column
-	{
-		Column_Cue,
-		Column_Description,
-		Column_Notes,
-		Column_Remaining,
-		Column_Elapsed,
-		Column_PostAction
-	};
-
-	static const Column editableColums[] = {Column_Cue};
-
 	class CueModelItem;
 
 	class CueModel : public QAbstractItemModel

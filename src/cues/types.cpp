@@ -57,8 +57,24 @@ namespace noises
 			return "Advance and Play";
 		}
 
-		assert( false && "Unhandled action type" );
 		return "";
 	}
+
+	PostAction stringToPostAction( const QString& action )
+	{
+		if ( action == "Advance" )
+		{
+			return PostAction_Advance;
+		}
+		else if ( action == "Advance and Play" )
+		{
+			return PostAction_AdvanceAndPlay;
+		}
+
+		assert( false && "Unhandled post action type" );
+		return defaultPostAction();
+	}
+
+
 
 } /* noises */

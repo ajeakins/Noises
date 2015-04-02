@@ -11,6 +11,7 @@
 #include <QLineEdit>
 
 #include <cue_widget/cue_model.h>
+#include <cue_widget/types.h>
 
 #include "cue_dialog.h"
 

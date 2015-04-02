@@ -25,4 +25,11 @@ namespace noises
 
 	QString postActionToString( PostAction action );
 
+	PostAction stringToPostAction( const QString& action );
+
+	inline PostAction defaultPostAction()
+	{
+		return PostAction_Advance;
+	}
+
 } /* noises */

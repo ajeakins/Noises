@@ -12,6 +12,7 @@
 #include <cues/wait_cue_model_item.h>
 
 #include "cue_model.h"
+#include "types.h"
 
 namespace noises
 {
@@ -22,8 +23,10 @@ CueModel::CueModel( QObject* parent )
 {
 	// Setup header item
 	QList< QVariant > rootData;
-	rootData << "Cue" << "Description" << "Notes" << "Remaining" << "Elapsed" << "Post Action";
-
+	for ( Column itr = ( Column )0; itr != ColumnCount; ++itr )
+	{
+		rootData.append( columnToString( itr ) );
+	}
 	m_root_item = new CueModelItem( rootData );
 }
 
@@ -96,14 +99,12 @@ CueModelItem* CueModel::createCue( CueType type )
 
 	// fill data
 	QList< QVariant > data;
-	for ( int i = 0; i <= Column_Notes; ++i )
-	{
-		data.push_back( "" );
-	}
 
-	data.push_back( "" );
-	data.push_back( "" );
-	data.push_back( 0 );
+	for ( Column itr = ( Column )0; itr != ColumnCount; ++itr )
+	{
+		data.append( "" );
+	}
+	data[Column_PostAction] = postActionToString( defaultPostAction() );
 
 	CueModelItem* item = 0;
 
