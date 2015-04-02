@@ -184,7 +184,7 @@ void MainWindow::openShow( const QString& file_name )
 void MainWindow::createCue( CueType type )
 {
 	CueModelItem* item = m_cue_list->createCue( type );
-	showCueEditDialog( item, m_cue_list->getDataMapperForSelection(), this );
+	showCueEditDialog( item, m_cue_list->getDataMapperForSelection(), true, this );
 }
 
 void MainWindow::about()

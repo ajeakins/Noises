@@ -19,10 +19,12 @@ namespace noises
 
 CueDialog::CueDialog(
 	QDataWidgetMapper* mapper,
+	bool create,
 	QWidget* parent )
 :
 	QDialog( parent ),
-	m_mapper( mapper )
+	m_mapper( mapper ),
+	m_create( create )
 {}
 
 CueDialog::~CueDialog()
@@ -97,7 +99,11 @@ void CueDialog::createWidgets()
 	generic_data_group_box->setLayout( generic_data_layout );
 
 	// buttons
-	auto available_buttons = QDialogButtonBox::Ok | QDialogButtonBox::Cancel;
+	QDialogButtonBox::StandardButtons available_buttons = QDialogButtonBox::Ok;
+	if ( !m_create )
+	{
+		available_buttons |= QDialogButtonBox::Cancel;
+	}
 	QDialogButtonBox* buttons = new QDialogButtonBox( available_buttons );
 
 	connect(

@@ -16,6 +16,7 @@ namespace noises
 		GroupCueDialog(
 			GroupCueModelItem* cue,
 			QDataWidgetMapper* mapper,
+			bool create,
 			QWidget* parent = nullptr );
 
 		virtual ~GroupCueDialog();

@@ -7,9 +7,10 @@ namespace noises
 ControlCueDialog::ControlCueDialog(
 	ControlCueModelItem* cue,
 	QDataWidgetMapper* mapper,
+	bool create,
 	QWidget* parent )
 :
-	CueDialog( mapper, parent ),
+	CueDialog( mapper, create, parent ),
 	m_cue( cue )
 {
 	setWindowTitle( "Edit Control Cue" );

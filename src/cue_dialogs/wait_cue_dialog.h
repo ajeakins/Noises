@@ -17,6 +17,7 @@ namespace noises
 		WaitCueDialog(
 			WaitCueModelItem* cue,
 			QDataWidgetMapper* mapper,
+			bool create,
 			QWidget* parent = nullptr );
 
 		virtual ~WaitCueDialog();

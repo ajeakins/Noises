@@ -9,9 +9,10 @@ namespace noises
 GroupCueDialog::GroupCueDialog(
 	GroupCueModelItem* cue,
 	QDataWidgetMapper* mapper,
+	bool create,
 	QWidget* parent )
 :
-	CueDialog( mapper, parent ),
+	CueDialog( mapper, create, parent ),
 	m_cue( cue )
 {
 	setWindowTitle( "Edit Group Cue" );

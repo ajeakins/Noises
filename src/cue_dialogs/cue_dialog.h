@@ -15,6 +15,7 @@ namespace noises
 	public:
 		CueDialog(
 			QDataWidgetMapper* mapper,
+			bool create, // TODO: this is horrific
 			QWidget* parent = nullptr );
 
 		virtual ~CueDialog();
@@ -32,6 +33,8 @@ namespace noises
 
 	private:
 		QDataWidgetMapper* m_mapper;
+
+		bool m_create;
 	};
 
 } /* namespace noises */

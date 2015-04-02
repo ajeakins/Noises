@@ -10,6 +10,7 @@ namespace noises
 	void showCueEditDialog(
 		CueModelItem* item,
 		QDataWidgetMapper* mapper,
-		QWidget* parent = nullptr );
+		bool create,
+		QWidget* parent );
 
 } /* namespace noises */

@@ -16,6 +16,7 @@ namespace noises
 void showCueEditDialog(
 	CueModelItem* item,
 	QDataWidgetMapper* mapper,
+	bool create,
 	QWidget* parent )
 {
 	switch( item->getType() )
@@ -25,6 +26,7 @@ void showCueEditDialog(
 			AudioCueDialog dialog(
 				( AudioCueModelItem* )item,
 				mapper,
+				create,
 				parent );
 			dialog.exec();
 			break;
@@ -34,6 +36,7 @@ void showCueEditDialog(
 			ControlCueDialog dialog(
 				( ControlCueModelItem* )item,
 				mapper,
+				create,
 				parent );
 			dialog.exec();
 			break;
@@ -43,6 +46,7 @@ void showCueEditDialog(
 			WaitCueDialog dialog(
 				( WaitCueModelItem* )item,
 				mapper,
+				create,
 				parent );
 			dialog.exec();
 			break;
@@ -52,6 +56,7 @@ void showCueEditDialog(
 			GroupCueDialog dialog(
 				( GroupCueModelItem* )item,
 				mapper,
+				create,
 				parent );
 			dialog.exec();
 			break;

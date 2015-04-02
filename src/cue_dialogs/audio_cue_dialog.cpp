@@ -24,9 +24,10 @@ namespace noises
 AudioCueDialog::AudioCueDialog(
 	AudioCueModelItem* cue,
 	QDataWidgetMapper* mapper,
+	bool create,
 	QWidget* parent )
 :
-	CueDialog( mapper, parent ),
+	CueDialog( mapper, create, parent ),
 	m_cue( cue )
 {
 	m_player = Application::getAudioManager().createPlayer( this );

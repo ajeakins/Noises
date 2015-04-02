@@ -16,6 +16,7 @@ namespace noises
 		ControlCueDialog(
 			ControlCueModelItem* cue,
 			QDataWidgetMapper* mapper,
+			bool create,
 			QWidget* parent = nullptr );
 
 		virtual ~ControlCueDialog();

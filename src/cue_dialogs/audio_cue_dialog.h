@@ -25,6 +25,7 @@ namespace noises
 		AudioCueDialog(
 			AudioCueModelItem* cue,
 			QDataWidgetMapper* mapper,
+			bool create,
 			QWidget* parent = nullptr );
 
 		virtual ~AudioCueDialog();

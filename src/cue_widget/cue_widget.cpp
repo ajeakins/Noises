@@ -109,7 +109,7 @@ void CueWidget::deleteCurrentCue()
 void CueWidget::editCue( QModelIndex index )
 {
 	CueModelItem* item = m_cue_model->itemFromIndex( index );
-	showCueEditDialog( item, getDataMapperForSelection(), this );
+	showCueEditDialog( item, getDataMapperForSelection(), false, this );
 }
 
 CueModelItem* CueWidget::getCurrentItem()
