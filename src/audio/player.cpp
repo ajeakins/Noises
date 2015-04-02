@@ -4,7 +4,7 @@
 #include <QMessageBox>
 #include <QTime>
 
-#include <application.h>
+#include <app/application.h>
 #include <utils/audio.h>
 
 #include "player.h"

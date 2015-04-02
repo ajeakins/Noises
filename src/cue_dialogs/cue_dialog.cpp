@@ -10,7 +10,7 @@
 #include <QLayout>
 #include <QLineEdit>
 
-#include <cue_model.h>
+#include <cue_widget/cue_model.h>
 
 #include "cue_dialog.h"
 

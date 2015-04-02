@@ -23,6 +23,8 @@ namespace noises
 		Column_PostAction
 	};
 
+	static const Column editableColums[] = {Column_Cue};
+
 	class CueModelItem;
 
 	class CueModel : public QAbstractItemModel

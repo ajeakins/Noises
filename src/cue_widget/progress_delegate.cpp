@@ -14,6 +14,11 @@
 namespace noises
 {
 
+ProgressDelegate::ProgressDelegate( QObject* parent )
+:
+	QStyledItemDelegate( parent )
+{}
+
 void ProgressDelegate::paint(
 	QPainter* painter,
 	const QStyleOptionViewItem& option,

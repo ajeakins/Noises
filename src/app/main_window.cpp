@@ -15,24 +15,21 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include <utils/cue.h>
-
 #include <cues/audio_cue_model_item.h>
 #include <cues/control_cue_model_item.h>
 #include <cues/cue_model_item.h>
 #include <cues/group_cue_model_item.h>
 #include <cues/wait_cue_model_item.h>
 
-#include <cue_dialogs/audio_cue_dialog.h>
-#include <cue_dialogs/control_cue_dialog.h>
-#include <cue_dialogs/group_cue_dialog.h>
-#include <cue_dialogs/wait_cue_dialog.h>
+#include <cue_dialogs/api.h>
+
+#include <cue_widget/cue_widget.h>
 
 #include "application.h"
 #include "main_window.h"
-#include "cue_model.h"
 #include "preferences.h"
-#include "progress_delegate.h"
+
+#define WITH_GROUP_CUES 0
 
 namespace noises
 {
@@ -50,15 +47,6 @@ MainWindow::MainWindow()
 	updateWindowTitle();
 
 	resize( 600, 500 );
-}
-
-QDataWidgetMapper* MainWindow::getDataMapper()
-{
-	QDataWidgetMapper* mapper = new QDataWidgetMapper();
-	mapper->setModel( m_cue_model );
-	mapper->setSubmitPolicy( QDataWidgetMapper::ManualSubmit );
-	mapper->setCurrentModelIndex( m_cue_list->selectionModel()->currentIndex() );
-	return mapper;
 }
 
 void MainWindow::closeEvent( QCloseEvent* event )
@@ -108,7 +96,7 @@ void MainWindow::saveShow()
 	}
 
 	QJsonArray cues;
-	m_cue_model->writeSettings( cues );
+	m_cue_list->writeSettings( cues );
 
 	QJsonObject root;
 	root["cues"] = cues;
@@ -189,96 +177,14 @@ void MainWindow::openShow( const QString& file_name )
 	QJsonValue cues = object.value( "cues" );
 	if ( cues.isArray() )
 	{
-		m_cue_model->readSettings( cues.toArray() );
+		m_cue_list->readSettings( cues.toArray() );
 	}
 }
 
-CueModelItem* MainWindow::createCue( CueType type )
+void MainWindow::createCue( CueType type )
 {
-	QModelIndex selected_row = m_cue_list->selectionModel()->currentIndex();
-
-	CueModelItem* parent;
-	int index = 0;
-	QString previous_number, next_number, new_number;
-
-	if ( selected_row.isValid() )
-	{
-		CueModelItem* selected_item = ( CueModelItem* )( selected_row.internalPointer() );
-		parent = selected_item->parent();
-		index = parent->row( selected_item );
-		previous_number = selected_item->data( 0 ).toString();
-	}
-	else
-	{
-		parent = m_cue_model->getRootItem();
-	}
-
-	QModelIndex next_row = m_cue_model->index( selected_row.row() + 1, selected_row.column() );
-	if ( next_row.isValid() )
-	{
-		CueModelItem* next_row_item = ( CueModelItem* )( next_row.internalPointer() );
-		next_number = next_row_item->data( 0 ).toString();
-	}
-
-	utils::getNewCueNumber( previous_number, next_number, new_number );
-
-	// add the cue
-
-	CueModelItem* cue = m_cue_model->createCue( type );
-	cue->setData( 0, new_number );
-
-	m_cue_model->setCueParent( parent, cue, index + 1 );
-
-	// update the selection
-
-	if ( ! selected_row.isValid() )
-	{
-		selected_row = m_cue_model->index( 0, 0 );
-		m_cue_list->selectionModel()->setCurrentIndex(
-			selected_row,
-			QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows );
-	}
-	else
-	{
-		selected_row = m_cue_model->index( selected_row.row() + 1, selected_row.column() );
-		m_cue_list->selectionModel()->setCurrentIndex(
-			selected_row,
-			QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows );
-	}
-
-	return cue;
-}
-
-void MainWindow::newAudioCue()
-{
-	AudioCueModelItem* cue = dynamic_cast< AudioCueModelItem* >( createCue( CueType_Audio ) );
-
-	AudioCueDialog dialog( cue, getDataMapper(), this );
-	dialog.exec();
-}
-
-void MainWindow::newControlCue()
-{
-	ControlCueModelItem* cue = dynamic_cast< ControlCueModelItem* >( createCue( CueType_Control ) );
-
-	ControlCueDialog dialog( cue, getDataMapper(), this );
-	dialog.exec();
-}
-
-void MainWindow::newWaitCue()
-{
-	WaitCueModelItem* cue = dynamic_cast< WaitCueModelItem* >( createCue( CueType_Wait ) );
-
-	WaitCueDialog dialog( cue, getDataMapper(), this );
-	dialog.exec();
-}
-
-void MainWindow::newGroupCue()
-{
-	GroupCueModelItem* cue = dynamic_cast< GroupCueModelItem* >( createCue( CueType_Group ) );
-
-	GroupCueDialog dialog( cue, getDataMapper(), this );
-	dialog.exec();
+	CueModelItem* item = m_cue_list->createCue( type );
+	showCueEditDialog( item, m_cue_list->getDataMapperForSelection(), this );
 }
 
 void MainWindow::about()
@@ -291,73 +197,11 @@ void MainWindow::about()
 
 void MainWindow::playCue()
 {
-	QModelIndex selected_row = m_cue_list->selectionModel()->currentIndex();
-	if ( !selected_row.isValid() )
-	{
-		return;
-	}
-
-	CueModelItem* item = m_cue_model->itemFromIndex( selected_row );
-
-	// execute cue
+	CueModelItem* item = m_cue_list->getCurrentItem();
 	if ( item )
 	{
 		item->execute();
-	}
-
-	// increment selection
-	selected_row = m_cue_model->index( selected_row.row() + 1, selected_row.column() );
-	m_cue_list->selectionModel()->setCurrentIndex(
-		selected_row,
-		QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows );
-}
-
-void MainWindow::editCue( QModelIndex index )
-{
-	CueModelItem* item = m_cue_model->itemFromIndex( index );
-	switch( item->getType() )
-	{
-		case CueType_Audio:
-		{
-			AudioCueDialog dialog(
-				( AudioCueModelItem* )item,
-				getDataMapper(),
-				this );
-			dialog.exec();
-			break;
-		}
-		case CueType_Control:
-		{
-			ControlCueDialog dialog(
-				( ControlCueModelItem* )item,
-				getDataMapper(),
-				this );
-			dialog.exec();
-			break;
-		}
-		case CueType_Wait:
-		{
-			WaitCueDialog dialog(
-				( WaitCueModelItem* )item,
-				getDataMapper(),
-				this );
-			dialog.exec();
-			break;
-		}
-		case CueType_Group:
-		{
-			GroupCueDialog dialog(
-				( GroupCueModelItem* )item,
-				getDataMapper(),
-				this );
-			dialog.exec();
-			break;
-		}
-		case CueType_None:
-			return;
-		default:
-			qWarning() << "WARNING: Unknown cue type\n";
-			break;
+		m_cue_list->selectNextCue();
 	}
 }
 
@@ -376,13 +220,7 @@ void MainWindow::deleteCue()
 		return;
 	}
 
-	QModelIndex selected_row = m_cue_list->selectionModel()->currentIndex();
-	if ( !selected_row.isValid() )
-	{
-		return;
-	}
-
-	m_cue_model->removeRow( selected_row.row(), selected_row.parent() );
+	m_cue_list->deleteCurrentCue();
 }
 
 void MainWindow::stopAllCues()
@@ -398,26 +236,7 @@ void MainWindow::editPreferences()
 
 void MainWindow::createWidgets()
 {
-	m_cue_model = new CueModel;
-
-	m_cue_list = new QTreeView;
-	m_cue_list->setModel( m_cue_model );
-
-	m_cue_list->setSelectionMode( QAbstractItemView::SingleSelection );
-	m_cue_list->setSelectionBehavior( QAbstractItemView::SelectRows );
-	m_cue_list->setDragEnabled( true );
-	m_cue_list->setDragDropMode( QAbstractItemView::InternalMove );
-	m_cue_list->setAcceptDrops( true );
-	m_cue_list->setDropIndicatorShown( true );
-
-	m_progress_delegate = new ProgressDelegate();
-	m_cue_list->setItemDelegateForColumn( 3, m_progress_delegate );
-	m_cue_list->setItemDelegateForColumn( 4, m_progress_delegate );
-
-	connect(
-		m_cue_list, SIGNAL( doubleClicked( QModelIndex ) ),
-		this, SLOT( editCue( QModelIndex ) ) );
-
+	m_cue_list = new CueWidget( this );
 	setCentralWidget( m_cue_list );
 }
 
@@ -489,7 +308,7 @@ void MainWindow::createActions()
 	m_new_audio_cue_action->setStatusTip( "Create a new audio cue" );
 	connect(
 		m_new_audio_cue_action, &QAction::triggered,
-		this, &MainWindow::newAudioCue );
+		this, [this](){ createCue( CueType_Audio ); } );
 
 	m_new_control_cue_action = new QAction(
 		QIcon( ":/images/control_cue_32x32.png" ),
@@ -498,7 +317,7 @@ void MainWindow::createActions()
 	m_new_control_cue_action->setStatusTip( "Create a new control cue" );
 	connect(
 		m_new_control_cue_action, &QAction::triggered,
-		this, &MainWindow::newControlCue );
+		this, [this](){ createCue( CueType_Control ); } );
 
 	m_new_wait_cue_action = new QAction(
 		QIcon( ":/images/wait_cue_32x32.png" ),
@@ -507,7 +326,7 @@ void MainWindow::createActions()
 	m_new_wait_cue_action->setStatusTip( "Create a new wait cue" );
 	connect(
 		m_new_wait_cue_action, &QAction::triggered,
-		this, &MainWindow::newWaitCue );
+		this, [this](){ createCue( CueType_Wait ); } );
 
 	m_new_group_cue_action = new QAction(
 		QIcon( ":/images/group_cue_32x32.png" ),
@@ -515,7 +334,7 @@ void MainWindow::createActions()
 	m_new_group_cue_action->setStatusTip( "Create a new group cue" );
 	connect(
 		m_new_group_cue_action, &QAction::triggered,
-		this, &MainWindow::newGroupCue );
+		this, [this](){ createCue( CueType_Group ); } );
 
 	// cue actions
 
@@ -570,7 +389,9 @@ void MainWindow::createToolBars()
 	m_tool_bar->addAction( m_new_audio_cue_action );
 	m_tool_bar->addAction( m_new_control_cue_action );
 	m_tool_bar->addAction( m_new_wait_cue_action );
+#if WITH_GROUP_CUES
 	m_tool_bar->addAction( m_new_group_cue_action );
+#endif
 }
 
 void MainWindow::createStatusBar()

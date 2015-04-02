@@ -3,7 +3,7 @@
 #include <QTime>
 
 #include <audio/player.h>
-#include <application.h>
+#include <app/application.h>
 #include <widgets/matrix.h>
 
 #include "cue_model_item.h"

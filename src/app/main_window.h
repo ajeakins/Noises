@@ -1,20 +1,17 @@
  #pragma once
 
 #include <QMainWindow>
-#include <QTreeView>
 
 #include <cues/types.h>
 
 class QAction;
 class QMenu;
-class QTreeView;
 class QDataWidgetMapper;
 
 namespace noises
 {
-	class CueModel;
+	class CueWidget;
 	class CueModelItem;
-	class ProgressDelegate;
 
 	class MainWindow : public QMainWindow
 	{
@@ -38,15 +35,8 @@ namespace noises
 
 		void about();
 
-		// Toolbar Slots
-		void newAudioCue();
-		void newControlCue();
-		void newWaitCue();
-		void newGroupCue();
-
 		// Cue Slots
 		void playCue();
-		void editCue( QModelIndex index );
 		void deleteCue();
 		void stopAllCues();
 
@@ -62,19 +52,13 @@ namespace noises
 
 		void updateWindowTitle();
 
-		QDataWidgetMapper* getDataMapper();
-
-		CueModelItem* createCue( CueType type );
+		void createCue( CueType type );
 
 	private:
 		QString m_current_file_name;
 
 		// Widgets
-		QTreeView* m_cue_list;
-		CueModel* m_cue_model;
-		QString m_current_show_file;
-
-		ProgressDelegate* m_progress_delegate;
+		CueWidget* m_cue_list;
 
 		// Menus
 		QMenu* m_file_menu;
