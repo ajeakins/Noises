@@ -40,6 +40,17 @@ void Manager::stop()
 	m_engine.stop();
 }
 
+void Manager::setQueuePlayers( bool yes )
+{
+	m_queue_players = yes;
+	if ( !m_queue_players && !m_queued_players.isEmpty() )
+	{
+		m_engine.registerPlayers( m_queued_players );
+		m_queued_players.clear();
+		startEngine();
+	}
+}
+
 void Manager::unregisterPlayer( Player::Ptr player )
 {
 	m_players.removeOne( player );
@@ -47,7 +58,19 @@ void Manager::unregisterPlayer( Player::Ptr player )
 
 void Manager::playerStarted( Player::Ptr player )
 {
-	m_engine.registerPlayer( player );
+	if ( m_queue_players )
+	{
+		m_queued_players.append( player );
+	}
+	else
+	{
+		m_engine.registerPlayer( player );
+		startEngine();
+	}
+}
+
+void Manager::startEngine()
+{
 	if ( !m_engine.isRunning() )
 	{
 		m_engine.start();

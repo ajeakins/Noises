@@ -9,6 +9,7 @@
 
 #include "cue_model.h"
 #include "progress_delegate.h"
+#include "types.h"
 
 #include "cue_widget.h"
 
@@ -104,6 +105,28 @@ void CueWidget::deleteCurrentCue()
 	}
 
 	m_cue_model->removeRow( selected_row.row(), selected_row.parent() );
+}
+
+void CueWidget::getTargetCues( CueModelItem* item, QList< CueModelItem* >& cues )
+{
+	CueModelItem* next_item = item;
+	CueModelItem* parent = item->parent();
+	bool play_next = true;
+
+	while ( play_next )
+	{
+		cues.append( next_item );
+
+		QString post_action = next_item->data( Column_PostAction ).toString();
+		play_next = stringToPostAction( post_action ) == PostAction_AdvanceAndPlay;
+
+		int row = parent->row( next_item ) + 1;
+		if ( row == parent->childCount() )
+		{
+			break;
+		}
+		next_item = parent->child( row );
+	}
 }
 
 void CueWidget::editCue( QModelIndex index )

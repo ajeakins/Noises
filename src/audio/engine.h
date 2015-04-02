@@ -24,6 +24,8 @@ namespace audio
 
 		void registerPlayer( Player::Ptr player );
 
+		void registerPlayers( QList< Player::Ptr >& players );
+
 		// Stop all players
 
 		void stop();

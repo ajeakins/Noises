@@ -87,7 +87,8 @@ void CueDialog::createWidgets()
 		PostAction_AdvanceAndPlay );
 
 	QModelIndex index = model->index( m_mapper->currentIndex(), Column_PostAction );
-	post_action_editor->setCurrentIndex( model->data( index ).toInt() );
+	int j = post_action_editor->findText( model->data( index ).toString() );
+	post_action_editor->setCurrentIndex( j );
 
 	generic_data_layout->addWidget( post_action_label, i, 0 );
 	generic_data_layout->addWidget( post_action_editor, i, 1 );

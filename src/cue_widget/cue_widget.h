@@ -21,6 +21,8 @@ namespace noises
 
 		void deleteCurrentCue();
 
+		void getTargetCues( CueModelItem* item, QList< CueModelItem* >& cues );
+
 		// selection
 
 		CueModelItem* getCurrentItem();

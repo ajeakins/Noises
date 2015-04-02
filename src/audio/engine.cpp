@@ -55,6 +55,12 @@ void Engine::registerPlayer( Player::Ptr player )
 	m_players.append( player );
 }
 
+void Engine::registerPlayers( QList< Player::Ptr >& players )
+{
+	QMutexLocker lock( &m_players_lock );
+	m_players.append( players );
+}
+
 void Engine::stop()
 {
 	if ( m_stream )

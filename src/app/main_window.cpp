@@ -197,12 +197,24 @@ void MainWindow::about()
 
 void MainWindow::playCue()
 {
+	typedef QList< CueModelItem* > CueList;
+
 	CueModelItem* item = m_cue_list->getCurrentItem();
-	if ( item )
+	if ( !item )
 	{
-		item->execute();
+		return;
+	}
+
+	CueList cues;
+	m_cue_list->getTargetCues( item, cues );
+
+	Application::getAudioManager().setQueuePlayers( true );
+	for ( CueList::const_iterator itr = cues.begin(); itr != cues.end(); ++itr )
+	{
+		(*itr)->execute();
 		m_cue_list->selectNextCue();
 	}
+	Application::getAudioManager().setQueuePlayers( false );
 }
 
 void MainWindow::deleteCue()

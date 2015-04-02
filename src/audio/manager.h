@@ -35,6 +35,8 @@ namespace audio
 
 		void stop();
 
+		void setQueuePlayers( bool yes );
+
 	Q_SIGNALS:
 		void started();
 
@@ -46,7 +48,13 @@ namespace audio
 		void unregisterPlayer( Player::Ptr player );
 
 	private:
+		void startEngine();
+
+	private:
 		QList< Player::Ptr > m_players;
+
+		bool m_queue_players;
+		QList< Player::Ptr > m_queued_players;
 
 		Engine m_engine;
 	};
