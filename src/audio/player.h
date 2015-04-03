@@ -5,11 +5,6 @@
 #include <QTime>
 #include <QEnableSharedFromThis>
 
-#include <portaudio.h>
-#include <sndfile.h>
-
-#include <widgets/matrix.h>
-
 namespace noises
 {
 namespace audio
@@ -20,31 +15,15 @@ namespace audio
 	public:
 		typedef QSharedPointer< Player > Ptr;
 
-		class ManagerHooks
-		{
-		private:
-			friend class Manager;
-
-			static Ptr create( QObject* parent );
-		};
-
-		~Player();
-
-		// setup
-
-		void setFilename( const QString& filename );
-
-		void setVolume( const widgets::MatrixSettings& settings );
-
-		QTime getDuration() const;
+		virtual ~Player();
 
 		// Playback controls
 
-		void start();
+		virtual void start() = 0;
 
-		void pause();
+		virtual void pause() = 0;
 
-		void stop();
+		virtual void stop() = 0;
 
 		bool isPlaying() const
 		{
@@ -60,46 +39,23 @@ namespace audio
 
 		void parentDestroyed( Player::Ptr player );
 
-	private:
-		friend class ManagerHooks;
-
+	protected:
+		friend class Manager;
 		friend class Engine;
 
 		Player( QObject* parent );
 
-		float getVolume( int input, int output ) const;
-
-		void readData();
-
-		QTime timeFromFrames( int frames ) const;
-
-		void addData(
+		virtual void addData(
 			float* audio_data,
 			int frames,
-			int channels );
+			int channels ) = 0;
+
+	protected:
+		// playback state
+		bool m_is_playing = false;
 
 	private:
 		QObject* m_parent;
-
-		QString m_filename;
-
-		// playback state
-		bool m_is_playing = false;
-		int m_pos = 0 ;
-		int m_last_pos = 0;
-
-		// audio data
-		float* m_audio_data = nullptr;
-
-		// audio information
-		SF_INFO m_audio_info;
-		int m_length;
-		int m_signal_interval;
-
-		// volume data
-		QVector< QVector< float > > m_volumes;
-		// current number of outputs we have data for
-		int m_outputs;
 	};
 
 } /* namespace audio */

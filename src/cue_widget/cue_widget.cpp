@@ -1,5 +1,6 @@
 
 #include <QDataWidgetMapper>
+#include <QDebug>
 
 #include <cue_dialogs/api.h>
 

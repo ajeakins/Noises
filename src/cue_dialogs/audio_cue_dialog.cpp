@@ -8,6 +8,7 @@
 #include <QTabWidget>
 
 #include <audio/manager.h>
+#include <audio/types.h>
 
 #include <cues/audio_cue_model_item.h>
 
@@ -30,7 +31,9 @@ AudioCueDialog::AudioCueDialog(
 	CueDialog( mapper, create, parent ),
 	m_cue( cue )
 {
-	m_player = Application::getAudioManager().createPlayer( this );
+	audio::Manager& manager = Application::getAudioManager();
+	audio::Player::Ptr player = manager.createPlayer( this, audio::PlayerType_Audio );
+	m_player = player.dynamicCast< audio::AudioPlayer >();
 
 	connect(
 		m_player.data(), &audio::Player::timeUpdated,

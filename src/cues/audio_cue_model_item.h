@@ -2,7 +2,7 @@
 
 #include <QTime>
 
-#include <audio/player.h>
+#include <audio/audio_player.h>
 #include <app/application.h>
 #include <widgets/matrix.h>
 
@@ -81,7 +81,7 @@ namespace noises
 		QTime m_duration;
 		QString m_time_format;
 
-		audio::Player::Ptr m_player;
+		audio::AudioPlayer::Ptr m_player;
 	};
 
 } /* namespace noises */

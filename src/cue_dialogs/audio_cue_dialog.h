@@ -1,6 +1,6 @@
 #pragma once
 
-#include <audio/player.h>
+#include <audio/audio_player.h>
 
 #include "cue_dialog.h"
 
@@ -58,7 +58,7 @@ namespace noises
 
 		// audio player
 
-		audio::Player::Ptr m_player;
+		audio::AudioPlayer::Ptr m_player;
 		QTime m_duration;
 
 		// widgets

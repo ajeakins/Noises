@@ -1,4 +1,5 @@
 
+#include "audio_player.h"
 #include "manager.h"
 
 namespace noises
@@ -18,9 +19,16 @@ Manager::Manager( QObject* parent )
 Manager::~Manager()
 {}
 
-Player::Ptr Manager::createPlayer( QObject* parent )
+Player::Ptr Manager::createPlayer( QObject* parent, PlayerType type )
 {
-	Player::Ptr player = Player::ManagerHooks::create( parent );
+	Player::Ptr player;
+
+	switch( type )
+	{
+	case PlayerType_Audio:
+		player = QSharedPointer< Player >( new AudioPlayer( parent ) );
+		break;
+	}
 
 	connect(
 		player.data(), SIGNAL( started( Player::Ptr ) ),

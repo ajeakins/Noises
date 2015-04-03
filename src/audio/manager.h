@@ -14,6 +14,7 @@
 
 #include "player.h"
 #include "engine.h"
+#include "types.h"
 
 class QThread;
 
@@ -31,7 +32,7 @@ namespace audio
 
 		~Manager();
 
-		Player::Ptr createPlayer( QObject* parent );
+		Player::Ptr createPlayer( QObject* parent, PlayerType type );
 
 		void stop();
 

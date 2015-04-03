@@ -1,6 +1,7 @@
 
 #include <QPixmap>
 
+#include <audio/types.h>
 #include <utils/time.h>
 
 #include "audio_cue_model_item.h"
@@ -44,7 +45,9 @@ AudioCueModelItem::AudioCueModelItem(
 	CueModelItem( item_data, parent_item ),
 	m_time_format( utils::defaultTimeFormat() )
 {
-	m_player = Application::getAudioManager().createPlayer( this );
+	audio::Manager& manager = Application::getAudioManager();
+	audio::Player::Ptr player = manager.createPlayer( this, audio::PlayerType_Audio );
+	m_player = player.dynamicCast< audio::AudioPlayer >();
 
 	connect(
 		m_player.data(), &audio::Player::timeUpdated,
