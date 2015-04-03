@@ -13,6 +13,8 @@
 #include <cue_widget/cue_model.h>
 #include <cue_widget/types.h>
 
+#include <cues/cue_model_item.h>
+
 #include "cue_dialog.h"
 
 namespace noises
@@ -48,6 +50,7 @@ void CueDialog::createWidgets()
 	generic_data_layout->setContentsMargins( 0, 0, 0, 0 );
 
 	QAbstractItemModel* model = m_mapper->model();
+	CueModel* cue_model = dynamic_cast< CueModel* >( model );
 
 	int i = Column_Cue;
 	for ( ; i <= Column_Notes; ++i )
@@ -79,16 +82,24 @@ void CueDialog::createWidgets()
 	QComboBox* post_action_editor = new QComboBox( this );
 	m_mapper->addMapping( post_action_editor, Column_PostAction );
 
-	post_action_editor->addItem(
-		postActionToString( PostAction_Advance ),
-		PostAction_Advance );
-	post_action_editor->addItem(
-		postActionToString( PostAction_AdvanceAndPlay ),
-		PostAction_AdvanceAndPlay );
+	QModelIndex index = model->index( m_mapper->currentIndex(), i );
+	CueModelItem* item = cue_model->itemFromIndex( index );
 
-	QModelIndex index = model->index( m_mapper->currentIndex(), Column_PostAction );
+	PostActions actions = item->getSupportedPostActions();
+	for( PostAction j = (PostAction)0; j != PostAction_ITEM_COUNT; ++j)
+	{
+		if ( actions & j )
+		{
+			post_action_editor->addItem( postActionToString( j ), j );
+		}
+	}
+
+	index = model->index( m_mapper->currentIndex(), Column_PostAction );
 	int j = post_action_editor->findText( model->data( index ).toString() );
-	post_action_editor->setCurrentIndex( j );
+	if ( j >= 0 )
+	{
+		post_action_editor->setCurrentIndex( j );
+	}
 
 	generic_data_layout->addWidget( post_action_label, i, 0 );
 	generic_data_layout->addWidget( post_action_editor, i, 1 );

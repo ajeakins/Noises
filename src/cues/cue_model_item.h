@@ -48,6 +48,11 @@ namespace noises
 			return CueType_None;
 		}
 
+		virtual PostActions getSupportedPostActions()
+		{
+			return PostActions( PostAction_Advance | PostAction_AdvanceAndPlay );
+		}
+
 		// execute the cues action
 		virtual void execute() const
 		{

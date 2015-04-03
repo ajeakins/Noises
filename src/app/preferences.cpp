@@ -32,6 +32,11 @@ unsigned int Preferences::getOutputCount() const
 	return m_data["output count"].value.toUInt();
 }
 
+unsigned int Preferences::getSampleRate() const
+{
+	return 44100;
+}
+
 void Preferences::getKeys( QList< QString >& keys ) const
 {
 	keys = m_data.keys();

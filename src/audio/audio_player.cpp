@@ -228,9 +228,7 @@ void AudioPlayer::start()
 	}
 
 	m_is_playing = true;
-
-	Player::Ptr self = Player::sharedFromThis();
-	Q_EMIT started( self );
+	Q_EMIT started( sharedFromThis() );
 }
 
 void AudioPlayer::pause()

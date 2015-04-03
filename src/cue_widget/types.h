@@ -13,7 +13,7 @@ namespace noises
 		Column_Elapsed,
 		Column_PostAction,
 
-		ColumnCount
+		Column_ITEM_COUNT
 	};
 
 	inline Column& operator++( Column& column )

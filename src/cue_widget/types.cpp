@@ -20,7 +20,7 @@ QString columnToString( Column column )
 			return "Elapsed";
 		case Column_PostAction:
 			return "Post Action";
-		case ColumnCount:
+		case Column_ITEM_COUNT:
 			return "";
 	}
 

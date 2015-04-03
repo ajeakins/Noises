@@ -6,7 +6,8 @@ namespace audio
 {
 	enum PlayerType
 	{
-		PlayerType_Audio
+		PlayerType_Audio,
+		PlayerType_Wait
 	};
 
 } /* namespace audio */

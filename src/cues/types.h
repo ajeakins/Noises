@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QString>
+#include <QFlags>
 
 namespace noises
 {
@@ -19,17 +20,22 @@ namespace noises
 
 	enum PostAction
 	{
-		PostAction_Advance,
-		PostAction_AdvanceAndPlay
+		PostAction_Advance			= 1 << 0,
+		PostAction_AdvanceAndPlay	= 1 << 1,
+
+		PostAction_ITEM_COUNT
 	};
+
+	Q_DECLARE_FLAGS(PostActions, PostAction)
+
+	inline PostAction& operator++( PostAction& action )
+	{
+		action = (PostAction)((int)action + 1);
+		return action;
+	}
 
 	QString postActionToString( PostAction action );
 
 	PostAction stringToPostAction( const QString& action );
-
-	inline PostAction defaultPostAction()
-	{
-		return PostAction_Advance;
-	}
 
 } /* noises */

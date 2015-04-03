@@ -55,6 +55,8 @@ namespace noises
 			return "Advance";
 		case PostAction_AdvanceAndPlay:
 			return "Advance and Play";
+		case PostAction_ITEM_COUNT:
+			return "";
 		}
 
 		return "";
@@ -72,7 +74,7 @@ namespace noises
 		}
 
 		assert( false && "Unhandled post action type" );
-		return defaultPostAction();
+		return PostAction_Advance;
 	}
 
 

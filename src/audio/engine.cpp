@@ -8,7 +8,6 @@
 
 #include "engine.h"
 
-#define SAMPLE_RATE			(44100)
 #define FRAMES_PER_BUFFER	(512)
 
 namespace noises
@@ -88,7 +87,8 @@ void Engine::start()
 		return;
 	}
 
-	m_channel_count = Application::getPreferences().getOutputCount();
+	Preferences& prefs = Application::getPreferences();
+	m_channel_count = prefs.getOutputCount();
 
 	outputParameters.channelCount = m_channel_count;
 	outputParameters.sampleFormat = paFloat32;
@@ -99,7 +99,7 @@ void Engine::start()
 		&m_stream,
 		NULL, /*no input*/
 		&outputParameters,
-		SAMPLE_RATE,
+		prefs.getSampleRate(),
 		/*paFramesPerBufferUnspecified*/ FRAMES_PER_BUFFER,
 		paNoFlag,
 		Engine::audioCallback,

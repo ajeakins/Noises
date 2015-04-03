@@ -1,9 +1,24 @@
 #pragma once
 
+#include <QTime>
+
+#include <audio/wait_player.h>
+
 #include "cue_model_item.h"
 
 namespace noises
 {
+	struct WaitCueSettings
+	{
+	public:
+		void readSettings( const QJsonObject& root );
+
+		void writeSettings( QJsonObject& root ) const;
+
+	public:
+		QTime wait_time;
+	};
+
 	class WaitCueModelItem: public CueModelItem
 	{
 	public:
@@ -11,20 +26,42 @@ namespace noises
 			const QList< QVariant >& item_data,
 			CueModelItem* parent_item = nullptr );
 
-		virtual ~WaitCueModelItem();
+		~WaitCueModelItem();
 
-		virtual CueType getType() const
+		CueType getType() const
 		{
 			return CueType_Wait;
 		}
 
+		PostActions getSupportedPostActions()
+		{
+			return PostActions( PostAction_AdvanceAndPlay );
+		}
+
+		WaitCueSettings& getSettings()
+		{
+			return m_settings;
+		}
+
 		void execute() const;
+
+		void readSettings( const QJsonObject& settings );
+
+		void writeSettings( QJsonObject& settings ) const;
+
+		// get rid of this...
+		void updatePlayer();
 
 	protected:
 		QVariant getIcon() const;
 
+	private Q_SLOTS:
+		void playerTimeChanged( const QTime& time );
+
 	private:
-		// settings
+		WaitCueSettings m_settings;
+
+		audio::WaitPlayer::Ptr m_player;
 	};
 
 } /* namespace noises */

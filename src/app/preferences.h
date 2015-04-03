@@ -18,6 +18,8 @@ namespace noises
 
 		unsigned int getOutputCount() const;
 
+		unsigned int getSampleRate() const;
+
 	private:
 		void getKeys( QList< QString >& keys ) const;
 

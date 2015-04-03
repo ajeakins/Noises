@@ -3,7 +3,7 @@
 #include "cue_dialog.h"
 
 class QDataWidgetMapper;
-class QDoubleSpinBox;
+class QTimeEdit;
 
 namespace noises
 {
@@ -40,7 +40,7 @@ namespace noises
 
 		// widgets
 
-		QDoubleSpinBox* m_wait_time;
+		QTimeEdit* m_wait_time;
 
 	};
 

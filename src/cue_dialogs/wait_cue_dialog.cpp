@@ -3,6 +3,9 @@
 #include <QGroupBox>
 #include <QLabel>
 #include <QLayout>
+#include <QTimeEdit>
+
+#include <utils/time.h>
 
 #include <cues/wait_cue_model_item.h>
 
@@ -45,10 +48,16 @@ void WaitCueDialog::accept()
 
 void WaitCueDialog::writeSettings()
 {
+	WaitCueSettings& settings = m_cue->getSettings();
+	settings.wait_time = m_wait_time->time();
+
+	m_cue->updatePlayer();
 }
 
 void WaitCueDialog::readSettings()
 {
+	const WaitCueSettings& settings = m_cue->getSettings();
+	m_wait_time->setTime( settings.wait_time );
 }
 
 void WaitCueDialog::createCueWidgets()
@@ -57,8 +66,8 @@ void WaitCueDialog::createCueWidgets()
 
 	QLabel* wait_time_label = new QLabel( "Wait time:", this );
 
-	m_wait_time = new QDoubleSpinBox( this );
-	m_wait_time->setSuffix( "s" );
+	m_wait_time = new QTimeEdit( this );
+	m_wait_time->setDisplayFormat( utils::defaultTimeFormat() );
 
 	QHBoxLayout* layout = new QHBoxLayout();
 	layout->setContentsMargins( 0, 0, 0, 0 );

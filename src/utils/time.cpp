@@ -48,6 +48,11 @@ bool isZero( const QTime& time )
 
 int timeToMsecs( const QTime& time )
 {
+	if ( time.isNull() )
+	{
+		return 0;
+	}
+
 	int msecs = time.msec();
 	msecs += time.second() * 1000;
 	msecs += time.minute() * 60 * 1000;

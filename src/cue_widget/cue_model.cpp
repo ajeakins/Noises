@@ -23,7 +23,7 @@ CueModel::CueModel( QObject* parent )
 {
 	// Setup header item
 	QList< QVariant > rootData;
-	for ( Column itr = ( Column )0; itr != ColumnCount; ++itr )
+	for ( Column itr = ( Column )0; itr != Column_ITEM_COUNT; ++itr )
 	{
 		rootData.append( columnToString( itr ) );
 	}
@@ -100,11 +100,10 @@ CueModelItem* CueModel::createCue( CueType type )
 	// fill data
 	QList< QVariant > data;
 
-	for ( Column itr = ( Column )0; itr != ColumnCount; ++itr )
+	for ( Column itr = ( Column )0; itr != Column_ITEM_COUNT; ++itr )
 	{
 		data.append( "" );
 	}
-	data[Column_PostAction] = postActionToString( defaultPostAction() );
 
 	CueModelItem* item = 0;
 

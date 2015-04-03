@@ -1,5 +1,6 @@
 
 #include "audio_player.h"
+#include "wait_player.h"
 #include "manager.h"
 
 namespace noises
@@ -28,6 +29,8 @@ Player::Ptr Manager::createPlayer( QObject* parent, PlayerType type )
 	case PlayerType_Audio:
 		player = QSharedPointer< Player >( new AudioPlayer( parent ) );
 		break;
+	case PlayerType_Wait:
+		player = Player::Ptr( new WaitPlayer( parent ) );
 	}
 
 	connect(

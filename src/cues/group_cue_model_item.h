@@ -11,9 +11,9 @@ namespace noises
 			const QList< QVariant >& item_data,
 			CueModelItem* parent_item = nullptr );
 
-		virtual ~GroupCueModelItem();
+		~GroupCueModelItem();
 
-		virtual CueType getType() const
+		CueType getType() const
 		{
 			return CueType_Group;
 		}
