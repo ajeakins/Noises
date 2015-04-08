@@ -42,6 +42,18 @@ void WaitPlayer::stop()
 	Q_EMIT stopped();
 }
 
+void WaitPlayer::updateTime()
+{
+	float timeInMSecs = ( float )m_pos;
+	timeInMSecs *= 1000.0f;
+	timeInMSecs /= Application::getPreferences().getSampleRate();
+
+	QTime time( 0, 0 ,0 );
+	time = time.addMSecs( ( int )timeInMSecs );
+
+	Q_EMIT Player::timeUpdated( time );
+}
+
 void WaitPlayer::addData(
 	float* /*audio_data*/,
 	int frames,

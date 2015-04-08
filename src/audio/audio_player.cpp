@@ -92,7 +92,7 @@ QTime AudioPlayer::timeFromFrames( int frames ) const
 {
 	QTime time(0, 0, 0);
 
-	if ( !m_audio_data )
+	if ( !m_audio_data || frames == 0 )
 	{
 		return time;
 	}
@@ -152,9 +152,6 @@ void AudioPlayer::readData()
 		m_audio_data = new_data;
 	}
 
-	// emit time updated every 100ms
-	m_signal_interval = m_audio_info.samplerate / ( 100 * m_audio_info.channels );
-
 	sf_readf_float( file, m_audio_data, m_audio_info.frames );
 	sf_close( file );
 
@@ -196,19 +193,9 @@ void AudioPlayer::addData(
 		m_pos += m_audio_info.channels;
 		audio += channels;
 
-		// send time update
-		if ( m_pos > m_last_pos + m_signal_interval )
-		{
-			// recievers should be in another thread so this should not block
-			Q_EMIT timeUpdated( timeFromFrames( m_pos / m_audio_info.channels ) );
-			m_last_pos = m_pos;
-		}
-
 		// reached the end of the track
 		if ( m_pos == m_length )
 		{
-			Q_EMIT timeUpdated( QTime( 0, 0, 0 ) );
-
 			m_is_playing = false;
 			m_pos = m_last_pos = 0;
 		}
@@ -243,6 +230,12 @@ void AudioPlayer::stop()
 	m_pos = m_last_pos = 0;
 	Q_EMIT timeUpdated( QTime( 0, 0, 0 ) );
 	Q_EMIT stopped();
+}
+
+void AudioPlayer::updateTime()
+{
+	QTime time = timeFromFrames( m_pos / m_audio_info.channels );
+	Q_EMIT timeUpdated( time );
 }
 
 } /* namespace audio */

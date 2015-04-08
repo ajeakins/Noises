@@ -38,6 +38,8 @@ namespace audio
 
 		void stop();
 
+		void updateTime();
+
 	private:
 		friend class Manager;
 		friend class Engine;
@@ -68,7 +70,6 @@ namespace audio
 		// audio information
 		SF_INFO m_audio_info;
 		int m_length;
-		int m_signal_interval;
 
 		// volume data
 		QVector< QVector< float > > m_volumes;

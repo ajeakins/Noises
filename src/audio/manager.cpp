@@ -20,6 +20,11 @@ Manager::Manager( QObject* parent )
 Manager::~Manager()
 {}
 
+double Manager::getStreamTime()
+{
+	return m_engine.getStreamTime();
+}
+
 Player::Ptr Manager::createPlayer( QObject* parent, PlayerType type )
 {
 	Player::Ptr player;

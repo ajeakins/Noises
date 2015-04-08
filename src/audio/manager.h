@@ -32,6 +32,9 @@ namespace audio
 
 		~Manager();
 
+		// Time in seconds
+		double getStreamTime();
+
 		Player::Ptr createPlayer( QObject* parent, PlayerType type );
 
 		void stop();

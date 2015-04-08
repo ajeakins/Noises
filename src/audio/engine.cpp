@@ -1,8 +1,9 @@
 
 #include <assert.h>
-#include <math.h>
-#include <stdio.h>
 #include <iostream>
+
+#include <QTimer>
+#include <QReadWriteLock>
 
 #include <app/application.h>
 
@@ -31,7 +32,9 @@ int Engine::m_channel_count = 0;
 
 Engine::Engine( QObject* parent )
 :
-	QObject( parent )
+	QObject( parent ),
+	m_players_lock( new QReadWriteLock ),
+	m_player_update_timer( new QTimer( this ) )
 {
 	PaError error;
 
@@ -41,6 +44,18 @@ Engine::Engine( QObject* parent )
 		onError( error );
 		return;
 	}
+
+	// This timer is evaluated in the GUI event loop
+	// rather than using strict playback time but
+	// the values written to the GUI are playback time.
+	m_player_update_timer->setInterval( 50 );
+	connect( m_player_update_timer, &QTimer::timeout,
+			this, &Engine::updatePlayerTimes );
+	// Use the finished signal to stop the timer since
+	// it has to be done from the same thread the timer is
+	// in and the finished callback happens in the audio thread.
+	connect( this, &Engine::finished,
+			this, &Engine::stopTimer );
 }
 
 Engine::~Engine()
@@ -48,16 +63,33 @@ Engine::~Engine()
 	Pa_Terminate();
 }
 
+void Engine::stopTimer()
+{
+	m_player_update_timer->stop();
+}
+
 void Engine::registerPlayer( Player::Ptr player )
 {
-	QMutexLocker lock( &m_players_lock );
+	QWriteLocker lock( m_players_lock );
 	m_players.append( player );
 }
 
 void Engine::registerPlayers( QList< Player::Ptr >& players )
 {
-	QMutexLocker lock( &m_players_lock );
+	QWriteLocker lock( m_players_lock );
 	m_players.append( players );
+}
+
+void Engine::updatePlayerTimes()
+{
+	QReadLocker lock( m_players_lock );
+	if ( !m_players.isEmpty() )
+	{
+		for ( Player::Ptr player : m_players )
+		{
+			player->updateTime();
+		}
+	}
 }
 
 void Engine::stop()
@@ -73,6 +105,11 @@ void Engine::stop()
 	}
 
 	m_players.clear();
+}
+
+double Engine::getStreamTime()
+{
+	return Pa_GetStreamTime( m_stream );
 }
 
 void Engine::start()
@@ -126,7 +163,8 @@ void Engine::start()
 		return;
 	}
 
-	is_running = true;
+	m_player_update_timer->start();
+	m_is_running = true;
 }
 
 int Engine::audioCallback(
@@ -138,7 +176,7 @@ int Engine::audioCallback(
 	void* userData )
 {
 	Engine* engine = static_cast< Engine* >( userData );
-	QMutexLocker( &engine->m_players_lock );
+	QReadLocker read_lock( engine->m_players_lock );
 
 	float* out = ( float* )outputBuffer;
 	std::fill( out, out + ( framesPerBuffer * m_channel_count ), 0.0f );
@@ -151,7 +189,14 @@ int Engine::audioCallback(
 
 		if ( !player->isPlaying() )
 		{
-			itr.remove();
+			read_lock.unlock();
+			{
+				QWriteLocker write_lock( engine->m_players_lock );
+
+				player->updateTime();
+				itr.remove();
+			}
+			read_lock.relock();
 		}
 	}
 
@@ -166,7 +211,7 @@ int Engine::audioCallback(
 void Engine::finishedCallback( void* userData )
 {
 	Engine* engine = static_cast< Engine* >( userData );
-	engine->is_running = false;
+	engine->m_is_running = false;
 	Q_EMIT engine->finished();
 }
 

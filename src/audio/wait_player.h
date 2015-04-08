@@ -20,6 +20,8 @@ namespace audio
 
 		void stop();
 
+		void updateTime();
+
 		void setDuration( const QTime& time )
 		{
 			m_duration = time;

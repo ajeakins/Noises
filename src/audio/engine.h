@@ -1,12 +1,14 @@
 #pragma once
 
 #include <QObject>
-#include <QMutex>
 #include <QList>
 
 #include <portaudio.h>
 
 #include "player.h"
+
+class QTimer;
+class QReadWriteLock;
 
 namespace noises
 {
@@ -32,14 +34,22 @@ namespace audio
 
 		bool isRunning()
 		{
-			return is_running;
+			return m_is_running;
 		}
+
+		// returns the stream time in seconds
+		double getStreamTime();
 
 	Q_SIGNALS:
 		void finished();
 
 	public slots:
 		void start();
+
+	private slots:
+		void updatePlayerTimes();
+
+		void stopTimer();
 
 	private:
 		static int audioCallback(
@@ -58,10 +68,14 @@ namespace audio
 		static PaStream* m_stream;
 		static int m_channel_count;
 
-		bool is_running = false;
+		bool m_is_running = false;
 
-		QMutex m_players_lock;
+		QReadWriteLock* m_players_lock;
 		PlayerList m_players;
+
+		// timer for the players to update their owners
+		// about thier status
+		QTimer* m_player_update_timer;
 	};
 
 } /* namespace audio */
