@@ -18,7 +18,7 @@ namespace noises
 			return CueType_Group;
 		}
 
-		void execute() const;
+		void execute();
 
 		Qt::ItemFlags flags() const;
 

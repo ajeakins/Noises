@@ -2,6 +2,10 @@
 #include <QPixmap>
 
 #include <audio/types.h>
+#include <audio/manager.h>
+
+#include <cue_widget/types.h>
+
 #include <utils/time.h>
 
 #include "audio_cue_model_item.h"
@@ -57,9 +61,22 @@ AudioCueModelItem::AudioCueModelItem(
 AudioCueModelItem::~AudioCueModelItem()
 {}
 
-void AudioCueModelItem::execute() const
+void AudioCueModelItem::execute()
 {
+	audio::ScopedQueueController lock( Application::getAudioManager() );
+
 	m_player->start();
+	Q_EMIT cueDone( this );
+
+	const QString& post_action = data( Column_PostAction ).toString();
+	if ( stringToPostAction( post_action ) == PostAction_AdvanceAndPlay )
+	{
+		int row = parent()->row( this ) + 1;
+		if ( row < parent()->childCount() )
+		{
+			parent()->child( row )->execute();
+		}
+	}
 }
 
 QVariant AudioCueModelItem::getIcon() const

@@ -43,11 +43,21 @@ namespace noises
 			return m_settings;
 		}
 
-		void execute() const;
+		void execute();
 
 		void readSettings( const QJsonObject& settings );
 
 		void writeSettings( QJsonObject& settings ) const;
+
+		const QString& getTimeFormat() const
+		{
+			return m_time_format;
+		}
+
+		const QTime& getDuration() const
+		{
+			return m_settings.wait_time;
+		}
 
 		// get rid of this...
 		void updatePlayer();
@@ -58,8 +68,12 @@ namespace noises
 	private Q_SLOTS:
 		void playerTimeChanged( const QTime& time );
 
+		void waitDone();
+
 	private:
 		WaitCueSettings m_settings;
+
+		QString m_time_format;
 
 		audio::WaitPlayer::Ptr m_player;
 	};

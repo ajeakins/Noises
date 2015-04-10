@@ -16,7 +16,7 @@ GroupCueModelItem::GroupCueModelItem(
 GroupCueModelItem::~GroupCueModelItem()
 {}
 
-void GroupCueModelItem::execute() const
+void GroupCueModelItem::execute()
 {}
 
 Qt::ItemFlags GroupCueModelItem::flags() const

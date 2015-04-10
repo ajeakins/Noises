@@ -18,7 +18,7 @@ namespace noises
 			return CueType_Control;
 		}
 
-		void execute() const;
+		void execute();
 
 	protected:
 		QVariant getIcon() const;

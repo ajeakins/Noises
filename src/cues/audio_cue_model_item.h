@@ -52,7 +52,7 @@ namespace noises
 			return m_settings;
 		}
 
-		void execute() const;
+		void execute();
 
 		void readSettings( const QJsonObject& settings );
 
@@ -63,9 +63,15 @@ namespace noises
 
 		float getProgress() const;
 
-		const QString& getTimeFormat() const { return m_time_format; }
+		const QString& getTimeFormat() const
+		{
+			return m_time_format;
+		}
 
-		const QTime& getDuration() const { return m_duration; }
+		const QTime& getDuration() const
+		{
+			return m_duration;
+		}
 
 		// Shouldn't need this
 		void updatePlayer();

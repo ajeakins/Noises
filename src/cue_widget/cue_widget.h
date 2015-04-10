@@ -21,8 +21,6 @@ namespace noises
 
 		void deleteCurrentCue();
 
-		void getTargetCues( CueModelItem* item, QList< CueModelItem* >& cues );
-
 		// selection
 
 		CueModelItem* getCurrentItem();
@@ -39,6 +37,10 @@ namespace noises
 
 	private Q_SLOTS:
 		void editCue( QModelIndex index );
+
+		// increment selection when we get the signal a cue
+		// is done playing
+		void cueDone( CueModelItem* item );
 
 	private:
 		CueModel* m_cue_model;

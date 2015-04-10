@@ -54,7 +54,7 @@ namespace noises
 		}
 
 		// execute the cues action
-		virtual void execute() const
+		virtual void execute()
 		{
 			assert( false && "Cannot execute base item" );
 		}
@@ -65,6 +65,8 @@ namespace noises
 
 	Q_SIGNALS:
 		void dataChanged( CueModelItem* item );
+
+		void cueDone( CueModelItem* item );
 
 	protected:
 		virtual QVariant getIcon() const;

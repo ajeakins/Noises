@@ -27,6 +27,9 @@ namespace audio
 			m_duration = time;
 		}
 
+	Q_SIGNALS:
+		void waitDone();
+
 	private:
 		friend class Manager;
 		friend class Engine;

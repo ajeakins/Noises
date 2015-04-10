@@ -8,6 +8,18 @@ namespace noises
 namespace audio
 {
 
+ScopedQueueController::ScopedQueueController( Manager& manager )
+:
+	m_manager( manager )
+{
+	m_manager.queuePlayers();
+}
+
+ScopedQueueController::~ScopedQueueController()
+{
+	m_manager.unqueuePlayers();
+}
+
 Manager::Manager( QObject* parent )
 :
 	QObject( parent )
@@ -56,10 +68,15 @@ void Manager::stop()
 	m_engine.stop();
 }
 
-void Manager::setQueuePlayers( bool yes )
+void Manager::queuePlayers()
 {
-	m_queue_players = yes;
-	if ( !m_queue_players && !m_queued_players.isEmpty() )
+	++m_queue_players;
+}
+
+void Manager::unqueuePlayers()
+{
+	--m_queue_players;
+	if ( m_queue_players == 0 && !m_queued_players.isEmpty() )
 	{
 		m_engine.registerPlayers( m_queued_players );
 		m_queued_players.clear();
@@ -74,7 +91,7 @@ void Manager::unregisterPlayer( Player::Ptr player )
 
 void Manager::playerStarted( Player::Ptr player )
 {
-	if ( m_queue_players )
+	if ( m_queue_players != 0 )
 	{
 		m_queued_players.append( player );
 	}

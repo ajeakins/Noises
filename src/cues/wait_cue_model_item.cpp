@@ -3,6 +3,7 @@
 
 #include <audio/manager.h>
 #include <app/application.h>
+#include <cue_widget/types.h>
 
 #include <utils/time.h>
 
@@ -34,12 +35,16 @@ WaitCueModelItem::WaitCueModelItem(
 	connect(
 		m_player.data(), &audio::Player::timeUpdated,
 		this, &WaitCueModelItem::playerTimeChanged );
+
+	connect(
+		m_player.data(), &audio::WaitPlayer::waitDone,
+		this, &WaitCueModelItem::waitDone );
 }
 
 WaitCueModelItem::~WaitCueModelItem()
 {}
 
-void WaitCueModelItem::execute() const
+void WaitCueModelItem::execute()
 {
 	m_player->start();
 }
@@ -52,24 +57,36 @@ QVariant WaitCueModelItem::getIcon() const
 
 void WaitCueModelItem::playerTimeChanged( const QTime& time )
 {
-	(void)time;
+	QTime remaining;
+	if ( utils::isZero( m_settings.wait_time ) )
+	{
+		remaining = QTime( 0, 0, 0 );
+	}
+	else
+	{
+		remaining = utils::subtract( m_settings.wait_time, time );
+	}
 
-	// QTime remaining;
-	// if ( utils::isZero( m_duration ) )
-	// {
-	// 	remaining = QTime( 0, 0, 0 );
-	// }
-	// else
-	// {
-	// 	remaining = utils::subtract( m_duration, time );
-	// }
+	setData( Column_Remaining, remaining.toString( m_time_format ) );
+	setData( Column_Elapsed, time.toString( m_time_format ) );
 
-	// setData( 3, remaining.toString( m_time_format ) );
-	// setData( 4, time.toString( m_time_format ) );
-
-	// Q_EMIT dataChanged( this );
+	Q_EMIT dataChanged( this );
 }
 
+void WaitCueModelItem::waitDone()
+{
+	Q_EMIT cueDone( this );
+
+	const QString& post_action = data( Column_PostAction ).toString();
+	if ( stringToPostAction( post_action ) == PostAction_AdvanceAndPlay )
+	{
+		int row = parent()->row( this ) + 1;
+		if ( row < parent()->childCount() )
+		{
+			parent()->child( row )->execute();
+		}
+	}
+}
 
 void WaitCueModelItem::readSettings( const QJsonObject& settings )
 {
@@ -92,6 +109,9 @@ void WaitCueModelItem::writeSettings( QJsonObject& settings ) const
 void WaitCueModelItem::updatePlayer()
 {
 	m_player->setDuration( m_settings.wait_time );
+	m_time_format = utils::timeFormat( m_settings.wait_time );
+
+	playerTimeChanged( QTime( 0, 0, 0 ) );
 }
 
 } /* namespace noises */

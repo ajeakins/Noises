@@ -5,6 +5,8 @@
 
 #include <QJsonArray>
 
+#include <cue_widget/types.h>
+
 #include "cue_model_item.h"
 
 namespace noises

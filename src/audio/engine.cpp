@@ -51,21 +51,11 @@ Engine::Engine( QObject* parent )
 	m_player_update_timer->setInterval( 50 );
 	connect( m_player_update_timer, &QTimer::timeout,
 			this, &Engine::updatePlayerTimes );
-	// Use the finished signal to stop the timer since
-	// it has to be done from the same thread the timer is
-	// in and the finished callback happens in the audio thread.
-	connect( this, &Engine::finished,
-			this, &Engine::stopTimer );
 }
 
 Engine::~Engine()
 {
 	Pa_Terminate();
-}
-
-void Engine::stopTimer()
-{
-	m_player_update_timer->stop();
 }
 
 void Engine::registerPlayer( Player::Ptr player )
@@ -90,6 +80,10 @@ void Engine::updatePlayerTimes()
 			player->updateTime();
 		}
 	}
+	else
+	{
+		m_player_update_timer->stop();
+	}
 }
 
 void Engine::stop()
@@ -102,9 +96,13 @@ void Engine::stop()
 	for ( Player::Ptr player : m_players )
 	{
 		player->stop();
+		player->updateTime();
 	}
 
 	m_players.clear();
+
+	m_is_running = false;
+	Q_EMIT finished();
 }
 
 double Engine::getStreamTime()
@@ -147,8 +145,6 @@ void Engine::start()
 		onError( error );
 		return;
 	}
-
-	Pa_SetStreamFinishedCallback(m_stream, Engine::finishedCallback);
 
 	if( error != paNoError )
 	{
@@ -202,17 +198,13 @@ int Engine::audioCallback(
 
 	if ( engine->m_players.isEmpty() )
 	{
+		engine->m_is_running = false;
+		Q_EMIT engine->finished();
+
 		return paComplete;
 	}
 
 	return paContinue;
-}
-
-void Engine::finishedCallback( void* userData )
-{
-	Engine* engine = static_cast< Engine* >( userData );
-	engine->m_is_running = false;
-	Q_EMIT engine->finished();
 }
 
 } /* namespace audio */

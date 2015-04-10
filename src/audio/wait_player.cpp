@@ -68,6 +68,8 @@ void WaitPlayer::addData(
 	if ( m_pos > m_length )
 	{
 		m_is_playing = false;
+		m_pos = 0;
+		Q_EMIT waitDone();
 	}
 }
 

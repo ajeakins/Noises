@@ -73,6 +73,9 @@ namespace noises
 
 		void writeSettings( QJsonArray& settings ) const;
 
+	Q_SIGNALS:
+		void cueDone( CueModelItem* cue );
+
 	private Q_SLOTS:
 		void itemDataChanged( CueModelItem* item );
 

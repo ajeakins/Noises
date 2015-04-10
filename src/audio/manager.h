@@ -23,6 +23,18 @@ namespace noises
 namespace audio
 {
 	class Engine;
+	class Manager;
+
+	class ScopedQueueController
+	{
+	public:
+		ScopedQueueController( Manager& manager );
+
+		~ScopedQueueController();
+
+	private:
+		Manager& m_manager;
+	};
 
 	class Manager: public QObject
 	{
@@ -39,7 +51,14 @@ namespace audio
 
 		void stop();
 
-		void setQueuePlayers( bool yes );
+		// Cue players so the can be added to the engine in one
+		// go, can be called recursively, each queue call must
+		// be matched by and unqueue. The best way to do this is
+		// to use the ScopedQueueController.
+
+		void queuePlayers();
+
+		void unqueuePlayers();
 
 	Q_SIGNALS:
 		void started();
@@ -57,7 +76,7 @@ namespace audio
 	private:
 		QList< Player::Ptr > m_players;
 
-		bool m_queue_players;
+		unsigned int m_queue_players;
 		QList< Player::Ptr > m_queued_players;
 
 		Engine m_engine;

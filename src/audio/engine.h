@@ -38,6 +38,8 @@ namespace audio
 		}
 
 		// returns the stream time in seconds
+		// currently does not work, seems to be
+		// a bug in port audio
 		double getStreamTime();
 
 	Q_SIGNALS:
@@ -49,8 +51,6 @@ namespace audio
 	private slots:
 		void updatePlayerTimes();
 
-		void stopTimer();
-
 	private:
 		static int audioCallback(
 			const void* inputBuffer,
@@ -59,8 +59,6 @@ namespace audio
 			const PaStreamCallbackTimeInfo* timeInfo,
 			PaStreamCallbackFlags statusFlags,
 			void* userData );
-
-		static void finishedCallback( void* userData );
 
 	private:
 		typedef QList< Player::Ptr > PlayerList;
@@ -74,7 +72,7 @@ namespace audio
 		PlayerList m_players;
 
 		// timer for the players to update their owners
-		// about thier status
+		// about their status
 		QTimer* m_player_update_timer;
 	};
 

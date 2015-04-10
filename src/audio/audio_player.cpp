@@ -198,6 +198,7 @@ void AudioPlayer::addData(
 		{
 			m_is_playing = false;
 			m_pos = m_last_pos = 0;
+			return;
 		}
 	}
 }
@@ -228,7 +229,6 @@ void AudioPlayer::stop()
 {
 	m_is_playing = false;
 	m_pos = m_last_pos = 0;
-	Q_EMIT timeUpdated( QTime( 0, 0, 0 ) );
 	Q_EMIT stopped();
 }
 

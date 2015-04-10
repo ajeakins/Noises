@@ -128,8 +128,11 @@ CueModelItem* CueModel::createCue( CueType type )
 
 	connect(
 		item, &CueModelItem::dataChanged,
-		this, &CueModel::itemDataChanged
-		);
+		this, &CueModel::itemDataChanged );
+
+	connect(
+		item, &CueModelItem::cueDone,
+		this, &CueModel::cueDone );
 
 	return item;
 }
