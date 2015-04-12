@@ -42,7 +42,7 @@ void WaitPlayer::stop()
 	Q_EMIT stopped();
 }
 
-void WaitPlayer::updateTime()
+void WaitPlayer::updateTime() const
 {
 	float timeInMSecs = ( float )m_pos;
 	timeInMSecs *= 1000.0f;

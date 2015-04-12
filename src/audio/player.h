@@ -28,14 +28,14 @@ namespace audio
 			return m_is_playing;
 		}
 
-		virtual void updateTime() = 0;
+		virtual void updateTime() const = 0;
 
 	Q_SIGNALS:
 		void started( Player::Ptr player );
 
 		void stopped();
 
-		void timeUpdated( QTime time );
+		void timeUpdated( QTime time ) const;
 
 		void parentDestroyed( Player::Ptr player );
 
@@ -49,11 +49,6 @@ namespace audio
 			float* audio_data,
 			int frames,
 			int channels ) = 0;
-
-		void emitTimeSignal( const QTime& time )
-		{
-			Q_EMIT timeUpdated( time );
-		}
 
 	protected:
 		// playback state

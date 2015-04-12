@@ -12,15 +12,15 @@ namespace audio
 	public:
 		typedef QSharedPointer< WaitPlayer > Ptr;
 
-		~WaitPlayer();
+		~WaitPlayer() override;
 
 		// Playback controls
 
-		void start();
+		void start() override;
 
-		void stop();
+		void stop() override;
 
-		void updateTime();
+		void updateTime() const override;
 
 		void setDuration( const QTime& time )
 		{
@@ -39,7 +39,7 @@ namespace audio
 		void addData(
 			float* audio_data,
 			int frames,
-			int channels );
+			int channels ) override;
 
 	private:
 		QTime m_duration;

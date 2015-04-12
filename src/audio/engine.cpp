@@ -48,6 +48,7 @@ Engine::Engine( QObject* parent )
 	// This timer is evaluated in the GUI event loop
 	// rather than using strict playback time but
 	// the values written to the GUI are playback time.
+	// 50ms seems like the sweet spot for smooth updates.
 	m_player_update_timer->setInterval( 50 );
 	connect( m_player_update_timer, &QTimer::timeout,
 			this, &Engine::updatePlayerTimes );

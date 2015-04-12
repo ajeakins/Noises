@@ -20,7 +20,7 @@ namespace audio
 	public:
 		typedef QSharedPointer< AudioPlayer > Ptr;
 
-		~AudioPlayer();
+		~AudioPlayer() override;
 
 		// setup
 
@@ -32,13 +32,13 @@ namespace audio
 
 		// Playback controls
 
-		void start();
+		void start() override;
 
 		void pause();
 
-		void stop();
+		void stop() override;
 
-		void updateTime();
+		void updateTime() const override;
 
 	private:
 		friend class Manager;
@@ -55,7 +55,7 @@ namespace audio
 		void addData(
 			float* audio_data,
 			int frames,
-			int channels );
+			int channels ) override;
 
 	private:
 		QString m_filename;

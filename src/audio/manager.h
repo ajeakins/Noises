@@ -76,7 +76,7 @@ namespace audio
 	private:
 		QList< Player::Ptr > m_players;
 
-		unsigned int m_queue_players;
+		unsigned int m_queue_players = 0;
 		QList< Player::Ptr > m_queued_players;
 
 		Engine m_engine;

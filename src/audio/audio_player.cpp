@@ -232,7 +232,7 @@ void AudioPlayer::stop()
 	Q_EMIT stopped();
 }
 
-void AudioPlayer::updateTime()
+void AudioPlayer::updateTime() const
 {
 	QTime time = timeFromFrames( m_pos / m_audio_info.channels );
 	Q_EMIT timeUpdated( time );
