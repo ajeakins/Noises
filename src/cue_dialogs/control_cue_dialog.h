@@ -3,6 +3,7 @@
 #include "cue_dialog.h"
 
 class QDataWidgetMapper;
+class QComboBox;
 
 namespace noises
 {
@@ -27,6 +28,8 @@ namespace noises
 	private:
 		void createCueWidgets();
 
+		void populateTargetCues();
+
 		void readSettings();
 
 		void writeSettings();
@@ -38,6 +41,10 @@ namespace noises
 		ControlCueModelItem* m_cue;
 
 		// widgets
+
+		QComboBox* m_target_cue;
+
+		QComboBox* m_action;
 
 	};
 

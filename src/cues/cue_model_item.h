@@ -53,6 +53,11 @@ namespace noises
 			return PostActions( PostAction_Advance | PostAction_AdvanceAndPlay );
 		}
 
+		QString getUuid()
+		{
+			return m_uuid;
+		}
+
 		// execute the cues action
 		virtual void execute()
 		{
@@ -77,6 +82,8 @@ namespace noises
 
 		CueModelItem* m_parent_item;
 		QList< CueModelItem* > m_child_items;
+
+		QString m_uuid;
 	};
 
 } /* namespace noises */

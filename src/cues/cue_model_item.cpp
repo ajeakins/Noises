@@ -2,6 +2,7 @@
 #include <assert.h>
 
 #include <QStringList>
+#include <QUuid>
 
 #include <QJsonArray>
 
@@ -18,7 +19,8 @@ CueModelItem::CueModelItem(
 :
 	QObject(),
 	m_item_data( item_data ),
-	m_parent_item( parent_item )
+	m_parent_item( parent_item ),
+	m_uuid( QUuid::createUuid().toString() )
 
 {
 	assert( item_data.count() == columnCount() );
@@ -140,11 +142,11 @@ QVariant CueModelItem::getIcon() const
 void CueModelItem::readSettings( const QJsonObject& settings )
 {
 	QJsonArray data = settings.value( "data" ).toArray();
-
 	for ( int i = 0; i != m_item_data.count(); ++i )
 	{
 		m_item_data[i] = data[i].toString();
 	}
+	m_uuid = settings.value( "uuid" ).toString();
 }
 
 void CueModelItem::writeSettings( QJsonObject& settings ) const
@@ -159,6 +161,7 @@ void CueModelItem::writeSettings( QJsonObject& settings ) const
 	}
 
 	settings["data"] = values;
+	settings["uuid"] = m_uuid;
 }
 
 } /* namespace noises */
