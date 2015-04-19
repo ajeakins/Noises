@@ -48,12 +48,12 @@ namespace noises
 			return CueType_None;
 		}
 
-		virtual PostActions getSupportedPostActions()
+		virtual PostActions getSupportedPostActions() const
 		{
 			return PostActions( PostAction_Advance | PostAction_AdvanceAndPlay );
 		}
 
-		QString getUuid()
+		QString getUuid() const
 		{
 			return m_uuid;
 		}

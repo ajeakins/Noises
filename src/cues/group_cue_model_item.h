@@ -13,17 +13,17 @@ namespace noises
 
 		~GroupCueModelItem();
 
-		CueType getType() const
+		CueType getType() const override
 		{
 			return CueType_Group;
 		}
 
-		void execute();
+		void execute() override;
 
-		Qt::ItemFlags flags() const;
+		Qt::ItemFlags flags() const override;
 
 	protected:
-		QVariant getIcon() const;
+		QVariant getIcon() const override;
 
 	private:
 		// settings

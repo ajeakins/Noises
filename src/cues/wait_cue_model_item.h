@@ -28,12 +28,12 @@ namespace noises
 
 		~WaitCueModelItem();
 
-		CueType getType() const
+		CueType getType() const override
 		{
 			return CueType_Wait;
 		}
 
-		PostActions getSupportedPostActions()
+		PostActions getSupportedPostActions() const override
 		{
 			return PostActions( PostAction_AdvanceAndPlay );
 		}
@@ -43,11 +43,11 @@ namespace noises
 			return m_settings;
 		}
 
-		void execute();
+		void execute() override;
 
-		void readSettings( const QJsonObject& settings );
+		void readSettings( const QJsonObject& settings ) override;
 
-		void writeSettings( QJsonObject& settings ) const;
+		void writeSettings( QJsonObject& settings ) const override;
 
 		const QString& getTimeFormat() const
 		{
@@ -63,7 +63,7 @@ namespace noises
 		void updatePlayer();
 
 	protected:
-		QVariant getIcon() const;
+		QVariant getIcon() const override;
 
 	private Q_SLOTS:
 		void playerTimeChanged( const QTime& time );

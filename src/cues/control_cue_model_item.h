@@ -47,7 +47,7 @@ namespace noises
 
 		~ControlCueModelItem();
 
-		CueType getType() const
+		CueType getType() const override
 		{
 			return CueType_Control;
 		}
@@ -57,14 +57,14 @@ namespace noises
 			return m_settings;
 		}
 
-		void execute();
+		void execute() override;
 
-		void readSettings( const QJsonObject& settings );
+		void readSettings( const QJsonObject& settings ) override;
 
-		void writeSettings( QJsonObject& settings ) const;
+		void writeSettings( QJsonObject& settings ) const override;
 
 	protected:
-		QVariant getIcon() const;
+		QVariant getIcon() const override;
 
 	private:
 		ControlCueSettings m_settings;
