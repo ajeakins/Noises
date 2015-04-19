@@ -1,6 +1,7 @@
 
 #include <QPixmap>
 
+#include "audio_cue_model_item.h"
 #include "control_cue_model_item.h"
 
 namespace noises
@@ -14,6 +15,8 @@ QString actionToString( ControlAction action )
 			return "Stop";
 		case ControlAction_Start:
 			return "Start";
+		case ControlAction_Pause:
+			return "Pause";
 		case ControlAction_ITEM_COUNT:
 			return "";
 	}
@@ -47,7 +50,40 @@ ControlCueModelItem::~ControlCueModelItem()
 {}
 
 void ControlCueModelItem::execute()
-{}
+{
+	CueModelItem* parent = this->parent();
+	CueModelItem* target = 0;
+	for ( int i = 0; i != parent->row( this ); ++i )
+	{
+		CueModelItem* item = parent->child( i );
+		if ( item->getUuid() == m_settings.target_cue_uuid )
+		{
+			target = item;
+		}
+	}
+
+	if ( target && target->getType() == CueType_Audio )
+	{
+		AudioCueModelItem* audio_cue = ( AudioCueModelItem* )target;
+
+		switch( m_settings.cue_action )
+		{
+			case ControlAction_Start:
+				audio_cue->start();
+				break;
+			case ControlAction_Stop:
+				audio_cue->stop();
+				break;
+			case ControlAction_Pause:
+				audio_cue->pause();
+				break;
+			case ControlAction_ITEM_COUNT:
+				break;
+		}
+	}
+
+	Q_EMIT cueDone( this );
+}
 
 QVariant ControlCueModelItem::getIcon() const
 {

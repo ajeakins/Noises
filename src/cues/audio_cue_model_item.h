@@ -73,6 +73,12 @@ namespace noises
 			return m_duration;
 		}
 
+		void stop();
+
+		void start();
+
+		void pause();
+
 		// Shouldn't need this
 		void updatePlayer();
 

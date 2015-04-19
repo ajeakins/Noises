@@ -8,6 +8,7 @@ namespace noises
 	{
 		ControlAction_Stop,
 		ControlAction_Start,
+		ControlAction_Pause,
 
 		ControlAction_ITEM_COUNT
 	};

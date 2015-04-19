@@ -85,6 +85,21 @@ QVariant AudioCueModelItem::getIcon() const
 	return icon;
 }
 
+void AudioCueModelItem::stop()
+{
+	m_player->stop();
+}
+
+void AudioCueModelItem::start()
+{
+	m_player->start();
+}
+
+void AudioCueModelItem::pause()
+{
+	m_player->pause();
+}
+
 void AudioCueModelItem::updatePlayer()
 {
 	m_player->setFilename( m_settings.file_name );
