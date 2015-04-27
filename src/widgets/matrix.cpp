@@ -5,7 +5,7 @@
 #include <QLabel>
 #include <QLayout>
 
-#include <audio/matrix_settings.h>
+#include <audio/volume_matrix.h>
 
 #include "volume_dial.h"
 
@@ -85,7 +85,7 @@ void Matrix::setVolume( unsigned int input, unsigned int output, float value )
 	dial->setVolume( value );
 }
 
-void Matrix::readSettings( const audio::MatrixSettings& settings )
+void Matrix::readSettings( const audio::VolumeMatrix& settings )
 {
 	if (
 		settings.getInputs() != getInputs() ||
@@ -105,7 +105,7 @@ void Matrix::readSettings( const audio::MatrixSettings& settings )
 	m_link->setChecked( settings.getStereoLink() );
 }
 
-void Matrix::writeSettings( audio::MatrixSettings& settings ) const
+void Matrix::writeSettings( audio::VolumeMatrix& settings ) const
 {
 	settings.setInputs( getInputs() );
 	settings.setOutputs( getOutputs() );

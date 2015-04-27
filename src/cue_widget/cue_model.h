@@ -7,7 +7,7 @@
 
 #include <QJsonArray>
 
-#include <cues/types.h>
+#include <cue/types.h>
 
 namespace noises
 {

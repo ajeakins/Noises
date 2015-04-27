@@ -1,6 +1,6 @@
 
-#include "audio_player.h"
-#include "wait_player.h"
+#include "player/audio_player.h"
+#include "player/wait_player.h"
 #include "manager.h"
 
 namespace noises

@@ -12,7 +12,7 @@ namespace noises
 {
 namespace audio
 {
-	class MatrixSettings;
+	class VolumeMatrix;
 
 	class AudioPlayer: public Player
 	{
@@ -26,7 +26,7 @@ namespace audio
 
 		void setFilename( const QString& filename );
 
-		void setVolume( const MatrixSettings& settings );
+		void setVolume( const VolumeMatrix& settings );
 
 		QTime getDuration() const;
 

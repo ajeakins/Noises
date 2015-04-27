@@ -2,7 +2,7 @@
 
 #include <QTime>
 
-#include <audio/wait_player.h>
+#include <audio/player/wait_player.h>
 
 #include "cue_model_item.h"
 

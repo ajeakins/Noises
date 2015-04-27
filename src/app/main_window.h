@@ -2,7 +2,7 @@
 
 #include <QMainWindow>
 
-#include <cues/types.h>
+#include <cue/types.h>
 
 class QAction;
 class QMenu;

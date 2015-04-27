@@ -12,7 +12,7 @@
 #include <QObject>
 #include <QList>
 
-#include "player.h"
+#include "player/player.h"
 #include "engine.h"
 #include "types.h"
 

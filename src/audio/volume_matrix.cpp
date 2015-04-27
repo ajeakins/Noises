@@ -5,14 +5,14 @@
 #include <QJsonArray>
 #include <QJsonValue>
 
-#include "matrix_settings.h"
+#include "volume_matrix.h"
 
 namespace noises
 {
 namespace audio
 {
 
-MatrixSettings::MatrixSettings(
+VolumeMatrix::VolumeMatrix(
 	unsigned int inputs,
 	unsigned int outputs )
 :
@@ -26,12 +26,12 @@ MatrixSettings::MatrixSettings(
 	initialiseVolumes();
 }
 
-unsigned int MatrixSettings::getInputs() const
+unsigned int VolumeMatrix::getInputs() const
 {
 	return m_inputs;
 }
 
-void MatrixSettings::setInputs( unsigned int inputs )
+void VolumeMatrix::setInputs( unsigned int inputs )
 {
 	if ( inputs == m_inputs )
 	{
@@ -41,12 +41,12 @@ void MatrixSettings::setInputs( unsigned int inputs )
 	}
 }
 
-unsigned int MatrixSettings::getOutputs() const
+unsigned int VolumeMatrix::getOutputs() const
 {
 	return m_outputs;
 }
 
-void MatrixSettings::setOutputs( unsigned int outputs )
+void VolumeMatrix::setOutputs( unsigned int outputs )
 {
 	if ( outputs != m_outputs )
 	{
@@ -55,7 +55,7 @@ void MatrixSettings::setOutputs( unsigned int outputs )
 	}
 }
 
-float MatrixSettings::getVolume(
+float VolumeMatrix::getVolume(
 	unsigned int input,
 	unsigned int output ) const
 {
@@ -67,7 +67,7 @@ float MatrixSettings::getVolume(
 	return m_volumes[input][output];
 }
 
-void MatrixSettings::setVolume(
+void VolumeMatrix::setVolume(
 	unsigned int input,
 	unsigned int output,
 	float volume )
@@ -78,23 +78,23 @@ void MatrixSettings::setVolume(
 	m_volumes[input][output] = volume;
 }
 
-bool MatrixSettings::getStereoLink() const
+bool VolumeMatrix::getStereoLink() const
 {
 	return m_stereo_link;
 }
 
-void MatrixSettings::setStereoLink( bool linked )
+void VolumeMatrix::setStereoLink( bool linked )
 {
 	m_stereo_link = linked;
 }
 
 
-bool MatrixSettings::isMinimumVolume( float volume ) const
+bool VolumeMatrix::isMinimumVolume( float volume ) const
 {
 	return volume == m_minimum_value;
 }
 
-void MatrixSettings::initialiseVolumes()
+void VolumeMatrix::initialiseVolumes()
 {
 	for ( unsigned int i = 0; i != m_inputs; ++i )
 	{
@@ -107,7 +107,7 @@ void MatrixSettings::initialiseVolumes()
 	}
 }
 
-void MatrixSettings::readSettings( const QJsonObject& settings )
+void VolumeMatrix::readSettings( const QJsonObject& settings )
 {
 	m_inputs = settings["inputs"].toInt();
 	m_outputs = settings["outputs"].toInt();
@@ -127,7 +127,7 @@ void MatrixSettings::readSettings( const QJsonObject& settings )
 	}
 }
 
-void MatrixSettings::writeSettings( QJsonObject& settings ) const
+void VolumeMatrix::writeSettings( QJsonObject& settings ) const
 {
 	settings.insert( "inputs", ( int )m_inputs );
 	settings.insert( "outputs", ( int )m_outputs );

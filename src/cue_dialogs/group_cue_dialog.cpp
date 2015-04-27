@@ -1,5 +1,5 @@
 
-#include <cues/group_cue_model_item.h>
+#include <cue/group_cue_model_item.h>
 
 #include "group_cue_dialog.h"
 

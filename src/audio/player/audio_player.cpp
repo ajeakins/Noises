@@ -9,7 +9,7 @@
 #include <app/application.h>
 #include <utils/audio.h>
 
-#include "matrix_settings.h"
+#include <audio/volume_matrix.h>
 
 #include "audio_player.h"
 
@@ -43,7 +43,7 @@ void AudioPlayer::setFilename( const QString& filename )
 	}
 }
 
-void AudioPlayer::setVolume( const MatrixSettings& settings )
+void AudioPlayer::setVolume( const VolumeMatrix& settings )
 {
 	if ( !m_audio_data )
 	{

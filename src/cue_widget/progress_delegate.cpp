@@ -2,9 +2,9 @@
 #include <QApplication>
 #include <QDebug>
 
-#include <cues/cue_model_item.h>
-#include <cues/audio_cue_model_item.h>
-#include <cues/wait_cue_model_item.h>
+#include <cue/cue_model_item.h>
+#include <cue/audio_cue_model_item.h>
+#include <cue/wait_cue_model_item.h>
 
 #include <utils/time.h>
 

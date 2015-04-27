@@ -15,11 +15,11 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include <cues/audio_cue_model_item.h>
-#include <cues/control_cue_model_item.h>
-#include <cues/cue_model_item.h>
-#include <cues/group_cue_model_item.h>
-#include <cues/wait_cue_model_item.h>
+#include <cue/audio_cue_model_item.h>
+#include <cue/control_cue_model_item.h>
+#include <cue/cue_model_item.h>
+#include <cue/group_cue_model_item.h>
+#include <cue/wait_cue_model_item.h>
 
 #include <cue_dialogs/api.h>
 

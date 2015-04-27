@@ -4,7 +4,7 @@
 
 #include <cue_dialogs/api.h>
 
-#include <cues/cue_model_item.h>
+#include <cue/cue_model_item.h>
 
 #include <utils/cue.h>
 

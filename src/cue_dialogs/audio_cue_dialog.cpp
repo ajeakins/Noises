@@ -8,10 +8,10 @@
 #include <QTabWidget>
 
 #include <audio/manager.h>
-#include <audio/matrix_settings.h>
+#include <audio/volume_matrix.h>
 #include <audio/types.h>
 
-#include <cues/audio_cue_model_item.h>
+#include <cue/audio_cue_model_item.h>
 
 #include <utils/time.h>
 
@@ -91,7 +91,7 @@ void AudioCueDialog::resetTimes()
 
 void AudioCueDialog::volumeChanged()
 {
-	audio::MatrixSettings settings;
+	audio::VolumeMatrix settings;
 	m_matrix->writeSettings( settings );
 	m_player->setVolume( settings );
 }

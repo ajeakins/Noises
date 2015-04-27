@@ -5,7 +5,7 @@
 
 #include <portaudio.h>
 
-#include "player.h"
+#include "player/player.h"
 
 class QTimer;
 class QReadWriteLock;

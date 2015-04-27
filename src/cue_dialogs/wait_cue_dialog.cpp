@@ -7,7 +7,7 @@
 
 #include <utils/time.h>
 
-#include <cues/wait_cue_model_item.h>
+#include <cue/wait_cue_model_item.h>
 
 #include "wait_cue_dialog.h"
 

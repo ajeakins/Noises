@@ -1,6 +1,6 @@
 #pragma once
 
-#include <audio/audio_player.h>
+#include <audio/player/audio_player.h>
 
 #include "cue_dialog.h"
 

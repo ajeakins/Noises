@@ -13,7 +13,7 @@
 #include <cue_widget/cue_model.h>
 #include <cue_widget/types.h>
 
-#include <cues/cue_model_item.h>
+#include <cue/cue_model_item.h>
 
 #include "cue_dialog.h"
 

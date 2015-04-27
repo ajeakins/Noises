@@ -8,10 +8,10 @@ namespace noises
 {
 namespace audio
 {
-	class MatrixSettings
+	class VolumeMatrix
 	{
 	public:
-		MatrixSettings(
+		VolumeMatrix(
 			unsigned int inputs = 2,
 			unsigned int outputs = 2
 			);

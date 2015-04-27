@@ -1,7 +1,7 @@
 
 #include <QDebug>
 
-#include <cues/cue_model_item.h>
+#include <cue/cue_model_item.h>
 
 #include "audio_cue_dialog.h"
 #include "control_cue_dialog.h"

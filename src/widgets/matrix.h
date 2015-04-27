@@ -10,7 +10,7 @@ namespace noises
 {
 namespace audio
 {
-	class MatrixSettings;
+	class VolumeMatrix;
 } /* namespace audio */
 namespace widgets
 {
@@ -39,8 +39,8 @@ namespace widgets
 		float getVolume( unsigned int input, unsigned int output ) const;
 		void setVolume( unsigned int input, unsigned int output, float value );
 
-		void readSettings( const audio::MatrixSettings& settings );
-		void writeSettings( audio::MatrixSettings& settings ) const;
+		void readSettings( const audio::VolumeMatrix& settings );
+		void writeSettings( audio::VolumeMatrix& settings ) const;
 
 	Q_SIGNALS:
 		void volumeChanged();

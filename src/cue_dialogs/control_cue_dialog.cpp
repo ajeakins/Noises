@@ -4,8 +4,8 @@
 #include <QLabel>
 #include <QLayout>
 
-#include <cues/cue_model_item.h>
-#include <cues/control_cue_model_item.h>
+#include <cue/cue_model_item.h>
+#include <cue/control_cue_model_item.h>
 #include <cue_widget/types.h>
 
 #include "control_cue_dialog.h"
