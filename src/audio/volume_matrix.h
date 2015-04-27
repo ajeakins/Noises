@@ -4,6 +4,13 @@
 
 class QJsonObject;
 
+// setting inputs and outputs causes
+// volume settings to be reset
+// TODO make optional?
+
+// could also provide set function that
+// does both in one go
+
 namespace noises
 {
 namespace audio
@@ -15,13 +22,6 @@ namespace audio
 			unsigned int inputs = 2,
 			unsigned int outputs = 2
 			);
-
-		// setting inputs and outputs causes
-		// volume settings to be reset
-		// TODO make optional?
-
-		// could also provide set function that
-		// does both in one go
 
 		// inputs
 

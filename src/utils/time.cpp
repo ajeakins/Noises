@@ -1,4 +1,6 @@
 
+#include "math.h"
+
 #include "time.h"
 
 namespace noises
@@ -62,7 +64,7 @@ int timeToMsecs( const QTime& time )
 
 QTime timeFromMsecs( int msecs )
 {
-	QTime time( 0, 0 , 0 );
+	QTime time( 0, 0, 0 );
 	time = time.addMSecs( msecs );
 	return time;
 }
@@ -74,11 +76,16 @@ QTime subtract( const QTime& lhs, const QTime& rhs )
 	return time;
 }
 
-float percentage( const QTime& numerator, const QTime& denominator )
+float fraction( const QTime& numerator, const QTime& denominator )
 {
-	float result = timeToMsecs( numerator ) * 100.0f;
+	float result = timeToMsecs( numerator );
 	result /= ( float )timeToMsecs( denominator );
 	return result;
+}
+
+float percentage( const QTime& numerator, const QTime& denominator )
+{
+	return fraction( numerator, denominator ) * 100.0f;
 }
 
 } /* namspace noises */
