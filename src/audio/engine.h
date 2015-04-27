@@ -63,8 +63,8 @@ namespace audio
 	private:
 		typedef QList< Player::Ptr > PlayerList;
 
-		static PaStream* m_stream;
-		static int m_channel_count;
+		PaStream* m_stream;
+		int m_channel_count;
 
 		bool m_is_running = false;
 

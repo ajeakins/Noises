@@ -44,10 +44,11 @@ Player::Ptr Manager::createPlayer( QObject* parent, PlayerType type )
 	switch( type )
 	{
 	case PlayerType_Audio:
-		player = QSharedPointer< Player >( new AudioPlayer( parent ) );
+		player = Player::Ptr( new AudioPlayer( parent ) );
 		break;
 	case PlayerType_Wait:
 		player = Player::Ptr( new WaitPlayer( parent ) );
+		break;
 	}
 
 	connect(

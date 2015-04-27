@@ -40,7 +40,6 @@ namespace audio
 		void parentDestroyed( Player::Ptr player );
 
 	protected:
-		friend class Manager;
 		friend class Engine;
 
 		Player( QObject* parent );

@@ -2,18 +2,18 @@
 
 #include <QObject>
 #include <QTime>
-
-#include <portaudio.h>
-#include <sndfile.h>
-
-#include <widgets/matrix.h>
+#include <QVector>
 
 #include "player.h"
+
+struct SF_INFO;
 
 namespace noises
 {
 namespace audio
 {
+	class MatrixSettings;
+
 	class AudioPlayer: public Player
 	{
 		Q_OBJECT
@@ -26,7 +26,7 @@ namespace audio
 
 		void setFilename( const QString& filename );
 
-		void setVolume( const widgets::MatrixSettings& settings );
+		void setVolume( const MatrixSettings& settings );
 
 		QTime getDuration() const;
 
@@ -62,13 +62,12 @@ namespace audio
 
 		// playback state
 		int m_pos = 0 ;
-		int m_last_pos = 0;
 
 		// audio data
 		float* m_audio_data = nullptr;
 
 		// audio information
-		SF_INFO m_audio_info;
+		QSharedPointer< SF_INFO > m_audio_info;
 		int m_length;
 
 		// volume data

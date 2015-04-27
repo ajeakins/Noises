@@ -3,8 +3,8 @@
 #include <QTime>
 
 #include <audio/audio_player.h>
+#include <audio/matrix_settings.h>
 #include <app/application.h>
-#include <widgets/matrix.h>
 
 #include "cue_model_item.h"
 #include "types.h"
@@ -30,7 +30,7 @@ namespace noises
 		QTime start_time, end_time;
 		QTime start_fade, end_fade;
 
-		widgets::MatrixSettings levels;
+		audio::MatrixSettings levels;
 	};
 
 	class AudioCueModelItem: public CueModelItem

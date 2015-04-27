@@ -27,9 +27,6 @@ namespace
 	}
 }
 
-PaStream* Engine::m_stream;
-int Engine::m_channel_count = 0;
-
 Engine::Engine( QObject* parent )
 :
 	QObject( parent ),
@@ -57,6 +54,7 @@ Engine::Engine( QObject* parent )
 Engine::~Engine()
 {
 	Pa_Terminate();
+	delete m_players_lock;
 }
 
 void Engine::registerPlayer( Player::Ptr player )
@@ -176,13 +174,13 @@ int Engine::audioCallback(
 	QReadLocker read_lock( engine->m_players_lock );
 
 	float* out = ( float* )outputBuffer;
-	std::fill( out, out + ( framesPerBuffer * m_channel_count ), 0.0f );
+	std::fill( out, out + ( framesPerBuffer * engine->m_channel_count ), 0.0f );
 
 	QMutableListIterator< Player::Ptr > itr( engine->m_players );
 	while ( itr.hasNext() )
 	{
 		Player::Ptr player = itr.next();
-		player->addData( out, framesPerBuffer, m_channel_count );
+		player->addData( out, framesPerBuffer, engine->m_channel_count );
 
 		if ( !player->isPlaying() )
 		{

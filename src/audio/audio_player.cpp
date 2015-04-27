@@ -4,8 +4,12 @@
 #include <QMessageBox>
 #include <QTime>
 
+#include <sndfile.h>
+
 #include <app/application.h>
 #include <utils/audio.h>
+
+#include "matrix_settings.h"
 
 #include "audio_player.h"
 
@@ -19,6 +23,7 @@ namespace audio
 AudioPlayer::AudioPlayer( QObject* parent )
 :
 	Player( parent ),
+	m_audio_info( new SF_INFO ),
 	m_outputs( Application::getPreferences().getOutputCount() )
 {}
 
@@ -38,7 +43,7 @@ void AudioPlayer::setFilename( const QString& filename )
 	}
 }
 
-void AudioPlayer::setVolume( const widgets::MatrixSettings& settings )
+void AudioPlayer::setVolume( const MatrixSettings& settings )
 {
 	if ( !m_audio_data )
 	{
@@ -47,7 +52,7 @@ void AudioPlayer::setVolume( const widgets::MatrixSettings& settings )
 
 	m_outputs = Application::getPreferences().getOutputCount();
 
-	for ( int i = 0; i != m_audio_info.channels; ++i )
+	for ( int i = 0; i != m_audio_info->channels; ++i )
 	{
 		m_volumes[i].resize( m_outputs );
 
@@ -70,7 +75,7 @@ float AudioPlayer::getVolume( int input, int output ) const
 {
 	if (
 		!m_audio_data ||
-		input >= m_audio_info.channels ||
+		input >= m_audio_info->channels ||
 		output >= m_outputs )
 	{
 		return 0.0f;
@@ -85,7 +90,7 @@ QTime AudioPlayer::getDuration() const
 		return QTime();
 	}
 
-	return timeFromFrames( m_audio_info.frames );
+	return timeFromFrames( m_audio_info->frames );
 }
 
 QTime AudioPlayer::timeFromFrames( int frames ) const
@@ -100,7 +105,7 @@ QTime AudioPlayer::timeFromFrames( int frames ) const
 	// calculate in floating point
 	float timeInMSecs = ( float )frames;
 	timeInMSecs *= 1000.0f;
-	timeInMSecs /= m_audio_info.samplerate;
+	timeInMSecs /= m_audio_info->samplerate;
 
 	time = time.addMSecs( ( int )timeInMSecs );
 
@@ -110,10 +115,10 @@ QTime AudioPlayer::timeFromFrames( int frames ) const
 void AudioPlayer::readData()
 {
 	// indicate to library to fill in the info
-	m_audio_info.format = 0;
+	m_audio_info->format = 0;
 
 	std::string data = m_filename.toStdString();
-	SNDFILE* file = sf_open( data.c_str(), SFM_READ, &m_audio_info );
+	SNDFILE* file = sf_open( data.c_str(), SFM_READ, m_audio_info.data() );
 
 	if ( !file )
 	{
@@ -124,7 +129,7 @@ void AudioPlayer::readData()
 		return;
 	}
 
-	m_length = m_audio_info.channels * m_audio_info.frames;
+	m_length = m_audio_info->channels * m_audio_info->frames;
 	if ( !m_audio_data )
 	{
 		m_audio_data = ( float* )malloc( m_length * sizeof( float ) );
@@ -152,22 +157,16 @@ void AudioPlayer::readData()
 		m_audio_data = new_data;
 	}
 
-	sf_readf_float( file, m_audio_data, m_audio_info.frames );
+	sf_readf_float( file, m_audio_data, m_audio_info->frames );
 	sf_close( file );
 
 	// TODO: get rid of this...
-	m_volumes.resize( m_audio_info.channels );
-	for ( int i = 0; i != m_audio_info.channels; ++i )
+	m_volumes.resize( m_audio_info->channels );
+	for ( int i = 0; i != m_audio_info->channels; ++i )
 	{
 		m_volumes[i].resize( m_outputs );
 	}
 }
-
-/**
- * Add the players data for it's current position to
- * the audio buffer. The buffer is assumed to be managed
- * by the engine so the player.
- */
 
 void AudioPlayer::addData(
 	float* audio,
@@ -183,21 +182,21 @@ void AudioPlayer::addData(
 	{
 		for( int output = 0; output != channels; ++output )
 		{
-			for( int input = 0; input != m_audio_info.channels; ++input )
+			for( int input = 0; input != m_audio_info->channels; ++input )
 			{
 				audio[output] += getVolume( input, output ) * m_audio_data[m_pos + input];
 			}
 		}
 
 		// increment to next frame
-		m_pos += m_audio_info.channels;
+		m_pos += m_audio_info->channels;
 		audio += channels;
 
 		// reached the end of the track
 		if ( m_pos == m_length )
 		{
 			m_is_playing = false;
-			m_pos = m_last_pos = 0;
+			m_pos = 0;
 			return;
 		}
 	}
@@ -228,13 +227,13 @@ void AudioPlayer::pause()
 void AudioPlayer::stop()
 {
 	m_is_playing = false;
-	m_pos = m_last_pos = 0;
+	m_pos = 0;
 	Q_EMIT stopped();
 }
 
 void AudioPlayer::updateTime() const
 {
-	QTime time = timeFromFrames( m_pos / m_audio_info.channels );
+	QTime time = timeFromFrames( m_pos / m_audio_info->channels );
 	Q_EMIT timeUpdated( time );
 }
 
