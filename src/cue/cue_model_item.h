@@ -3,6 +3,7 @@
 #include <assert.h>
 
 #include <QList>
+#include <QTime>
 #include <QVariant>
 
 #include <QJsonObject>
@@ -62,6 +63,24 @@ namespace noises
 		virtual void execute()
 		{
 			assert( false && "Cannot execute base item" );
+		}
+
+		// Interaction with cues that have durations
+		// TODO: move to duration subclass?
+
+		virtual bool hasDuration() const
+		{
+			return false;
+		}
+
+		virtual QString getTimeFormat() const
+		{
+			return "";
+		}
+
+		virtual QTime getDuration() const
+		{
+			return QTime();
 		}
 
 		virtual void readSettings( const QJsonObject& settings );

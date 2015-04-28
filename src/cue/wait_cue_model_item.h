@@ -49,12 +49,17 @@ namespace noises
 
 		void writeSettings( QJsonObject& settings ) const override;
 
-		const QString& getTimeFormat() const
+		bool hasDuration() const override
+		{
+			return true;
+		}
+
+		QString getTimeFormat() const override
 		{
 			return m_time_format;
 		}
 
-		const QTime& getDuration() const
+		QTime getDuration() const override
 		{
 			return m_settings.wait_time;
 		}

@@ -58,17 +58,17 @@ namespace noises
 
 		void writeSettings( QJsonObject& settings ) const override;
 
-		// TODO: move these up class hiearchy, should be shared amoungst all cues
-		// that have the concept of duration
+		bool hasDuration() const override
+		{
+			return true;
+		}
 
-		float getProgress() const;
-
-		const QString& getTimeFormat() const
+		QString getTimeFormat() const override
 		{
 			return m_time_format;
 		}
 
-		const QTime& getDuration() const
+		QTime getDuration() const override
 		{
 			return m_duration;
 		}

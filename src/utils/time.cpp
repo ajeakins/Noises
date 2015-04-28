@@ -79,8 +79,12 @@ QTime subtract( const QTime& lhs, const QTime& rhs )
 float fraction( const QTime& numerator, const QTime& denominator )
 {
 	float result = timeToMsecs( numerator );
-	result /= ( float )timeToMsecs( denominator );
-	return result;
+	int denominator_in_msecs = timeToMsecs( denominator );
+	if ( denominator_in_msecs == 0 )
+	{
+		return 0.0f;
+	}
+	return result / ( float )denominator_in_msecs;
 }
 
 float percentage( const QTime& numerator, const QTime& denominator )

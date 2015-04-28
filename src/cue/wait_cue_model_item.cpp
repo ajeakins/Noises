@@ -67,8 +67,8 @@ void WaitCueModelItem::playerTimeChanged( const QTime& time )
 		remaining = utils::subtract( m_settings.wait_time, time );
 	}
 
-	setData( Column_Remaining, remaining.toString( m_time_format ) );
-	setData( Column_Elapsed, time.toString( m_time_format ) );
+	setData( Column_Remaining, remaining );
+	setData( Column_Elapsed, time );
 
 	Q_EMIT dataChanged( this );
 }

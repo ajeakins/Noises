@@ -123,8 +123,8 @@ void AudioCueModelItem::playerTimeChanged( const QTime& time )
 		remaining = utils::subtract( m_duration, time );
 	}
 
-	setData( 3, remaining.toString( m_time_format ) );
-	setData( 4, time.toString( m_time_format ) );
+	setData( Column_Remaining, remaining );
+	setData( Column_Elapsed, time );
 
 	Q_EMIT dataChanged( this );
 }

@@ -30,29 +30,11 @@ void ProgressDelegate::paint(
 	const CueModel* model = static_cast< const CueModel* >( index.model() );
 	CueModelItem* item = model->itemFromIndex( index );
 
-	// make this more generic...
-	CueType type =  item->getType();
-	if ( type == CueType_Audio || type == CueType_Wait )
+	if ( item->hasDuration() )
 	{
-		QString time_string;
-		float percentage = 0.0f;
-
-		if ( type == CueType_Audio )
-		{
-			AudioCueModelItem* cue = static_cast< AudioCueModelItem* >( item );
-
-			time_string = index.data().toString();
-			QTime time = QTime::fromString( time_string, cue->getTimeFormat() );
-			percentage = utils::percentage( time, cue->getDuration() );
-		}
-		else if ( type == CueType_Wait )
-		{
-			WaitCueModelItem* cue = static_cast< WaitCueModelItem* >( item );
-
-			time_string = index.data().toString();
-			QTime time = QTime::fromString( time_string, cue->getTimeFormat() );
-			percentage = utils::percentage( time, cue->getDuration() );
-		}
+		QTime time = index.data().toTime();
+		float percentage = utils::percentage( time, item->getDuration() );
+		QString time_string = time.toString( item->getTimeFormat() );
 
 		QStyleOptionProgressBar progressBarOption;
 		progressBarOption.rect = option.rect;
@@ -66,6 +48,7 @@ void ProgressDelegate::paint(
 			QStyle::CE_ProgressBar,
 			&progressBarOption,
 			painter);
+
 	}
 }
 
