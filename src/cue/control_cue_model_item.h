@@ -9,6 +9,7 @@ namespace noises
 		ControlAction_Stop,
 		ControlAction_Start,
 		ControlAction_Pause,
+		ControlAction_VolumeChange,
 
 		ControlAction_ITEM_COUNT
 	};
@@ -33,7 +34,6 @@ namespace noises
 	public:
 		QString target_cue_uuid;
 		ControlAction cue_action;
-
 	};
 
 	// ControlCueModelItem

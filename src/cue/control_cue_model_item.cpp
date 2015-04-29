@@ -17,6 +17,8 @@ QString actionToString( ControlAction action )
 			return "Start";
 		case ControlAction_Pause:
 			return "Pause";
+		case ControlAction_VolumeChange:
+			return "Volume Change";
 		case ControlAction_ITEM_COUNT:
 			return "";
 	}
@@ -76,6 +78,8 @@ void ControlCueModelItem::execute()
 				break;
 			case ControlAction_Pause:
 				audio_cue->pause();
+				break;
+			case ControlAction_VolumeChange:
 				break;
 			case ControlAction_ITEM_COUNT:
 				break;

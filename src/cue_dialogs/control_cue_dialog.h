@@ -1,13 +1,43 @@
 #pragma once
 
+#include <cue/control_cue_model_item.h>
+
 #include "cue_dialog.h"
 
 class QDataWidgetMapper;
+class QCheckBox;
 class QComboBox;
+class QTimeEdit;
+class QVBoxLayout;
 
 namespace noises
 {
+	namespace widgets
+	{
+		class Matrix;
+	}
+
 	class ControlCueModelItem;
+
+	class VolumeChangeWidget: public QWidget
+	{
+		Q_OBJECT
+
+	public:
+		VolumeChangeWidget( QWidget* parent = nullptr );
+
+		void readSettings( const ControlCueSettings& settings );
+		void writeSettings( ControlCueSettings& settings );
+
+	private:
+		void createWidgets();
+
+	private:
+		QTimeEdit* m_wait_time;
+		QCheckBox* m_stop_cue_on_end;
+		QPushButton* m_reset;
+		widgets::Matrix* m_matrix;
+	};
 
 	class ControlCueDialog: public CueDialog
 	{
@@ -25,10 +55,15 @@ namespace noises
 	public Q_SLOTS:
 		virtual void accept();
 
+	private Q_SLOTS:
+		void typeChanged();
+
 	private:
 		void createCueWidgets();
 
 		void populateTargetCues();
+
+		ControlAction getActionType() const;
 
 		void readSettings();
 
@@ -43,9 +78,10 @@ namespace noises
 		// widgets
 
 		QComboBox* m_target_cue;
-
 		QComboBox* m_action;
 
+		QVBoxLayout* m_type_specific_layout;
+		VolumeChangeWidget* m_type_specific_widget = nullptr;
 	};
 
 } /* namespace noises */
