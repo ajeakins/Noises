@@ -32,9 +32,7 @@ AudioCueDialog::AudioCueDialog(
 	CueDialog( mapper, create, parent ),
 	m_cue( cue )
 {
-	audio::Manager& manager = Application::getAudioManager();
-	audio::Player::Ptr player = manager.createPlayer( this, audio::PlayerType_Audio );
-	m_player = player.dynamicCast< audio::AudioPlayer >();
+	m_player = cue->getPlayer();
 
 	connect(
 		m_player.data(), &audio::Player::timeUpdated,

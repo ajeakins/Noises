@@ -73,6 +73,11 @@ namespace noises
 			return m_duration;
 		}
 
+		audio::AudioPlayer::Ptr getPlayer()
+		{
+			return m_player;
+		}
+
 		void stop();
 
 		void start();
