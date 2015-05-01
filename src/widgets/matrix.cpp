@@ -105,7 +105,7 @@ void Matrix::readSettings( const audio::VolumeMatrix& settings )
 	m_link->setChecked( settings.getStereoLink() );
 }
 
-void Matrix::writeSettings( audio::VolumeMatrix& settings ) const
+bool Matrix::writeSettings( audio::VolumeMatrix& settings ) const
 {
 	settings.setInputs( getInputs() );
 	settings.setOutputs( getOutputs() );
@@ -119,6 +119,9 @@ void Matrix::writeSettings( audio::VolumeMatrix& settings ) const
 	}
 
 	settings.setStereoLink( m_link->isChecked() );
+
+	// Obviouous TODO...
+	return true;
 }
 
 void Matrix::valueChanged( float /*value*/ )

@@ -40,7 +40,7 @@ namespace widgets
 		void setVolume( unsigned int input, unsigned int output, float value );
 
 		void readSettings( const audio::VolumeMatrix& settings );
-		void writeSettings( audio::VolumeMatrix& settings ) const;
+		bool writeSettings( audio::VolumeMatrix& settings ) const;
 
 	Q_SIGNALS:
 		void volumeChanged();

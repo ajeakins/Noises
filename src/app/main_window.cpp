@@ -49,8 +49,33 @@ MainWindow::MainWindow()
 	resize( 600, 500 );
 }
 
+void MainWindow::setSavePending()
+{
+	m_save_pending = true;
+	updateWindowTitle();
+}
+
 void MainWindow::closeEvent( QCloseEvent* event )
 {
+	if ( m_save_pending )
+	{
+		QMessageBox message(
+			QMessageBox::Question,
+			"Unsaved Changes",
+			"There are unsaved changes, are you sure you want to quit?",
+			QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel,
+			this );
+		int ret = message.exec();
+		if ( ret == QMessageBox::Save )
+		{
+			saveShow();
+		}
+		else if ( ret == QMessageBox::Cancel )
+		{
+			return;
+		}
+	}
+
 	// check state and confirm
 	saveSettings();
 
@@ -80,6 +105,11 @@ void MainWindow::updateWindowTitle()
 	{
 		title += " - ";
 		title += m_current_file_name;
+
+		if ( m_save_pending )
+		{
+			title += "*";
+		}
 	}
 
 	setWindowTitle( title );
@@ -106,6 +136,8 @@ void MainWindow::saveShow()
 
 	QJsonDocument document( root );
 	file.write( document.toJson() );
+
+	m_save_pending = false;
 }
 
 void MainWindow::saveShowAs()

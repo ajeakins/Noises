@@ -20,6 +20,8 @@
 
 #include "audio_cue_dialog.h"
 
+#include "detail.h"
+
 namespace noises
 {
 
@@ -58,12 +60,6 @@ AudioCueDialog::~AudioCueDialog()
 	m_player->stop();
 }
 
-void AudioCueDialog::accept()
-{
-	writeSettings();
-	CueDialog::accept();
-}
-
 void AudioCueDialog::onFilenameChanged()
 {
 	QString filepath = m_file_edit->text();
@@ -100,21 +96,28 @@ void AudioCueDialog::playerTimeChanged( const QTime& time )
 	m_remaining_time->setTime( utils::subtract( m_duration, time ) );
 }
 
-void AudioCueDialog::writeSettings() const
+bool AudioCueDialog::writeSettings() const
 {
+	bool something_changed = false;
+
 	AudioCueSettings& settings = m_cue->getSettings();
 
-	settings.file_name = m_file_edit->text();
+	SET_VALUE( settings.file_name, m_file_edit->text(), something_changed )
 
-	settings.start_time = m_start_time->time();
-	settings.end_time = m_end_time->time();
+	SET_VALUE( settings.start_time, m_start_time->time(), something_changed )
+	SET_VALUE( settings.end_time, m_end_time->time(), something_changed )
 
-	settings.start_fade = m_fade_in_time->time();
-	settings.end_fade = m_fade_out_time->time();
+	SET_VALUE( settings.start_fade, m_fade_in_time->time(), something_changed )
+	SET_VALUE( settings.end_fade, m_fade_out_time->time(), something_changed )
 
-	m_matrix->writeSettings( settings.levels );
+	if ( m_matrix->writeSettings( settings.levels ) )
+	{
+		something_changed = true;
+	}
 
 	m_cue->updatePlayer();
+
+	return something_changed;
 }
 
 void AudioCueDialog::readSettings()

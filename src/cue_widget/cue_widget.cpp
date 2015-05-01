@@ -63,6 +63,7 @@ CueModelItem* CueWidget::createCue( CueType type )
 	else
 	{
 		parent = m_cue_model->getRootItem();
+		index = parent->childCount();
 	}
 
 	QModelIndex next_row = m_cue_model->index( selected_row.row() + 1, selected_row.column() );

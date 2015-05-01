@@ -10,6 +10,8 @@
 #include <QLayout>
 #include <QLineEdit>
 
+#include <app/main_window.h>
+
 #include <cue_widget/cue_model.h>
 #include <cue_widget/types.h>
 
@@ -35,7 +37,19 @@ CueDialog::~CueDialog()
 
 void CueDialog::accept()
 {
+	bool something_changed = false;
+
 	m_mapper->submit();
+	something_changed |= writeSettings();
+
+	// TODO: this is horrendous
+	if ( something_changed )
+	{
+		QWidget* parent = parentWidget();
+		MainWindow* main_window = static_cast< MainWindow* >( parent );
+		main_window->setSavePending();
+	}
+
 	QDialog::accept();
 }
 

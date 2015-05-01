@@ -32,14 +32,9 @@ GroupCueDialog::GroupCueDialog(
 GroupCueDialog::~GroupCueDialog()
 {}
 
-void GroupCueDialog::accept()
+bool GroupCueDialog::writeSettings() const
 {
-	writeSettings();
-	CueDialog::accept();
-}
-
-void GroupCueDialog::writeSettings()
-{
+	return false;
 }
 
 void GroupCueDialog::readSettings()

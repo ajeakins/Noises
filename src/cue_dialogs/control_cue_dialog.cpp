@@ -12,6 +12,7 @@
 #include <utils/time.h>
 
 #include "control_cue_dialog.h"
+#include "detail.h"
 
 namespace noises
 {
@@ -88,23 +89,24 @@ ControlCueDialog::ControlCueDialog(
 ControlCueDialog::~ControlCueDialog()
 {}
 
-void ControlCueDialog::accept()
+bool ControlCueDialog::writeSettings() const
 {
-	writeSettings();
-	CueDialog::accept();
-}
+	bool something_changed = false;
 
-void ControlCueDialog::writeSettings()
-{
 	ControlCueSettings& settings = m_cue->getSettings();
 
-	settings.cue_action = getActionType();
-	settings.target_cue_uuid = m_target_cue->itemData( m_target_cue->currentIndex() ).toString();
+	SET_VALUE( settings.cue_action, getActionType(), something_changed );
+	SET_VALUE(
+		settings.target_cue_uuid,
+		m_target_cue->itemData( m_target_cue->currentIndex() ).toString(),
+		something_changed )
 
 	if ( m_type_specific_widget )
 	{
 		m_type_specific_widget->writeSettings( settings );
 	}
+
+	return something_changed;
 }
 
 void ControlCueDialog::readSettings()

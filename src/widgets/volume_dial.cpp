@@ -11,8 +11,8 @@
 
 #include "volume_dial.h"
 
-#define MINIMUM_DB -30
-#define MAXIMUM_DB 6
+#define MINIMUM_DB -60
+#define MAXIMUM_DB 10
 #define STEP 0.1f
 
 namespace noises

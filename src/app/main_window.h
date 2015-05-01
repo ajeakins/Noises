@@ -1,4 +1,4 @@
- #pragma once
+#pragma once
 
 #include <QMainWindow>
 
@@ -19,6 +19,8 @@ namespace noises
 
 	public:
 		MainWindow();
+
+		void setSavePending();
 
 	protected:
 		void closeEvent( QCloseEvent* event );
@@ -56,6 +58,7 @@ namespace noises
 
 	private:
 		QString m_current_file_name;
+		bool m_save_pending = false;
 
 		// Widgets
 		CueWidget* m_cue_list;

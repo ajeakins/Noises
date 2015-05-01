@@ -21,12 +21,16 @@ namespace noises
 		virtual ~CueDialog();
 
 	public Q_SLOTS:
-		virtual void accept();
+		void accept();
 
 	protected:
 		void createWidgets();
 
 		QLineEdit* getEditor( int section );
+
+		virtual void readSettings() = 0;
+
+		virtual bool writeSettings() const = 0;
 
 	protected:
 		QLayout* m_layout;

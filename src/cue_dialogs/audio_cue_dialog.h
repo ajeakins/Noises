@@ -31,8 +31,6 @@ namespace noises
 		virtual ~AudioCueDialog();
 
 	private Q_SLOTS:
-		virtual void accept();
-
 		void onFilenameChanged();
 
 		void resetTimes();
@@ -46,9 +44,9 @@ namespace noises
 
 		void setTimeDisplayFormat( QString format );
 
-		void readSettings();
+		void readSettings() override;
 
-		void writeSettings() const;
+		bool writeSettings() const override;
 
 	private:
 

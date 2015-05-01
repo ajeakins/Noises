@@ -21,15 +21,12 @@ namespace noises
 
 		virtual ~GroupCueDialog();
 
-	public Q_SLOTS:
-		virtual void accept();
-
 	private:
 		void createCueWidgets();
 
-		void readSettings();
+		void readSettings() override;
 
-		void writeSettings();
+		bool writeSettings() const override;
 
 	private:
 

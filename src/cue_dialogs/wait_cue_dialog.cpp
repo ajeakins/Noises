@@ -9,6 +9,7 @@
 
 #include <cue/wait_cue_model_item.h>
 
+#include "detail.h"
 #include "wait_cue_dialog.h"
 
 namespace noises
@@ -40,18 +41,17 @@ WaitCueDialog::WaitCueDialog(
 WaitCueDialog::~WaitCueDialog()
 {}
 
-void WaitCueDialog::accept()
+bool WaitCueDialog::writeSettings() const
 {
-	writeSettings();
-	CueDialog::accept();
-}
+	bool something_changed = false;
 
-void WaitCueDialog::writeSettings()
-{
 	WaitCueSettings& settings = m_cue->getSettings();
-	settings.wait_time = m_wait_time->time();
+
+	SET_VALUE( settings.wait_time, m_wait_time->time(), something_changed )
 
 	m_cue->updatePlayer();
+
+	return something_changed;
 }
 
 void WaitCueDialog::readSettings()

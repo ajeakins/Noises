@@ -52,9 +52,6 @@ namespace noises
 
 		virtual ~ControlCueDialog();
 
-	public Q_SLOTS:
-		virtual void accept();
-
 	private Q_SLOTS:
 		void typeChanged();
 
@@ -65,9 +62,9 @@ namespace noises
 
 		ControlAction getActionType() const;
 
-		void readSettings();
+		void readSettings() override;
 
-		void writeSettings();
+		bool writeSettings() const override;
 
 	private:
 
