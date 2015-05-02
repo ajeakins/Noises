@@ -19,8 +19,6 @@ namespace noises
 
 		CueModelItem* createCue( CueType type );
 
-		void deleteCurrentCue();
-
 		// selection
 
 		CueModelItem* getCurrentItem();
@@ -35,15 +33,26 @@ namespace noises
 
 		void writeSettings( QJsonArray& settings ) const;
 
+	public Q_SLOTS:
+		void deleteCurrentCue();
+
 	private Q_SLOTS:
 		void editCue( QModelIndex index );
+
+		void editCurrentCue();
 
 		// increment selection when we get the signal a cue
 		// is done playing
 		void cueDone( CueModelItem* item );
 
 	private:
+		void contextMenuEvent( QContextMenuEvent* event );
+
+	private:
 		CueModel* m_cue_model;
+
+		QAction* m_edit_cue_action;
+		QAction* m_delete_cue_action;
 	};
 
 } /* namespace noises */

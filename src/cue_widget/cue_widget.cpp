@@ -1,6 +1,9 @@
 
+#include <QAction>
+#include <QContextMenuEvent>
 #include <QDataWidgetMapper>
-#include <QDebug>
+#include <QMenu>
+#include <QMessageBox>
 
 #include <cue_dialogs/api.h>
 
@@ -33,8 +36,8 @@ CueWidget::CueWidget( QWidget* parent )
 	setDropIndicatorShown( true );
 
 	ProgressDelegate* progress_delegate = new ProgressDelegate( this );
-	setItemDelegateForColumn( 3, progress_delegate );
-	setItemDelegateForColumn( 4, progress_delegate );
+	setItemDelegateForColumn( Column_Remaining, progress_delegate );
+	setItemDelegateForColumn( Column_Elapsed, progress_delegate );
 
 	connect(
 		this, SIGNAL( doubleClicked( QModelIndex ) ),
@@ -43,6 +46,14 @@ CueWidget::CueWidget( QWidget* parent )
 	connect(
 		m_cue_model, &CueModel::cueDone,
 		this, &CueWidget::cueDone );
+
+	m_edit_cue_action = new QAction( QIcon( ":/images/edit_16x16.png" ), "Edit Cue", this );
+	connect( m_edit_cue_action, &QAction::triggered,
+		this, &CueWidget::editCurrentCue );
+
+	m_delete_cue_action = new QAction( QIcon( ":/images/delete_16x16.png" ), "Delete Cue", this );
+	connect( m_delete_cue_action, &QAction::triggered,
+		this, &CueWidget::deleteCurrentCue );
 }
 
 CueModelItem* CueWidget::createCue( CueType type )
@@ -104,6 +115,19 @@ CueModelItem* CueWidget::createCue( CueType type )
 
 void CueWidget::deleteCurrentCue()
 {
+	QMessageBox message(
+		QMessageBox::Question,
+		"Delete Cue",
+		"Are you sure you want to delete?",
+		QMessageBox::Ok | QMessageBox::Cancel,
+		this );
+	int ret = message.exec();
+
+	if ( ret != QMessageBox::Ok )
+	{
+		return;
+	}
+
 	QModelIndex selected_row = selectionModel()->currentIndex();
 	if ( !selected_row.isValid() )
 	{
@@ -117,6 +141,17 @@ void CueWidget::editCue( QModelIndex index )
 {
 	CueModelItem* item = m_cue_model->itemFromIndex( index );
 	showCueEditDialog( item, getDataMapperForSelection(), false, this );
+}
+
+void CueWidget::editCurrentCue()
+{
+	QModelIndex selected_row = selectionModel()->currentIndex();
+	if ( !selected_row.isValid() )
+	{
+		return;
+	}
+
+	editCue( selected_row );
 }
 
 void CueWidget::cueDone( CueModelItem* /*item*/ )
@@ -162,6 +197,15 @@ QDataWidgetMapper* CueWidget::getDataMapperForSelection()
 	mapper->setSubmitPolicy( QDataWidgetMapper::ManualSubmit );
 	mapper->setCurrentModelIndex( selectionModel()->currentIndex() );
 	return mapper;
+}
+
+void CueWidget::contextMenuEvent( QContextMenuEvent* event )
+{
+	QMenu menu;
+	menu.addAction( m_edit_cue_action );
+	menu.addSeparator();
+	menu.addAction( m_delete_cue_action );
+	menu.exec( event->globalPos() );
 }
 
 void CueWidget::readSettings( const QJsonArray& settings )

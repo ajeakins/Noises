@@ -4,6 +4,8 @@
 	<file>images/audio_cue_32x32.png</file>
 	<file>images/control_cue_16x16.png</file>
 	<file>images/control_cue_32x32.png</file>
+	<file>images/delete_16x16.png</file>
+	<file>images/edit_16x16.png</file>
 	<file>images/group_cue_16x16.png</file>
 	<file>images/group_cue_32x32.png</file>
 	<file>images/wait_cue_16x16.png</file>

@@ -239,19 +239,6 @@ void MainWindow::playCue()
 
 void MainWindow::deleteCue()
 {
-	QMessageBox message(
-		QMessageBox::Question,
-		"Delete Cue",
-		"Are you sure you want to delete?",
-		QMessageBox::Ok | QMessageBox::Cancel,
-		this );
-	int ret = message.exec();
-
-	if ( ret != QMessageBox::Ok )
-	{
-		return;
-	}
-
 	m_cue_list->deleteCurrentCue();
 }
 
