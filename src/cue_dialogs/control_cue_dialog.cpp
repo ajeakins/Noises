@@ -11,6 +11,8 @@
 
 #include <utils/time.h>
 
+#include <widgets/matrix.h>
+
 #include "control_cue_dialog.h"
 #include "detail.h"
 
@@ -30,21 +32,26 @@ void VolumeChangeWidget::createWidgets()
 {
 	QLabel* wait_time_label = new QLabel( "Fade time:", this );
 
-	m_wait_time = new QTimeEdit( this );
-	m_wait_time->setDisplayFormat( utils::defaultTimeFormat() );
+	m_fade_time = new QTimeEdit( this );
+	m_fade_time->setDisplayFormat( utils::defaultTimeFormat() );
 
-	QLabel* stop_cue_on_end_label = new QLabel( "Stop cue on end:" );
+	QHBoxLayout* fade_row = new QHBoxLayout;
+	fade_row->setContentsMargins( 0, 0, 0, 0 );
+	fade_row->addWidget( wait_time_label );
+	fade_row->addWidget( m_fade_time );
 
-	m_stop_cue_on_end =  new QCheckBox( this );
+	m_stop_cue_on_end =  new QCheckBox( "Stop On End", this );
+	m_stop_cue_on_end->setToolTip( "Stop target cue once fade is done" );
 
-	QGridLayout* layout = new QGridLayout;
-	layout->setContentsMargins( 0, 0, 0, 0 );
-	layout->addWidget( wait_time_label, 0, 0 );
-	layout->addWidget( m_wait_time, 0, 1 );
-	layout->addWidget( stop_cue_on_end_label, 1, 0 );
-	layout->addWidget( m_stop_cue_on_end, 1, 1 );
+	m_matrix = new widgets::Matrix( 2, 2, this );
 
-	setLayout( layout );
+	QVBoxLayout* main_layout = new QVBoxLayout;
+	main_layout->setContentsMargins( 0, 0, 0, 0 );
+	main_layout->addLayout( fade_row );
+	main_layout->addWidget( m_stop_cue_on_end );
+	main_layout->addWidget( m_matrix );
+
+	setLayout( main_layout );
 }
 
 void VolumeChangeWidget::readSettings( const ControlCueSettings& /*settings*/ )
@@ -95,11 +102,8 @@ bool ControlCueDialog::writeSettings() const
 
 	ControlCueSettings& settings = m_cue->getSettings();
 
-	SET_VALUE( settings.cue_action, getActionType(), something_changed );
-	SET_VALUE(
-		settings.target_cue_uuid,
-		m_target_cue->itemData( m_target_cue->currentIndex() ).toString(),
-		something_changed )
+	SET_VALUE( settings.cue_action, getActionType(), something_changed )
+	SET_VALUE( settings.target_cue_uuid, getTargetCue(), something_changed )
 
 	if ( m_type_specific_widget )
 	{
@@ -130,6 +134,11 @@ void ControlCueDialog::readSettings()
 ControlAction ControlCueDialog::getActionType() const
 {
 	return ( ControlAction )m_action->itemData( m_action->currentIndex() ).toInt();
+}
+
+QString ControlCueDialog::getTargetCue() const
+{
+	return m_target_cue->itemData( m_target_cue->currentIndex() ).toString();
 }
 
 void ControlCueDialog::createCueWidgets()

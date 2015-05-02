@@ -33,7 +33,7 @@ namespace noises
 		void createWidgets();
 
 	private:
-		QTimeEdit* m_wait_time;
+		QTimeEdit* m_fade_time;
 		QCheckBox* m_stop_cue_on_end;
 		QPushButton* m_reset;
 		widgets::Matrix* m_matrix;
@@ -61,6 +61,8 @@ namespace noises
 		void populateTargetCues();
 
 		ControlAction getActionType() const;
+
+		QString getTargetCue() const;
 
 		void readSettings() override;
 
