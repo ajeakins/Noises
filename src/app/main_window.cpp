@@ -138,6 +138,7 @@ void MainWindow::saveShow()
 	file.write( document.toJson() );
 
 	m_save_pending = false;
+	updateWindowTitle();
 }
 
 void MainWindow::saveShowAs()
