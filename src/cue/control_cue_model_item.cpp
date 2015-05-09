@@ -1,6 +1,8 @@
 
 #include <QPixmap>
 
+#include <utils/time.h>
+
 #include "audio_cue_model_item.h"
 #include "control_cue_model_item.h"
 
@@ -27,6 +29,9 @@ QString actionToString( ControlAction action )
 
 // ControlCueSettings
 
+ControlCueSettings::~ControlCueSettings()
+{}
+
 void ControlCueSettings::readSettings( const QJsonObject& value )
 {
 	target_cue_uuid = value["target_cue_uuid"].toString();
@@ -39,13 +44,42 @@ void ControlCueSettings::writeSettings( QJsonObject& value ) const
 	value["cue_action"] = cue_action;
 }
 
+// VolumeChangeControlCueSettings
+
+VolumeChangeControlCueSettings::~VolumeChangeControlCueSettings()
+{}
+
+void VolumeChangeControlCueSettings::readSettings( const QJsonObject& value )
+{
+	ControlCueSettings::readSettings( value );
+
+	fade_time = utils::timeFromMsecs( value["fade_time"].toInt() );
+	stop_target_on_end = value["stop_target_on_end"].toBool();
+
+	QJsonObject target_levels_settings = value["target_levels"].toObject();
+	target_levels.readSettings( target_levels_settings );
+}
+
+void VolumeChangeControlCueSettings::writeSettings( QJsonObject& value ) const
+{
+	ControlCueSettings::writeSettings( value );
+
+	value["fade_time"] = utils::timeToMsecs( fade_time );
+	value["stop_target_on_end"] = stop_target_on_end;
+
+	QJsonObject target_levels_settings;
+	target_levels.writeSettings( target_levels_settings );
+	value["target_levels"] = target_levels_settings;
+}
+
 // ControlCueModelItem
 
 ControlCueModelItem::ControlCueModelItem(
 	const QList< QVariant >& item_data,
 	CueModelItem* parent_item )
 :
-		CueModelItem( item_data, parent_item )
+		CueModelItem( item_data, parent_item ),
+		m_settings( new ControlCueSettings )
 {}
 
 ControlCueModelItem::~ControlCueModelItem()
@@ -58,7 +92,7 @@ void ControlCueModelItem::execute()
 	for ( int i = 0; i != parent->row( this ); ++i )
 	{
 		CueModelItem* item = parent->child( i );
-		if ( item->getUuid() == m_settings.target_cue_uuid )
+		if ( item->getUuid() == m_settings->target_cue_uuid )
 		{
 			target = item;
 		}
@@ -68,7 +102,7 @@ void ControlCueModelItem::execute()
 	{
 		AudioCueModelItem* audio_cue = ( AudioCueModelItem* )target;
 
-		switch( m_settings.cue_action )
+		switch( m_settings->cue_action )
 		{
 			case ControlAction_Start:
 				audio_cue->start();
@@ -95,10 +129,47 @@ QVariant ControlCueModelItem::getIcon() const
 	return icon;
 }
 
+bool ControlCueModelItem::hasDuration() const
+{
+	if ( m_settings->cue_action == ControlAction_VolumeChange )
+	{
+		return true;
+	}
+	return false;
+}
+
+QString ControlCueModelItem::getTimeFormat() const
+{
+	if ( m_settings->cue_action ==  ControlAction_VolumeChange )
+	{
+		auto volume_change_settings = dynamic_cast< VolumeChangeControlCueSettings* >( m_settings.data() );
+		return utils::timeFormat( volume_change_settings->fade_time );
+	}
+
+	return "";
+}
+
+QTime ControlCueModelItem::getDuration() const
+{
+	if ( m_settings->cue_action ==  ControlAction_VolumeChange )
+	{
+		auto volume_change_settings = dynamic_cast< VolumeChangeControlCueSettings* >( m_settings.data() );
+		return volume_change_settings->fade_time;
+	}
+
+	return QTime();
+}
+
 void ControlCueModelItem::readSettings( const QJsonObject& settings )
 {
 	CueModelItem::readSettings( settings );
-	m_settings.readSettings( settings["control-settings"].toObject() );
+	m_settings->readSettings( settings["control-settings"].toObject() );
+
+	if ( m_settings->cue_action == ControlAction_VolumeChange )
+	{
+		m_settings.reset( new VolumeChangeControlCueSettings );
+		m_settings->readSettings( settings["control-settings"].toObject() );
+	}
 }
 
 void ControlCueModelItem::writeSettings( QJsonObject& settings ) const
@@ -106,7 +177,7 @@ void ControlCueModelItem::writeSettings( QJsonObject& settings ) const
 	CueModelItem::writeSettings( settings );
 
 	QJsonObject controlSettings;
-	m_settings.writeSettings( controlSettings );
+	m_settings->writeSettings( controlSettings );
 	settings["control-settings"] = controlSettings;
 }
 

@@ -1,5 +1,9 @@
 #pragma once
 
+#include <audio/volume_matrix.h>
+
+#include <utils/enum.h>
+
 #include "cue_model_item.h"
 
 namespace noises
@@ -24,16 +28,39 @@ namespace noises
 
 	// ControlCueSettings
 
-	struct ControlCueSettings
+	class ControlCueSettings
 	{
 	public:
-		void readSettings( const QJsonObject& root );
+		typedef QScopedPointer< ControlCueSettings > Ptr;
 
-		void writeSettings( QJsonObject& root ) const;
+		virtual ~ControlCueSettings();
+
+		virtual void readSettings( const QJsonObject& value );
+
+		virtual void writeSettings( QJsonObject& value ) const;
 
 	public:
 		QString target_cue_uuid;
 		ControlAction cue_action;
+	};
+
+	// VolumeChangeControlCueSettings
+
+	class VolumeChangeControlCueSettings: public ControlCueSettings
+	{
+	public:
+		typedef QScopedPointer< VolumeChangeControlCueSettings > Ptr;
+
+		~VolumeChangeControlCueSettings();
+
+		void readSettings( const QJsonObject& value ) override;
+
+		void writeSettings( QJsonObject& value ) const override;
+
+	public:
+		QTime fade_time;
+		bool stop_target_on_end;
+		audio::VolumeMatrix target_levels;
 	};
 
 	// ControlCueModelItem
@@ -52,7 +79,13 @@ namespace noises
 			return CueType_Control;
 		}
 
-		ControlCueSettings& getSettings()
+		bool hasDuration() const override;
+
+		QString getTimeFormat() const override;
+
+		QTime getDuration() const override;
+
+		ControlCueSettings::Ptr& getSettings()
 		{
 			return m_settings;
 		}
@@ -67,7 +100,7 @@ namespace noises
 		QVariant getIcon() const override;
 
 	private:
-		ControlCueSettings m_settings;
+		ControlCueSettings::Ptr m_settings;
 	};
 
 } /* namespace noises */

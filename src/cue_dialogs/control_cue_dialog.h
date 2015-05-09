@@ -26,8 +26,9 @@ namespace noises
 	public:
 		VolumeChangeWidget( QWidget* parent = nullptr );
 
-		void readSettings( const ControlCueSettings& settings );
-		void writeSettings( ControlCueSettings& settings );
+		void readSettings( const ControlCueSettings::Ptr& settings );
+
+		bool writeSettings( ControlCueSettings::Ptr& settings );
 
 	private:
 		void createWidgets();

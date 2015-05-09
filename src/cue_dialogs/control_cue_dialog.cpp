@@ -43,6 +43,7 @@ void VolumeChangeWidget::createWidgets()
 	m_stop_cue_on_end =  new QCheckBox( "Stop On End", this );
 	m_stop_cue_on_end->setToolTip( "Stop target cue once fade is done" );
 
+	// TODO need to read this from the target cue...
 	m_matrix = new widgets::Matrix( 2, 2, this );
 
 	QVBoxLayout* main_layout = new QVBoxLayout;
@@ -54,14 +55,36 @@ void VolumeChangeWidget::createWidgets()
 	setLayout( main_layout );
 }
 
-void VolumeChangeWidget::readSettings( const ControlCueSettings& /*settings*/ )
+void VolumeChangeWidget::readSettings( const ControlCueSettings::Ptr& settings )
 {
+	const VolumeChangeControlCueSettings::Ptr& volume_change_settings = \
+		( const VolumeChangeControlCueSettings::Ptr& )( settings );
 
+	m_fade_time->setTime( volume_change_settings->fade_time );
+	m_stop_cue_on_end->setChecked( volume_change_settings->stop_target_on_end );
+
+	m_matrix->readSettings( volume_change_settings->target_levels );
 }
 
-void VolumeChangeWidget::writeSettings( ControlCueSettings& /*settings*/ )
+bool VolumeChangeWidget::writeSettings( ControlCueSettings::Ptr& settings )
 {
+	VolumeChangeControlCueSettings::Ptr& volume_change_settings = \
+		( VolumeChangeControlCueSettings::Ptr& )( settings );
 
+	bool something_changed = false;
+
+	SET_VALUE(
+		volume_change_settings->fade_time,
+		m_fade_time->time(),
+		something_changed )
+	SET_VALUE(
+		volume_change_settings->stop_target_on_end,
+		m_stop_cue_on_end->isChecked(),
+		something_changed )
+
+	something_changed |= m_matrix->writeSettings( volume_change_settings->target_levels );
+
+	return something_changed;
 }
 
 // ControlCueDialog
@@ -100,14 +123,22 @@ bool ControlCueDialog::writeSettings() const
 {
 	bool something_changed = false;
 
-	ControlCueSettings& settings = m_cue->getSettings();
+	ControlCueSettings::Ptr& settings = m_cue->getSettings();
 
-	SET_VALUE( settings.cue_action, getActionType(), something_changed )
-	SET_VALUE( settings.target_cue_uuid, getTargetCue(), something_changed )
+	// check if we need to specialise the settings
+	// TODO make this more generic
+	if ( settings->cue_action != getActionType() && getActionType() == ControlAction_VolumeChange )
+	{
+		settings.reset( new VolumeChangeControlCueSettings );
+		something_changed = true;
+	}
+
+	SET_VALUE( settings->cue_action, getActionType(), something_changed )
+	SET_VALUE( settings->target_cue_uuid, getTargetCue(), something_changed )
 
 	if ( m_type_specific_widget )
 	{
-		m_type_specific_widget->writeSettings( settings );
+		something_changed |= m_type_specific_widget->writeSettings( settings );
 	}
 
 	return something_changed;
@@ -115,19 +146,24 @@ bool ControlCueDialog::writeSettings() const
 
 void ControlCueDialog::readSettings()
 {
-	const ControlCueSettings& settings = m_cue->getSettings();
+	const ControlCueSettings::Ptr& settings = m_cue->getSettings();
 
-	int index = m_action->findData( settings.cue_action );
+	int index = m_action->findData( settings->cue_action );
 	if ( index >= 0 )
 	{
 		m_action->setCurrentIndex( index );
 	}
 
-	index = m_target_cue->findData( settings.target_cue_uuid );
+	index = m_target_cue->findData( settings->target_cue_uuid );
 	if ( index >= 0 )
 	{
 		m_target_cue->setCurrentIndex( index );
 		typeChanged();
+	}
+
+	if ( m_type_specific_widget )
+	{
+		m_type_specific_widget->readSettings( settings );
 	}
 }
 
