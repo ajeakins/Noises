@@ -14,7 +14,6 @@
 #include <widgets/matrix.h>
 
 #include "control_cue_dialog.h"
-#include "detail.h"
 
 namespace noises
 {
@@ -73,11 +72,11 @@ bool VolumeChangeWidget::writeSettings( ControlCueSettings::Ptr& settings )
 
 	bool something_changed = false;
 
-	SET_VALUE(
+	NOISES_SET_VALUE(
 		volume_change_settings->fade_time,
 		m_fade_time->time(),
 		something_changed )
-	SET_VALUE(
+	NOISES_SET_VALUE(
 		volume_change_settings->stop_target_on_end,
 		m_stop_cue_on_end->isChecked(),
 		something_changed )
@@ -133,8 +132,8 @@ bool ControlCueDialog::writeSettings() const
 		something_changed = true;
 	}
 
-	SET_VALUE( settings->cue_action, getActionType(), something_changed )
-	SET_VALUE( settings->target_cue_uuid, getTargetCue(), something_changed )
+	NOISES_SET_VALUE( settings->cue_action, getActionType(), something_changed )
+	NOISES_SET_VALUE( settings->target_cue_uuid, getTargetCue(), something_changed )
 
 	if ( m_type_specific_widget )
 	{

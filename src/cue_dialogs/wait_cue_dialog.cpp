@@ -9,7 +9,6 @@
 
 #include <cue/wait_cue_model_item.h>
 
-#include "detail.h"
 #include "wait_cue_dialog.h"
 
 namespace noises
@@ -47,7 +46,7 @@ bool WaitCueDialog::writeSettings() const
 
 	WaitCueSettings& settings = m_cue->getSettings();
 
-	SET_VALUE( settings.wait_time, m_wait_time->time(), something_changed )
+	NOISES_SET_VALUE( settings.wait_time, m_wait_time->time(), something_changed )
 
 	m_cue->updatePlayer();
 

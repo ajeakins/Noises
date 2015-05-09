@@ -2,6 +2,8 @@
 
 #include <QString>
 
+#include <utils/macro.h>
+
 namespace noises
 {
 	enum Column
@@ -16,11 +18,7 @@ namespace noises
 		Column_ITEM_COUNT
 	};
 
-	inline Column& operator++( Column& column )
-	{
-		column = (Column)((int)column + 1);
-		return column;
-	}
+	NOISES_DECLARE_ITERABLE_ENUM( Column )
 
 	QString columnToString( Column column );
 

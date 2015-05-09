@@ -3,6 +3,8 @@
 #include <QString>
 #include <QFlags>
 
+#include <utils/macro.h>
+
 namespace noises
 {
 	enum CueType
@@ -26,13 +28,9 @@ namespace noises
 		PostAction_ITEM_COUNT
 	};
 
-	Q_DECLARE_FLAGS(PostActions, PostAction)
+	Q_DECLARE_FLAGS( PostActions, PostAction )
 
-	inline PostAction& operator++( PostAction& action )
-	{
-		action = (PostAction)((int)action + 1);
-		return action;
-	}
+	NOISES_DECLARE_ITERABLE_ENUM( PostAction )
 
 	QString postActionToString( PostAction action );
 

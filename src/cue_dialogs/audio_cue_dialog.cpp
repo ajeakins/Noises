@@ -20,8 +20,6 @@
 
 #include "audio_cue_dialog.h"
 
-#include "detail.h"
-
 namespace noises
 {
 
@@ -102,18 +100,15 @@ bool AudioCueDialog::writeSettings() const
 
 	AudioCueSettings& settings = m_cue->getSettings();
 
-	SET_VALUE( settings.file_name, m_file_edit->text(), something_changed )
+	NOISES_SET_VALUE( settings.file_name, m_file_edit->text(), something_changed )
 
-	SET_VALUE( settings.start_time, m_start_time->time(), something_changed )
-	SET_VALUE( settings.end_time, m_end_time->time(), something_changed )
+	NOISES_SET_VALUE( settings.start_time, m_start_time->time(), something_changed )
+	NOISES_SET_VALUE( settings.end_time, m_end_time->time(), something_changed )
 
-	SET_VALUE( settings.start_fade, m_fade_in_time->time(), something_changed )
-	SET_VALUE( settings.end_fade, m_fade_out_time->time(), something_changed )
+	NOISES_SET_VALUE( settings.start_fade, m_fade_in_time->time(), something_changed )
+	NOISES_SET_VALUE( settings.end_fade, m_fade_out_time->time(), something_changed )
 
-	if ( m_matrix->writeSettings( settings.levels ) )
-	{
-		something_changed = true;
-	}
+	something_changed |= m_matrix->writeSettings( settings.levels );
 
 	m_cue->updatePlayer();
 

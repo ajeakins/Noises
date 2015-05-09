@@ -2,7 +2,7 @@
 
 #include <audio/volume_matrix.h>
 
-#include <utils/enum.h>
+#include <utils/macro.h>
 
 #include "cue_model_item.h"
 
@@ -18,11 +18,7 @@ namespace noises
 		ControlAction_ITEM_COUNT
 	};
 
-	inline ControlAction& operator++( ControlAction& action )
-	{
-		action = ( ControlAction )( ( int )action + 1 );
-		return action;
-	}
+	NOISES_DECLARE_ITERABLE_ENUM( ControlAction )
 
 	QString actionToString( ControlAction action );
 

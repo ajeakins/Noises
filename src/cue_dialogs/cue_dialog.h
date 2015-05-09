@@ -33,7 +33,7 @@ namespace noises
 		virtual bool writeSettings() const = 0;
 
 	protected:
-		QLayout* m_layout;
+		QLayout* m_layout = nullptr;
 
 	private:
 		QDataWidgetMapper* m_mapper;
