@@ -33,6 +33,11 @@ namespace noises
 
 		void writeSettings( QJsonArray& settings ) const;
 
+	Q_SIGNALS:
+		// report a setting change so the main window can set save
+		// state pending
+		void cueSettingChanged();
+
 	public Q_SLOTS:
 		void deleteCurrentCue();
 

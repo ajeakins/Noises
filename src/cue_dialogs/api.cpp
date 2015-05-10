@@ -13,7 +13,7 @@
 namespace noises
 {
 
-void showCueEditDialog(
+bool showCueEditDialog(
 	CueModelItem* item,
 	QDataWidgetMapper* mapper,
 	bool create,
@@ -29,7 +29,7 @@ void showCueEditDialog(
 				create,
 				parent );
 			dialog.exec();
-			break;
+			return dialog.settingsChanged();
 		}
 		case CueType_Control:
 		{
@@ -39,7 +39,7 @@ void showCueEditDialog(
 				create,
 				parent );
 			dialog.exec();
-			break;
+			return dialog.settingsChanged();
 		}
 		case CueType_Wait:
 		{
@@ -49,7 +49,7 @@ void showCueEditDialog(
 				create,
 				parent );
 			dialog.exec();
-			break;
+			return dialog.settingsChanged();
 		}
 		case CueType_Group:
 		{
@@ -59,13 +59,13 @@ void showCueEditDialog(
 				create,
 				parent );
 			dialog.exec();
-			break;
+			return dialog.settingsChanged();
 		}
 		default:
 			qWarning() << "WARNING: Unknown cue type\n";
 			break;
 	}
-
+	return false;
 }
 
 } /* namespace noises */

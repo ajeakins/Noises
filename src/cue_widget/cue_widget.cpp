@@ -87,14 +87,12 @@ CueModelItem* CueWidget::createCue( CueType type )
 	utils::getNewCueNumber( previous_number, next_number, new_number );
 
 	// add the cue
-
 	CueModelItem* cue = m_cue_model->createCue( type );
 	cue->setData( 0, new_number );
 
 	m_cue_model->setCueParent( parent, cue, index + 1 );
 
 	// update the selection
-
 	if ( ! selected_row.isValid() )
 	{
 		selected_row = m_cue_model->index( 0, 0 );
@@ -110,6 +108,7 @@ CueModelItem* CueWidget::createCue( CueType type )
 			QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows );
 	}
 
+	Q_EMIT cueSettingChanged();
 	return cue;
 }
 
@@ -135,12 +134,16 @@ void CueWidget::deleteCurrentCue()
 	}
 
 	m_cue_model->removeRow( selected_row.row(), selected_row.parent() );
+	Q_EMIT cueSettingChanged();
 }
 
 void CueWidget::editCue( QModelIndex index )
 {
 	CueModelItem* item = m_cue_model->itemFromIndex( index );
-	showCueEditDialog( item, getDataMapperForSelection(), false, this );
+	if( showCueEditDialog( item, getDataMapperForSelection(), false, this ) )
+	{
+		Q_EMIT cueSettingChanged();
+	}
 }
 
 void CueWidget::editCurrentCue()

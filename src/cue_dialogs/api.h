@@ -7,7 +7,7 @@ namespace noises
 {
 	class CueModelItem;
 
-	void showCueEditDialog(
+	bool showCueEditDialog(
 		CueModelItem* item,
 		QDataWidgetMapper* mapper,
 		bool create,

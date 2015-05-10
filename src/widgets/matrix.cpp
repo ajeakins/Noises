@@ -107,21 +107,35 @@ void Matrix::readSettings( const audio::VolumeMatrix& settings )
 
 bool Matrix::writeSettings( audio::VolumeMatrix& settings ) const
 {
+	bool something_changed = false;
+
+	if (
+		settings.getInputs() != getInputs() ||
+		settings.getOutputs() != getOutputs() ||
+		settings.getStereoLink() != m_link->isChecked()
+		)
+	{
+		something_changed = true;
+	}
+
 	settings.setInputs( getInputs() );
 	settings.setOutputs( getOutputs() );
+
+	settings.setStereoLink( m_link->isChecked() );
 
 	for ( IndexDataMap::const_iterator itr = m_index_map.begin(); itr != m_index_map.end(); ++itr )
 	{
 		const IndexData& index_data = itr.value();
 		VolumeDial* const& volume_dial = itr.key();
 
-		settings.setVolume( index_data.input, index_data.output, volume_dial->getVolume() );
+		if ( settings.getVolume( index_data.input, index_data.output ) != volume_dial->getVolume() )
+		{
+			settings.setVolume( index_data.input, index_data.output, volume_dial->getVolume() );
+			something_changed = true;
+		}
 	}
 
-	settings.setStereoLink( m_link->isChecked() );
-
-	// Obviouous TODO...
-	return true;
+	return something_changed;
 }
 
 void Matrix::valueChanged( float /*value*/ )

@@ -190,7 +190,7 @@ void MainWindow::openShow( const QString& file_name )
 
 	if ( !file.isOpen() )
 	{
-		QMessageBox::critical( this, "Errror Loading File", "Unable to load show file." );
+		QMessageBox::critical( this, "Error Loading File", "Unable to load show file." );
 		return;
 	}
 
@@ -257,6 +257,9 @@ void MainWindow::editPreferences()
 void MainWindow::createWidgets()
 {
 	m_cue_list = new CueWidget( this );
+	connect(
+		m_cue_list, &CueWidget::cueSettingChanged,
+		this, &MainWindow::setSavePending );
 	setCentralWidget( m_cue_list );
 }
 

@@ -20,6 +20,11 @@ namespace noises
 
 		virtual ~CueDialog();
 
+		bool settingsChanged()
+		{
+			return m_settings_changed;
+		}
+
 	public Q_SLOTS:
 		void accept();
 
@@ -39,6 +44,7 @@ namespace noises
 		QDataWidgetMapper* m_mapper;
 
 		bool m_create;
+		bool m_settings_changed = false;
 	};
 
 } /* namespace noises */
