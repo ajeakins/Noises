@@ -1,17 +1,17 @@
 
 #include <assert.h>
-#include <iostream>
 
 #include <QApplication>
-#include <QtGui>
-#include <QToolBar>
+#include <QCloseEvent>
+#include <QFileDialog>
 #include <QMenu>
 #include <QMenuBar>
-#include <QStatusBar>
-#include <QDataWidgetMapper>
 #include <QMessageBox>
-#include <QFileDialog>
+#include <QStatusBar>
+#include <QSettings>
+#include <QToolBar>
 
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 

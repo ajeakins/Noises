@@ -92,8 +92,13 @@ namespace noises
 
 		void writeSettings( QJsonObject& settings ) const override;
 
+		void updatePlayer();
+
 	protected:
 		QVariant getIcon() const override;
+
+	private Q_SLOTS:
+		void playerTimeChanged( const QTime& time );
 
 	private:
 		ControlCueSettings::Ptr m_settings;

@@ -1,10 +1,7 @@
 
 #include <QApplication>
-#include <QDebug>
 
 #include <cue/cue_model_item.h>
-#include <cue/audio_cue_model_item.h>
-#include <cue/wait_cue_model_item.h>
 
 #include <utils/time.h>
 

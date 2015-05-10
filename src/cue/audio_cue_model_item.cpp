@@ -13,6 +13,8 @@
 namespace noises
 {
 
+// AudioCueSettings
+
 void AudioCueSettings::readSettings( const QJsonObject& value )
 {
 	file_name = value["file_name"].toString( "" );
@@ -41,6 +43,8 @@ void AudioCueSettings::writeSettings( QJsonObject& value ) const
 	levels.writeSettings( levelSettings );
 	value["levels"] = levelSettings;
 }
+
+// AudioCueModelItem
 
 AudioCueModelItem::AudioCueModelItem(
 	const QList< QVariant >& item_data,

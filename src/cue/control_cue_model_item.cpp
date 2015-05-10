@@ -1,6 +1,8 @@
 
 #include <QPixmap>
 
+#include <cue_widget/types.h>
+
 #include <utils/time.h>
 
 #include "audio_cue_model_item.h"
@@ -140,23 +142,21 @@ bool ControlCueModelItem::hasDuration() const
 
 QString ControlCueModelItem::getTimeFormat() const
 {
-	if ( m_settings->cue_action ==  ControlAction_VolumeChange )
+	if ( m_settings->cue_action == ControlAction_VolumeChange )
 	{
 		auto volume_change_settings = dynamic_cast< VolumeChangeControlCueSettings* >( m_settings.data() );
 		return utils::timeFormat( volume_change_settings->fade_time );
 	}
-
 	return "";
 }
 
 QTime ControlCueModelItem::getDuration() const
 {
-	if ( m_settings->cue_action ==  ControlAction_VolumeChange )
+	if ( m_settings->cue_action == ControlAction_VolumeChange )
 	{
 		auto volume_change_settings = dynamic_cast< VolumeChangeControlCueSettings* >( m_settings.data() );
 		return volume_change_settings->fade_time;
 	}
-
 	return QTime();
 }
 
@@ -169,6 +169,8 @@ void ControlCueModelItem::readSettings( const QJsonObject& settings )
 	{
 		m_settings.reset( new VolumeChangeControlCueSettings );
 		m_settings->readSettings( settings["control-settings"].toObject() );
+
+		updatePlayer();
 	}
 }
 
@@ -179,6 +181,33 @@ void ControlCueModelItem::writeSettings( QJsonObject& settings ) const
 	QJsonObject controlSettings;
 	m_settings->writeSettings( controlSettings );
 	settings["control-settings"] = controlSettings;
+}
+
+void ControlCueModelItem::updatePlayer()
+{
+	if ( m_settings->cue_action == ControlAction_VolumeChange )
+	{
+		playerTimeChanged( QTime( 0, 0, 0 ) );
+	}
+}
+
+void ControlCueModelItem::playerTimeChanged( const QTime& time )
+{
+	QTime remaining;
+	QTime duration = getDuration();
+	if ( utils::isZero( duration ) )
+	{
+		remaining = QTime( 0, 0, 0 );
+	}
+	else
+	{
+		remaining = utils::subtract( duration, time );
+	}
+
+	setData( Column_Remaining, remaining );
+	setData( Column_Elapsed, time );
+
+	Q_EMIT dataChanged( this );
 }
 
 } /* namespace noises */
