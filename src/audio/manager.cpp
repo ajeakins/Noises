@@ -1,5 +1,6 @@
 
 #include "player/audio_player.h"
+#include "player/fade_player.h"
 #include "player/wait_player.h"
 #include "manager.h"
 
@@ -48,6 +49,9 @@ Player::Ptr Manager::createPlayer( QObject* parent, PlayerType type )
 		break;
 	case PlayerType_Wait:
 		player = Player::Ptr( new WaitPlayer( parent ) );
+		break;
+	case PlayerType_Fade:
+		player = Player::Ptr( new FadePlayer( parent ) );
 		break;
 	}
 

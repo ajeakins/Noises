@@ -1,5 +1,8 @@
 
 #include <QPixmap>
+#include <QSharedPointer>
+
+#include <audio/player/fade_player.h>
 
 #include <cue_widget/types.h>
 
@@ -107,16 +110,21 @@ void ControlCueModelItem::execute()
 		switch( m_settings->cue_action )
 		{
 			case ControlAction_Start:
-				audio_cue->start();
+				audio_cue->getPlayer()->start();
 				break;
 			case ControlAction_Stop:
-				audio_cue->stop();
+				audio_cue->getPlayer()->stop();
 				break;
 			case ControlAction_Pause:
-				audio_cue->pause();
+				audio_cue->getPlayer()->pause();
 				break;
 			case ControlAction_VolumeChange:
+			{
+				audio::Manager& manager = Application::getAudioManager();
+				audio::Player::Ptr player = manager.createPlayer( this, audio::PlayerType_Fade );
+				audio::FadePlayer::Ptr fade_player = player.dynamicCast< audio::FadePlayer >();
 				break;
+			}
 			case ControlAction_ITEM_COUNT:
 				break;
 		}

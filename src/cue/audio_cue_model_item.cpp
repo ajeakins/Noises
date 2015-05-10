@@ -1,7 +1,6 @@
 
 #include <QPixmap>
 
-#include <audio/types.h>
 #include <audio/manager.h>
 
 #include <cue_widget/types.h>
@@ -87,21 +86,6 @@ QVariant AudioCueModelItem::getIcon() const
 {
 	QPixmap icon( ":/images/audio_cue_16x16.png" );
 	return icon;
-}
-
-void AudioCueModelItem::stop()
-{
-	m_player->stop();
-}
-
-void AudioCueModelItem::start()
-{
-	m_player->start();
-}
-
-void AudioCueModelItem::pause()
-{
-	m_player->pause();
 }
 
 void AudioCueModelItem::updatePlayer()

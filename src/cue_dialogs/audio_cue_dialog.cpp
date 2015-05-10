@@ -9,7 +9,7 @@
 
 #include <audio/manager.h>
 #include <audio/volume_matrix.h>
-#include <audio/types.h>
+#include <audio/player/types.h>
 
 #include <cue/audio_cue_model_item.h>
 
