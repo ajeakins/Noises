@@ -61,7 +61,7 @@ Player::Ptr Manager::createPlayer( QObject* parent, PlayerType type )
 
 	connect(
 		player.data(), SIGNAL( parentDestroyed( Player::Ptr ) ),
-		this, SLOT( unregisterPlayer( Player::Ptr ) ) );
+		this, SLOT( releasePlayer( Player::Ptr ) ) );
 
 	m_players.append( player );
 
@@ -89,7 +89,7 @@ void Manager::unqueuePlayers()
 	}
 }
 
-void Manager::unregisterPlayer( Player::Ptr player )
+void Manager::releasePlayer( Player::Ptr player )
 {
 	m_players.removeOne( player );
 }

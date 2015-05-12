@@ -2,8 +2,6 @@
 #include <QPixmap>
 #include <QSharedPointer>
 
-#include <audio/player/fade_player.h>
-
 #include <cue_widget/types.h>
 
 #include <utils/time.h>
@@ -122,7 +120,21 @@ void ControlCueModelItem::execute()
 			{
 				audio::Manager& manager = Application::getAudioManager();
 				audio::Player::Ptr player = manager.createPlayer( this, audio::PlayerType_Fade );
-				audio::FadePlayer::Ptr fade_player = player.dynamicCast< audio::FadePlayer >();
+				m_fade_player = player.dynamicCast< audio::FadePlayer >();
+
+				connect(
+					m_fade_player.data(), &audio::FadePlayer::timeUpdated,
+					this, &ControlCueModelItem::playerTimeChanged );
+				connect(
+					m_fade_player.data(), &audio::FadePlayer::fadeDone,
+					this, &ControlCueModelItem::fadeDone
+					);
+
+				auto volume_change_settings = dynamic_cast< VolumeChangeControlCueSettings* >( m_settings.data() );
+				m_fade_player->setFadeTime( volume_change_settings->fade_time );
+				m_fade_player->setTargetLevels( volume_change_settings->target_levels );
+
+				audio_cue->getPlayer()->addFade( m_fade_player );
 				break;
 			}
 			case ControlAction_ITEM_COUNT:
@@ -216,6 +228,40 @@ void ControlCueModelItem::playerTimeChanged( const QTime& time )
 	setData( Column_Elapsed, time );
 
 	Q_EMIT dataChanged( this );
+}
+
+void ControlCueModelItem::fadeDone()
+{
+	if ( m_fade_player )
+	{
+		Application::getAudioManager().releasePlayer( m_fade_player );
+		m_fade_player.clear();
+	}
+
+	// Stop target cue if requested
+	if ( m_settings->cue_action == ControlAction_VolumeChange )
+	{
+		auto volume_change_settings = dynamic_cast< VolumeChangeControlCueSettings* >( m_settings.data() );
+		if ( volume_change_settings->stop_target_on_end )
+		{
+			CueModelItem* parent = this->parent();
+			CueModelItem* target = 0;
+			for ( int i = 0; i != parent->row( this ); ++i )
+			{
+				CueModelItem* item = parent->child( i );
+				if ( item->getUuid() == m_settings->target_cue_uuid )
+				{
+					target = item;
+				}
+			}
+
+			if ( target && target->getType() == CueType_Audio )
+			{
+				AudioCueModelItem* audio_cue = ( AudioCueModelItem* )target;
+				audio_cue->getPlayer()->stop();
+			}
+		}
+	}
 }
 
 } /* namespace noises */

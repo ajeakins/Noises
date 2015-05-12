@@ -65,10 +65,12 @@ namespace audio
 
 		void stopped();
 
+	public Q_SLOTS:
+		// Remove a player from the manager allowing it to be destroyed
+		void releasePlayer( Player::Ptr player );
+
 	private Q_SLOTS:
 		void playerStarted( Player::Ptr player );
-
-		void unregisterPlayer( Player::Ptr player );
 
 	private:
 		void startEngine();

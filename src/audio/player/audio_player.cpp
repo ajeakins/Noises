@@ -1,4 +1,6 @@
 
+// TODO get rid of UI components from here...
+
 #include <assert.h>
 
 #include <QMessageBox>
@@ -8,6 +10,7 @@
 
 #include <app/application.h>
 #include <utils/audio.h>
+#include <utils/math.h>
 
 #include <audio/volume_matrix.h>
 
@@ -23,8 +26,7 @@ namespace audio
 AudioPlayer::AudioPlayer( QObject* parent )
 :
 	Player( parent ),
-	m_audio_info( new SF_INFO ),
-	m_outputs( Application::getPreferences().getOutputCount() )
+	m_audio_info( new SF_INFO )
 {}
 
 AudioPlayer::~AudioPlayer()
@@ -45,42 +47,79 @@ void AudioPlayer::setFilename( const QString& filename )
 
 void AudioPlayer::setVolume( const VolumeMatrix& settings )
 {
-	if ( !m_audio_data )
+	m_volumes = settings;
+	resetVolumes();
+}
+
+void AudioPlayer::resetVolumes()
+{
+	m_current_volumes.resize( m_volumes.getInputs() );
+	for ( unsigned int in = 0; in != m_volumes.getInputs(); ++in )
 	{
-		return;
-	}
-
-	m_outputs = Application::getPreferences().getOutputCount();
-
-	for ( int i = 0; i != m_audio_info->channels; ++i )
-	{
-		m_volumes[i].resize( m_outputs );
-
-		for ( int j = 0; j != m_outputs; ++j )
+		m_current_volumes[in].resize( m_volumes.getOutputs() );
+		for ( unsigned int out = 0; out != m_volumes.getOutputs(); ++out )
 		{
-			float volume = 0.0f;
-
-			float volume_in_db = settings.getVolume( i, j );
-			if ( !settings.isMinimumVolume( volume_in_db ) )
-			{
-				volume = utils::dbToMultiplier( volume_in_db );
-			}
-
-			m_volumes[i][j] = volume;
+			m_current_volumes[in][out] = utils::dbToMultiplier( m_volumes.getVolume( in, out ) );;
 		}
 	}
 }
 
-float AudioPlayer::getVolume( int input, int output ) const
+void AudioPlayer::updateCurrentVolumes()
 {
-	if (
-		!m_audio_data ||
-		input >= m_audio_info->channels ||
-		output >= m_outputs )
+	// No update needed
+	if ( m_fades.isEmpty() )
 	{
-		return 0.0f;
+		return;
 	}
-	return m_volumes[input][output];
+
+	int frames = timeInFrames();
+
+	for ( unsigned int in = 0; in != m_volumes.getInputs(); ++in )
+	{
+		for ( unsigned int out = 0; out != m_volumes.getOutputs(); ++out )
+		{
+			float cumulative_volume = 1.0f;
+			bool any_fade_active = false;
+
+			// add the contribution of all currently running fades
+			QMutableListIterator< FadeEntry > itr( m_fades );
+			while ( itr.hasNext() )
+			{
+				FadeEntry& fade_entry = itr.next();
+
+				int local_time = frames - fade_entry.start_frame;
+				// fade hasn't started yet
+				if ( local_time < 0 )
+				{
+					continue;
+				}
+				else
+				{
+					float from_volume = fade_entry.m_start_volumes[in][out];
+					float to_volume = utils::dbToMultiplier( fade_entry.fade->getTargetLevels().getVolume( in, out ) );
+					float fraction = ( float )local_time / ( float )fade_entry.fade->getFadeTimeInFrames();
+					cumulative_volume *= utils::lerp( from_volume, to_volume, fraction );
+					any_fade_active = true;
+				}
+
+				if ( local_time >= fade_entry.fade->getFadeTimeInFrames() )
+				{
+					fade_entry.fade->setPosition( local_time );
+					itr.remove();
+				}
+			}
+
+			if ( any_fade_active )
+			{
+				m_current_volumes[in][out] = cumulative_volume;
+			}
+			else
+			{
+				// nothing to do
+				return;
+			}
+		}
+	}
 }
 
 QTime AudioPlayer::getDuration() const
@@ -91,6 +130,17 @@ QTime AudioPlayer::getDuration() const
 	}
 
 	return timeFromFrames( m_audio_info->frames );
+}
+
+void AudioPlayer::addFade( FadePlayer::Ptr fade_player )
+{
+	FadeEntry entry = { timeInFrames(), fade_player, m_current_volumes };
+	m_fades.append( entry );
+}
+
+int AudioPlayer::timeInFrames() const
+{
+	return m_pos / m_audio_info->channels;
 }
 
 QTime AudioPlayer::timeFromFrames( int frames ) const
@@ -160,12 +210,9 @@ void AudioPlayer::readData()
 	sf_readf_float( file, m_audio_data, m_audio_info->frames );
 	sf_close( file );
 
-	// TODO: get rid of this...
-	m_volumes.resize( m_audio_info->channels );
-	for ( int i = 0; i != m_audio_info->channels; ++i )
-	{
-		m_volumes[i].resize( m_outputs );
-	}
+	// TODO: get rid of this... maybe
+	m_volumes.setInputs( m_audio_info->channels );
+	m_volumes.setOutputs( Application::getPreferences().getOutputCount() );
 }
 
 void AudioPlayer::addData(
@@ -180,11 +227,13 @@ void AudioPlayer::addData(
 
 	for( int frame = 0; frame != frames; ++frame )
 	{
+		updateCurrentVolumes();
+
 		for( int output = 0; output != channels; ++output )
 		{
 			for( int input = 0; input != m_audio_info->channels; ++input )
 			{
-				audio[output] += getVolume( input, output ) * m_audio_data[m_pos + input];
+				audio[output] +=  m_current_volumes[input][output] * m_audio_data[m_pos + input];
 			}
 		}
 
@@ -195,8 +244,7 @@ void AudioPlayer::addData(
 		// reached the end of the track
 		if ( m_pos == m_length )
 		{
-			m_is_playing = false;
-			m_pos = 0;
+			stop();
 			return;
 		}
 	}
@@ -228,13 +276,24 @@ void AudioPlayer::stop()
 {
 	m_is_playing = false;
 	m_pos = 0;
+	resetVolumes();
 	Q_EMIT stopped();
 }
 
 void AudioPlayer::updateTime() const
 {
-	QTime time = timeFromFrames( m_pos / m_audio_info->channels );
+	int frames = timeInFrames();
+
+	// update our time
+	QTime time = timeFromFrames( frames );
 	Q_EMIT timeUpdated( time );
+
+	// stimulate fades to update theirs
+	for ( Fades::const_iterator itr = m_fades.begin(); itr != m_fades.end(); ++itr )
+	{
+		itr->fade->setPosition( frames - itr->start_frame );
+		itr->fade->updateTime();
+	}
 }
 
 } /* namespace audio */

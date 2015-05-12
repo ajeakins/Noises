@@ -4,6 +4,8 @@
 #include <QTime>
 #include <QVector>
 
+#include "fade_player.h"
+
 #include "player.h"
 
 struct SF_INFO;
@@ -23,15 +25,15 @@ namespace audio
 		~AudioPlayer() override;
 
 		// setup
-
 		void setFilename( const QString& filename );
 
 		void setVolume( const VolumeMatrix& settings );
 
 		QTime getDuration() const;
 
-		// Playback controls
+		void addFade( FadePlayer::Ptr fade_player );
 
+		// playback controls
 		void start() override;
 
 		void pause();
@@ -46,9 +48,9 @@ namespace audio
 
 		AudioPlayer( QObject* parent );
 
-		float getVolume( int input, int output ) const;
-
 		void readData();
+
+		int timeInFrames() const;
 
 		QTime timeFromFrames( int frames ) const;
 
@@ -57,23 +59,38 @@ namespace audio
 			int frames,
 			int channels ) override;
 
+		void resetVolumes();
+
+		void updateCurrentVolumes();
+
 	private:
 		QString m_filename;
 
 		// playback state
 		int m_pos = 0 ;
 
-		// audio data
+		// audio
 		float* m_audio_data = nullptr;
-
-		// audio information
 		QSharedPointer< SF_INFO > m_audio_info;
 		int m_length;
 
-		// volume data
-		QVector< QVector< float > > m_volumes;
-		// current number of outputs we have data for
-		int m_outputs;
+		// volumes
+		VolumeMatrix m_volumes;
+
+		// Current volumes taking into account fades
+		// converted to a multiplier
+		typedef QVector< QVector< float > > Volumes;
+		Volumes m_current_volumes;
+
+		// fades
+		struct FadeEntry
+		{
+			int start_frame;
+			FadePlayer::Ptr fade;
+			Volumes m_start_volumes;
+		};
+		typedef QList< FadeEntry > Fades;
+		Fades m_fades;
 	};
 
 } /* namespace audio */

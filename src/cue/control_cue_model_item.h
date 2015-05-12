@@ -1,5 +1,6 @@
 #pragma once
 
+#include <audio/player/fade_player.h>
 #include <audio/volume_matrix.h>
 
 #include <utils/macro.h>
@@ -100,8 +101,11 @@ namespace noises
 	private Q_SLOTS:
 		void playerTimeChanged( const QTime& time );
 
+		void fadeDone();
+
 	private:
 		ControlCueSettings::Ptr m_settings;
+		audio::FadePlayer::Ptr m_fade_player;
 	};
 
 } /* namespace noises */
