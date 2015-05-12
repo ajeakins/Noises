@@ -1,28 +1,46 @@
+Roadmap
+=======
 
-Next:
-- preferences...
-- settings
-- more saving, need to consider design for adding and removing values
-- refactor model, make less generic probably...
-- fades
-- put application into class inheriting from QApplication?
-- restructure cue list into it's own class?
+0.1
+===
+* Audio, wait and control cues
 
-Longer term:
-- other cue types
-  - Wait should be easy
-  - Groups, need drag and drop and play behaviour
-  - Control, hard...
-- show mode
-  - disable editing
-  - giant warning on loss of focus
+0.2
+===
+* Groups cues
+* Looping of audio cues
 
-Dreams:
-- Audio waveform preview, great for setting start and end, auto find start/end by detecting silence?
-- In order of easyness... High/lowpas, EQ, reverb.
-- Surround panning.
-- Timing localisations.
-- GUI for configuring speaker locations?
+0.3
+===
+* Audio waveform preview, great for setting start and end, auto find start/end by detecting silence?
 
-Attributions:
-icon source: "Open Iconic — www.useiconic.com/open"
+Onwards
+===
+* In order of easyness... High/lowpas, EQ, reverb.
+* Surround panning.
+* Timing localisations.
+* GUI for configuring speaker locations?
+* animation cues
+
+TODO 0.1
+========
+- Refine preferences and settings.
+- Finish control cues, tidy code, finish UI.
+- Add show mode.
+  - Disable editing.
+  - Giant warning on loss of focus.
+- Sample rate management
+- Profile memory usage.
+- Valgrind testing.
+- Better interaction between running state and edit dialogs.
+- Audio cue start and end times and fades need implementing.
+- About dialog, attributions icon source: "Open Iconic — www.useiconic.com/open"
+
+- Put application into class inheriting from QApplication?
+
+----
+Plans
+----
+
+* Precise timings, need to store cue start time the first time it gets used in a data cb and reset on stop to keep track of state.
+* Write some tests, probably starting with the matrix widget. There is a lot of fixing to do...
