@@ -47,6 +47,18 @@ int CueModel::columnCount( const QModelIndex& parent ) const
 	}
 }
 
+void CueModel::clear()
+{
+	Q_EMIT beginResetModel();
+
+	while( m_root_item->childCount() )
+	{
+		m_root_item->deleteChild( 0 );
+	}
+
+	Q_EMIT endResetModel();
+}
+
 QVariant CueModel::data( const QModelIndex& index, int role ) const
 {
 	if ( !index.isValid() )

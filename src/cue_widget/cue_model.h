@@ -28,6 +28,7 @@ namespace noises
 			int role = Qt::EditRole);
 
 		Qt::ItemFlags flags( const QModelIndex& index ) const;
+
 		QVariant headerData(
 			int section,
 			Qt::Orientation orientation,
@@ -49,12 +50,17 @@ namespace noises
 		void setCueParent( CueModelItem* parent, CueModelItem* child, int row );
 
 		int rowCount( const QModelIndex& parent = QModelIndex() ) const;
+
 		int columnCount( const QModelIndex& parent = QModelIndex() ) const;
+
+		void clear();
 
 		CueModelItem* getRootItem()
 		{
 			return m_root_item;
 		}
+
+		// Drag and drop
 
 		Qt::DropActions supportedDropActions() const;
 
@@ -68,6 +74,8 @@ namespace noises
 			int row,
 			int column,
 			const QModelIndex& parent );
+
+		// Settings
 
 		void readSettings( const QJsonArray& settings );
 

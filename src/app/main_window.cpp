@@ -66,19 +66,17 @@ void MainWindow::closeEvent( QCloseEvent* event )
 			QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel,
 			this );
 		int ret = message.exec();
-		if ( ret == QMessageBox::Save )
-		{
-			saveShow();
-		}
-		else if ( ret == QMessageBox::Cancel )
+		if ( ret == QMessageBox::Cancel )
 		{
 			return;
 		}
+		else if ( ret == QMessageBox::Save )
+		{
+			saveShow();
+		}
 	}
 
-	// check state and confirm
 	saveSettings();
-
 	event->accept();
 }
 
@@ -100,23 +98,51 @@ void MainWindow::loadSettings()
 
 void MainWindow::updateWindowTitle()
 {
-	QString title = "Noises";
+	QString title = "Noises - ";
+
 	if ( !m_current_file_name.isEmpty() )
 	{
-		title += " - ";
 		title += m_current_file_name;
+	}
+	else
+	{
+		title += "Untitled Show";
+	}
 
-		if ( m_save_pending )
-		{
-			title += "*";
-		}
+	if ( m_save_pending )
+	{
+		title += "*";
 	}
 
 	setWindowTitle( title );
 }
 
 void MainWindow::newShow()
-{}
+{
+	if ( m_save_pending )
+	{
+		QMessageBox message(
+			QMessageBox::Question,
+			"Unsaved Changes",
+			"There are unsaved changes, do you want to save?",
+			QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel,
+			this );
+		int ret = message.exec();
+		if ( ret == QMessageBox::Cancel )
+		{
+			return;
+		}
+		else if ( ret == QMessageBox::Save )
+		{
+			saveShow();
+		}
+	}
+
+	m_save_pending = false;
+	m_current_file_name = QString();
+	m_cue_list->clear();
+	updateWindowTitle();
+}
 
 void MainWindow::saveShow()
 {

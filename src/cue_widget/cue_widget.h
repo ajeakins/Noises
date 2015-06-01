@@ -19,6 +19,8 @@ namespace noises
 
 		CueModelItem* createCue( CueType type );
 
+		void clear();
+
 		// selection
 
 		CueModelItem* getCurrentItem();

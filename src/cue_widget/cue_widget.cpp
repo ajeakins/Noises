@@ -112,6 +112,11 @@ CueModelItem* CueWidget::createCue( CueType type )
 	return cue;
 }
 
+void CueWidget::clear()
+{
+	m_cue_model->clear();
+}
+
 void CueWidget::deleteCurrentCue()
 {
 	QMessageBox message(
