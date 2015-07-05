@@ -14,7 +14,7 @@ namespace widgets
 		Q_OBJECT
 
 	public:
-		FileLineEdit( QWidget* parent = 0 );
+		FileLineEdit( QWidget* parent = nullptr );
 
 		~FileLineEdit();
 

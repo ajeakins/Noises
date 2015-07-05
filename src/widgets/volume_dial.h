@@ -13,9 +13,9 @@ namespace widgets
 	{
 		Q_OBJECT
 	public:
-		VolumeDial( QWidget* parent = 0 );
+		VolumeDial( QWidget* parent = nullptr );
 
-		VolumeDial( const QString& text, QWidget* parent = 0 );
+		VolumeDial( const QString& text, QWidget* parent = nullptr );
 
 		~VolumeDial();
 
@@ -35,6 +35,7 @@ namespace widgets
 
 	private Q_SLOTS:
 		void valueSetDial( int value );
+
 		void valueSetSpinBox( double value );
 
 	private:

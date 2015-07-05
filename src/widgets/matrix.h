@@ -26,7 +26,7 @@ namespace widgets
 		Matrix(
 			unsigned int inputs = 2,
 			unsigned int outputs = 2,
-			QWidget* parent = 0 );
+			QWidget* parent = nullptr );
 
 		~Matrix();
 

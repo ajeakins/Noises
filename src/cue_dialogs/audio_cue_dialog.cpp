@@ -17,6 +17,7 @@
 
 #include <widgets/file_line_edit.h>
 #include <widgets/matrix.h>
+#include <widgets/pan.h>
 
 #include "audio_cue_dialog.h"
 
@@ -92,6 +93,31 @@ void AudioCueDialog::playerTimeChanged( const QTime& time )
 {
 	m_elapsed_time->setTime( time );
 	m_remaining_time->setTime( utils::subtract( m_duration, time ) );
+
+	if ( utils::isZero( time ) )
+	{
+		m_play_pause_button->setIcon( QIcon( ":images/play_32x32.png" ) );
+	}
+}
+
+void AudioCueDialog::playPause()
+{
+	if ( m_player->isPlaying() )
+	{
+		m_player->pause();
+		m_play_pause_button->setIcon( QIcon( ":images/play_32x32.png" ) );
+	}
+	else
+	{
+		m_player->start();
+		m_play_pause_button->setIcon( QIcon( ":images/pause_32x32.png" ) );
+	}
+}
+
+void AudioCueDialog::stop()
+{
+	m_player->stop();
+	m_play_pause_button->setIcon( QIcon( ":images/play_32x32.png" ) );
 }
 
 bool AudioCueDialog::writeSettings() const
@@ -131,7 +157,9 @@ void AudioCueDialog::readSettings()
 	m_matrix->setOutputs( Application::getPreferences().getOutputCount() );
 
 	m_player->setFilename( settings.file_name );
+
 	volumeChanged();
+	m_duration = m_player->getDuration();
 }
 
 void AudioCueDialog::createCueWidgets()
@@ -139,7 +167,6 @@ void AudioCueDialog::createCueWidgets()
 	createWidgets();
 
 	// file
-
 	m_file_edit = new widgets::FileLineEdit( this );
 
 	connect(
@@ -155,59 +182,41 @@ void AudioCueDialog::createCueWidgets()
 
 	// preview
 
-	QLabel* elapsed_label =  new QLabel( "Elapsed:", this );
+	// TODO get rid of these edits, they are only ever read
+	// should be labels, just need to sort format stuff
 	m_elapsed_time = new QTimeEdit( this );
 	m_elapsed_time->setReadOnly( true );
 
-	QLabel* remaining_label = new QLabel( "Remaining:", this );
 	m_remaining_time = new QTimeEdit( this );
 	m_remaining_time->setReadOnly( true );
 
-	m_play_button = new QPushButton( this );
-	m_play_button->setIcon( QIcon( ":images/play_32x32.png" ) );
-
-	m_pause_button = new QPushButton( this );
-	m_pause_button->setIcon( QIcon( ":images/pause_32x32.png" ) );
+	m_play_pause_button = new QPushButton( this );
+	m_play_pause_button->setIcon( QIcon( ":images/play_32x32.png" ) );
 
 	m_stop_button = new QPushButton( this );
 	m_stop_button->setIcon( QIcon( ":images/stop_32x32.png" ) );
 
 	connect(
-		m_play_button, &QPushButton::released,
-		[this](){ m_player->start(); } );
-
-	connect(
-		m_pause_button, &QPushButton::released,
-		[this](){ m_player->pause(); } );
+		m_play_pause_button, &QPushButton::released,
+		this, &AudioCueDialog::playPause );
 
 	connect(
 		m_stop_button, &QPushButton::released,
-		[this](){ m_player->stop(); } );
+		this, &AudioCueDialog::stop );
 
-	QGridLayout* preview_times_grid = new QGridLayout();
-	preview_times_grid->setContentsMargins( 0, 0, 0, 0 );
+	QHBoxLayout* preview_layout = new QHBoxLayout;
+	preview_layout->setContentsMargins( 0, 0, 0, 0 );
 
-	preview_times_grid->addWidget( remaining_label, 0, 0 );
-	preview_times_grid->addWidget( m_remaining_time, 0, 1 );
-	preview_times_grid->addWidget( elapsed_label, 0, 2 );
-	preview_times_grid->addWidget( m_elapsed_time, 0, 3 );
+	preview_layout->addWidget( m_play_pause_button );
+	preview_layout->addWidget( m_stop_button );
 
-	QHBoxLayout* preview_buttons = new QHBoxLayout;
-	preview_buttons->setContentsMargins( 0, 0, 0, 0 );
-	preview_buttons->addWidget( m_play_button );
-	preview_buttons->addWidget( m_pause_button );
-	preview_buttons->addWidget( m_stop_button );
-	preview_buttons->addStretch();
-
-	QVBoxLayout* preview_layout = new QVBoxLayout;
-	preview_layout->addLayout( preview_times_grid );
-	preview_layout->addLayout( preview_buttons );
+	preview_layout->addWidget( m_remaining_time );
+	preview_layout->addWidget( m_elapsed_time );
 
 	QGroupBox* preview_group_box = new QGroupBox( "Preview", this );
 	preview_group_box->setLayout( preview_layout );
 
 	// times
-
 	QLabel* start_label =  new QLabel( "Start:", this );
 	m_start_time = new QTimeEdit( this );
 
@@ -245,21 +254,23 @@ void AudioCueDialog::createCueWidgets()
 	times_grid->addWidget( fade_out_label, 1, 2 );
 	times_grid->addWidget( m_fade_out_time, 1, 3 );
 
-	QHBoxLayout* times_layout = new QHBoxLayout;
-	times_layout->setContentsMargins( 0, 0, 0, 0 );
-	times_layout->addLayout( times_grid );
-	times_layout->addStretch();
-
 	QGroupBox* times_group_box = new QGroupBox( "Times", this );
-	times_group_box->setLayout( times_layout );
+	times_group_box->setLayout( times_grid );
 
+	// pan
+	widgets::Pan* pan = new widgets::Pan( this );
+
+	QVBoxLayout* pan_layout = new QVBoxLayout;
+	pan_layout->setContentsMargins( 0, 0, 0, 0 );
+	pan_layout->addWidget( pan );
+
+	QGroupBox* pan_group_box = new QGroupBox( "Pan", this );
+	pan_group_box->setLayout( pan_layout );
 
 	// detailed setings tabbed
-
 	QTabWidget* tabs = new QTabWidget( this );
 
 	// audio matrix
-
 	m_matrix = new widgets::Matrix( 2, 2, this );
 
 	connect(
@@ -278,6 +289,7 @@ void AudioCueDialog::createCueWidgets()
 	m_layout->addWidget( file_group_box );
 	m_layout->addWidget( preview_group_box );
 	m_layout->addWidget( times_group_box );
+	m_layout->addWidget( pan_group_box );
 	m_layout->addWidget( tabs );
 }
 

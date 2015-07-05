@@ -4,6 +4,7 @@
 
 #include "cue_dialog.h"
 
+class QSlider;
 class QTimeEdit;
 class QDataWidgetMapper;
 
@@ -15,6 +16,7 @@ namespace noises
 	{
 		class Matrix;
 		class FileLineEdit;
+		class Pan;
 	}
 
 	class AudioCueDialog: public CueDialog
@@ -38,6 +40,10 @@ namespace noises
 		void volumeChanged();
 
 		void playerTimeChanged( const QTime& time );
+
+		void playPause();
+
+		void stop();
 
 	private:
 		void createCueWidgets();
@@ -63,8 +69,7 @@ namespace noises
 
 		widgets::FileLineEdit* m_file_edit;
 
-		QPushButton* m_play_button;
-		QPushButton* m_pause_button;
+		QPushButton* m_play_pause_button;
 		QPushButton* m_stop_button;
 
 		QTimeEdit* m_remaining_time;
@@ -76,6 +81,8 @@ namespace noises
 		QTimeEdit* m_end_time;
 		QTimeEdit* m_fade_in_time;
 		QTimeEdit* m_fade_out_time;
+
+		QSlider* m_pan_slider;
 
 		widgets::Matrix* m_matrix;
 

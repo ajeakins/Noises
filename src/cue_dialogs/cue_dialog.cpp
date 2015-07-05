@@ -17,6 +17,8 @@
 
 #include <cue/cue_model_item.h>
 
+#include <widgets/expanding_line_edit.h>
+
 #include "cue_dialog.h"
 
 namespace noises
@@ -60,9 +62,9 @@ void CueDialog::createWidgets()
 	for ( ; i <= Column_Notes; ++i )
 	{
 		QVariant header_data = model->headerData( i, Qt::Horizontal );
-		QLabel* label = new QLabel( header_data.toString() );
+		QLabel* label = new QLabel( header_data.toString(), this );
 
-		QLineEdit* editor = new QLineEdit;
+		QLineEdit* editor = new widgets::ExpandingLineEdit( this );
 		m_mapper->addMapping( editor, i );
 
 		// for some reason we have to fill this in manually
@@ -72,8 +74,8 @@ void CueDialog::createWidgets()
 
 		editor->setText( data.toString() );
 
-		generic_data_layout->addWidget( label, i, 0 );
-		generic_data_layout->addWidget( editor, i, 1 );
+		generic_data_layout->addWidget( label, 0, i );
+		generic_data_layout->addWidget( editor, 1, i );
 	}
 
 	//
@@ -105,8 +107,8 @@ void CueDialog::createWidgets()
 		post_action_editor->setCurrentIndex( j );
 	}
 
-	generic_data_layout->addWidget( post_action_label, i, 0 );
-	generic_data_layout->addWidget( post_action_editor, i, 1 );
+	generic_data_layout->addWidget( post_action_label, 0, i );
+	generic_data_layout->addWidget( post_action_editor, 1, i );
 
 	//
 	// TODO --------------------------------------------------------------------

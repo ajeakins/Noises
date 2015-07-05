@@ -42,17 +42,18 @@ CueWidget::CueWidget( QWidget* parent )
 	connect(
 		this, SIGNAL( doubleClicked( QModelIndex ) ),
 		this, SLOT( editCue( QModelIndex ) ) );
-
 	connect(
 		m_cue_model, &CueModel::cueDone,
 		this, &CueWidget::cueDone );
 
 	m_edit_cue_action = new QAction( QIcon( ":/images/edit_16x16.png" ), "Edit Cue", this );
-	connect( m_edit_cue_action, &QAction::triggered,
+	connect(
+		m_edit_cue_action, &QAction::triggered,
 		this, &CueWidget::editCurrentCue );
 
 	m_delete_cue_action = new QAction( QIcon( ":/images/delete_16x16.png" ), "Delete Cue", this );
-	connect( m_delete_cue_action, &QAction::triggered,
+	connect(
+		m_delete_cue_action, &QAction::triggered,
 		this, &CueWidget::deleteCurrentCue );
 }
 
