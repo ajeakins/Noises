@@ -34,6 +34,8 @@ namespace noises
 		void createWidgets();
 
 	private:
+		friend class ControlCueDialog;
+
 		QTimeEdit* m_fade_time;
 		QCheckBox* m_stop_cue_on_end;
 		QPushButton* m_reset;
@@ -55,6 +57,8 @@ namespace noises
 
 	private Q_SLOTS:
 		void typeChanged();
+
+		void targetCueChanged( int index );
 
 	private:
 		void createCueWidgets();

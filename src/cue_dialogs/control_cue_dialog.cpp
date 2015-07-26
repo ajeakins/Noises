@@ -1,4 +1,6 @@
 
+#include <assert.h>
+
 #include <QCheckBox>
 #include <QComboBox>
 #include <QGroupBox>
@@ -7,6 +9,8 @@
 #include <QTimeEdit>
 
 #include <cue/cue_model_item.h>
+#include <cue/audio_cue_model_item.h>
+
 #include <cue_widget/types.h>
 
 #include <utils/time.h>
@@ -151,13 +155,13 @@ void ControlCueDialog::readSettings()
 	if ( index >= 0 )
 	{
 		m_action->setCurrentIndex( index );
+		typeChanged();
 	}
 
 	index = m_target_cue->findData( settings->target_cue_uuid );
 	if ( index >= 0 )
 	{
 		m_target_cue->setCurrentIndex( index );
-		typeChanged();
 	}
 
 	if ( m_type_specific_widget )
@@ -183,6 +187,9 @@ void ControlCueDialog::createCueWidgets()
 	QLabel* target_cue_label = new QLabel( "Target Cue:", this );
 	m_target_cue = new QComboBox( this );
 	populateTargetCues();
+	connect(
+		m_target_cue, static_cast< void ( QComboBox::* )( int ) >( &QComboBox::currentIndexChanged ),
+		this, &ControlCueDialog::targetCueChanged );
 
 	QLabel* action_label = new QLabel( "Action", this );
 	m_action = new QComboBox( this );
@@ -234,6 +241,28 @@ void ControlCueDialog::typeChanged()
 	}
 }
 
+void ControlCueDialog::targetCueChanged( int index )
+{
+	ControlAction action = getActionType();
+	if ( action == ControlAction_VolumeChange )
+	{
+		QString uuid = m_target_cue->itemData( index ).toString();
+
+		// read volume data from target cue as a starting point
+		CueModelItem* parent = m_cue->parent();
+		for ( int row = 0; row != parent->row( m_cue ); ++row )
+		{
+			CueModelItem* item = parent->child( row );
+			if ( item->getUuid() == uuid )
+			{
+				assert( item->getType() == CueType_Audio );
+				auto audio_cue = dynamic_cast< AudioCueModelItem* >( item );
+				m_type_specific_widget->m_matrix->readSettings( audio_cue->getSettings().levels );
+			}
+		}
+	}
+}
+
 namespace
 {
 	QString getName( CueModelItem* item )
@@ -247,7 +276,7 @@ namespace
 
 void ControlCueDialog::populateTargetCues()
 {
-	CueModelItem* parent = m_cue->parent();
+	CueModelItem* parent = m_cue->parent(); // No, no, no
 	for ( int row = 0; row != parent->row( m_cue ); ++row )
 	{
 		CueModelItem* item = parent->child( row );
