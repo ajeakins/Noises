@@ -37,12 +37,10 @@ namespace audio
 
 		void timeUpdated( QTime time ) const;
 
-		void parentDestroyed( Player::Ptr player );
-
 	protected:
 		friend class Engine;
 
-		Player( QObject* parent );
+		Player();
 
 		virtual void addData(
 			float* audio_data,

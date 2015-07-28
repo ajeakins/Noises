@@ -25,9 +25,11 @@ Manager::Manager( QObject* parent )
 :
 	QObject( parent )
 {
+	// TODO: what is this signal for?
+	// It has a crappy name..
 	connect(
 		&m_engine, &Engine::finished,
-		[this](){ Q_EMIT stopped(); } );
+		this, &Manager::stopped );
 }
 
 Manager::~Manager()
@@ -38,32 +40,26 @@ double Manager::getStreamTime()
 	return m_engine.getStreamTime();
 }
 
-Player::Ptr Manager::createPlayer( QObject* parent, PlayerType type )
+Player::Ptr Manager::createPlayer( PlayerType type )
 {
 	Player::Ptr player;
 
 	switch( type )
 	{
 	case PlayerType_Audio:
-		player = Player::Ptr( new AudioPlayer( parent ) );
+		player = Player::Ptr( new AudioPlayer );
 		break;
 	case PlayerType_Wait:
-		player = Player::Ptr( new WaitPlayer( parent ) );
+		player = Player::Ptr( new WaitPlayer );
 		break;
 	case PlayerType_Fade:
-		player = Player::Ptr( new FadePlayer( parent ) );
+		player = Player::Ptr( new FadePlayer );
 		break;
 	}
 
 	connect(
-		player.data(), SIGNAL( started( Player::Ptr ) ),
-		this, SLOT( playerStarted( Player::Ptr ) ) );
-
-	connect(
-		player.data(), SIGNAL( parentDestroyed( Player::Ptr ) ),
-		this, SLOT( releasePlayer( Player::Ptr ) ) );
-
-	m_players.append( player );
+		player.data(), &Player::started,
+		this, &Manager::playerStarted);
 
 	return player;
 }
@@ -87,11 +83,6 @@ void Manager::unqueuePlayers()
 		m_queued_players.clear();
 		startEngine();
 	}
-}
-
-void Manager::releasePlayer( Player::Ptr player )
-{
-	m_players.removeOne( player );
 }
 
 void Manager::playerStarted( Player::Ptr player )

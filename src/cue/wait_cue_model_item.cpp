@@ -29,7 +29,7 @@ WaitCueModelItem::WaitCueModelItem(
 	CueModelItem( item_data, parent_item )
 {
 	audio::Manager& manager = Application::getAudioManager();
-	audio::Player::Ptr player = manager.createPlayer( this, audio::PlayerType_Wait );
+	audio::Player::Ptr player = manager.createPlayer( audio::PlayerType_Wait );
 	m_player = player.dynamicCast< audio::WaitPlayer >();
 
 	connect(

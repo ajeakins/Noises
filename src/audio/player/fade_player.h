@@ -51,7 +51,7 @@ namespace audio
 		friend class Manager;
 		friend class Engine;
 
-		FadePlayer( QObject* parent );
+		FadePlayer();
 
 		void addData(
 			float* audio_data,

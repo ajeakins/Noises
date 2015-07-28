@@ -47,7 +47,7 @@ namespace audio
 		// Time in seconds
 		double getStreamTime();
 
-		Player::Ptr createPlayer( QObject* parent, PlayerType type );
+		Player::Ptr createPlayer( PlayerType type );
 
 		void stop();
 
@@ -65,10 +65,6 @@ namespace audio
 
 		void stopped();
 
-	public Q_SLOTS:
-		// Remove a player from the manager allowing it to be destroyed
-		void releasePlayer( Player::Ptr player );
-
 	private Q_SLOTS:
 		void playerStarted( Player::Ptr player );
 
@@ -76,8 +72,6 @@ namespace audio
 		void startEngine();
 
 	private:
-		QList< Player::Ptr > m_players;
-
 		unsigned int m_queue_players = 0;
 		QList< Player::Ptr > m_queued_players;
 

@@ -119,7 +119,7 @@ void ControlCueModelItem::execute()
 			case ControlAction_VolumeChange:
 			{
 				audio::Manager& manager = Application::getAudioManager();
-				audio::Player::Ptr player = manager.createPlayer( this, audio::PlayerType_Fade );
+				audio::Player::Ptr player = manager.createPlayer( audio::PlayerType_Fade );
 				m_fade_player = player.dynamicCast< audio::FadePlayer >();
 
 				connect(
@@ -127,8 +127,7 @@ void ControlCueModelItem::execute()
 					this, &ControlCueModelItem::playerTimeChanged );
 				connect(
 					m_fade_player.data(), &audio::FadePlayer::fadeDone,
-					this, &ControlCueModelItem::fadeDone
-					);
+					this, &ControlCueModelItem::fadeDone );
 
 				auto volume_change_settings = dynamic_cast< VolumeChangeControlCueSettings* >( m_settings.data() );
 				m_fade_player->setFadeTime( volume_change_settings->fade_time );
@@ -234,7 +233,6 @@ void ControlCueModelItem::fadeDone()
 {
 	if ( m_fade_player )
 	{
-		Application::getAudioManager().releasePlayer( m_fade_player );
 		m_fade_player.clear();
 	}
 

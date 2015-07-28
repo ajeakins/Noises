@@ -34,7 +34,7 @@ namespace audio
 		friend class Manager;
 		friend class Engine;
 
-		WaitPlayer( QObject* parent );
+		WaitPlayer();
 
 		void addData(
 			float* audio_data,

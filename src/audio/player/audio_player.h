@@ -46,7 +46,7 @@ namespace audio
 		friend class Manager;
 		friend class Engine;
 
-		AudioPlayer( QObject* parent );
+		AudioPlayer();
 
 		void readData();
 

@@ -9,9 +9,9 @@ namespace noises
 namespace audio
 {
 
-WaitPlayer::WaitPlayer( QObject* parent )
+WaitPlayer::WaitPlayer()
 :
-	Player( parent )
+	Player()
 {}
 
 WaitPlayer::~WaitPlayer()

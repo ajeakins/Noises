@@ -23,9 +23,9 @@ namespace audio
 
 // AudioPlayer
 
-AudioPlayer::AudioPlayer( QObject* parent )
+AudioPlayer::AudioPlayer()
 :
-	Player( parent ),
+	Player(),
 	m_audio_info( new SF_INFO )
 {}
 

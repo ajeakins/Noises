@@ -53,7 +53,7 @@ AudioCueModelItem::AudioCueModelItem(
 	m_time_format( utils::defaultTimeFormat() )
 {
 	audio::Manager& manager = Application::getAudioManager();
-	audio::Player::Ptr player = manager.createPlayer( this, audio::PlayerType_Audio );
+	audio::Player::Ptr player = manager.createPlayer( audio::PlayerType_Audio );
 	m_player = player.dynamicCast< audio::AudioPlayer >();
 
 	connect(

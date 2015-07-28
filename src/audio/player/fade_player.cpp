@@ -9,9 +9,9 @@ namespace noises
 namespace audio
 {
 
-FadePlayer::FadePlayer( QObject* parent )
+FadePlayer::FadePlayer()
 :
-	Player( parent )
+	Player()
 {}
 
 FadePlayer::~FadePlayer()
