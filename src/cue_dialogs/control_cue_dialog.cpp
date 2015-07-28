@@ -239,6 +239,8 @@ void ControlCueDialog::typeChanged()
 		m_type_specific_widget = new VolumeChangeWidget( this );
 		m_type_specific_layout->addWidget( m_type_specific_widget );
 	}
+
+	targetCueChanged( m_target_cue->currentIndex() );
 }
 
 void ControlCueDialog::targetCueChanged( int index )
