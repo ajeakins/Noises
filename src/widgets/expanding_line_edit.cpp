@@ -17,7 +17,7 @@ ExpandingLineEdit::ExpandingLineEdit( QWidget* parent )
 
 void ExpandingLineEdit::resizeToContents()
 {
-    int w = fontMetrics().boundingRect( text() ).width();
+    int w = fontMetrics().width( text() );
     w += 20; // Font metrics are coming back a bit small...
     setMinimumSize( w, height() );
 }
