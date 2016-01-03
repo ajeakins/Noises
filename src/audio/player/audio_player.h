@@ -42,6 +42,9 @@ namespace audio
 
 		void updateTime() const override;
 
+	Q_SIGNALS:
+		void onError( const QString& title, const QString& message);
+
 	private:
 		friend class Manager;
 		friend class Engine;

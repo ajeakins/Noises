@@ -24,13 +24,7 @@ ScopedQueueController::~ScopedQueueController()
 Manager::Manager( QObject* parent )
 :
 	QObject( parent )
-{
-	// TODO: what is this signal for?
-	// It has a crappy name..
-	connect(
-		&m_engine, &Engine::finished,
-		this, &Manager::stopped );
-}
+{}
 
 Manager::~Manager()
 {}

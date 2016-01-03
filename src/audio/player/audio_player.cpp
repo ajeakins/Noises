@@ -1,9 +1,6 @@
 
-// TODO get rid of UI components from here...
-
 #include <assert.h>
 
-#include <QMessageBox>
 #include <QTime>
 
 #include <sndfile.h>
@@ -172,10 +169,9 @@ void AudioPlayer::readData()
 
 	if ( !file )
 	{
-		QString title = "Unable to Open File";
-		QString message = "Unable to open audio file [%1].\n\n %2";
-		message = message.arg( m_filename, sf_strerror( file ) );
-		QMessageBox::critical( nullptr, title, message );
+		onError(
+			"Unable to Open File",
+			QString("Unable to open audio file [%1].\n\n %2").arg( m_filename, sf_strerror( file ) ) );
 		return;
 	}
 
@@ -185,9 +181,9 @@ void AudioPlayer::readData()
 		m_audio_data = ( float* )malloc( m_length * sizeof( float ) );
 		if( !m_audio_data )
 		{
-			QString title = "Unable to Open File";
-			QString message = "Unable to open audio file, memory allocation failed.";
-			QMessageBox::critical( nullptr, title, message );
+			onError(
+				"Unable to Open File",
+				"Unable to open audio file, memory allocation failed." );
 			return;
 		}
 	}
@@ -199,9 +195,9 @@ void AudioPlayer::readData()
 			free( m_audio_data );
 			m_audio_data = nullptr;
 
-			QString title = "Unable to Open File";
-			QString message = "Unable to open audio file, memory allocation failed.";
-			QMessageBox::critical( nullptr, title, message );
+			onError(
+				"Unable to Open File",
+				"Unable to open audio file, memory allocation failed." );
 			return;
 		}
 		m_audio_data = new_data;

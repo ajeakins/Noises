@@ -15,11 +15,15 @@
 
 #include <utils/time.h>
 
+#include <widgets/time_label.h>
 #include <widgets/file_line_edit.h>
 #include <widgets/matrix.h>
 #include <widgets/pan.h>
+#include <widgets/time_label.h>
 
 #include "audio_cue_dialog.h"
+
+#define WITH_PAN 0
 
 namespace noises
 {
@@ -160,6 +164,9 @@ void AudioCueDialog::readSettings()
 
 	volumeChanged();
 	m_duration = m_player->getDuration();
+
+	QTime time(0, 0, 0);
+	playerTimeChanged(time);
 }
 
 void AudioCueDialog::createCueWidgets()
@@ -181,14 +188,11 @@ void AudioCueDialog::createCueWidgets()
 	file_group_box->setLayout( file_layout );
 
 	// preview
+	m_elapsed_time = new widgets::TimeLabel( this );
+	m_elapsed_time->setPrefix( "Elapsed: " );
 
-	// TODO get rid of these edits, they are only ever read
-	// should be labels, just need to sort format stuff
-	m_elapsed_time = new QTimeEdit( this );
-	m_elapsed_time->setReadOnly( true );
-
-	m_remaining_time = new QTimeEdit( this );
-	m_remaining_time->setReadOnly( true );
+	m_remaining_time = new widgets::TimeLabel( this );
+	m_remaining_time->setPrefix( "Remaining: " );
 
 	m_play_pause_button = new QPushButton( this );
 	m_play_pause_button->setIcon( QIcon( ":images/play_32x32.png" ) );
@@ -212,6 +216,7 @@ void AudioCueDialog::createCueWidgets()
 
 	preview_layout->addWidget( m_remaining_time );
 	preview_layout->addWidget( m_elapsed_time );
+	preview_layout->addStretch();
 
 	QGroupBox* preview_group_box = new QGroupBox( "Preview", this );
 	preview_group_box->setLayout( preview_layout );
@@ -257,8 +262,13 @@ void AudioCueDialog::createCueWidgets()
 	QGroupBox* times_group_box = new QGroupBox( "Times", this );
 	times_group_box->setLayout( times_grid );
 
+#if WITH_PAN
 	// pan
 	widgets::Pan* pan = new widgets::Pan( this );
+
+	connect(
+		pan, &widgets::Pan::valueChanged,
+		m_player.data(), &audio::AudioPlayer::setPan );
 
 	QVBoxLayout* pan_layout = new QVBoxLayout;
 	pan_layout->setContentsMargins( 0, 0, 0, 0 );
@@ -266,6 +276,7 @@ void AudioCueDialog::createCueWidgets()
 
 	QGroupBox* pan_group_box = new QGroupBox( "Pan", this );
 	pan_group_box->setLayout( pan_layout );
+#endif
 
 	// detailed setings tabbed
 	QTabWidget* tabs = new QTabWidget( this );
@@ -289,7 +300,9 @@ void AudioCueDialog::createCueWidgets()
 	m_layout->addWidget( file_group_box );
 	m_layout->addWidget( preview_group_box );
 	m_layout->addWidget( times_group_box );
+#if WITH_PAN
 	m_layout->addWidget( pan_group_box );
+#endif
 	m_layout->addWidget( tabs );
 }
 

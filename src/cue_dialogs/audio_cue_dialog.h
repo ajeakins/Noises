@@ -17,6 +17,7 @@ namespace noises
 		class Matrix;
 		class FileLineEdit;
 		class Pan;
+		class TimeLabel;
 	}
 
 	class AudioCueDialog: public CueDialog
@@ -72,8 +73,8 @@ namespace noises
 		QPushButton* m_play_pause_button;
 		QPushButton* m_stop_button;
 
-		QTimeEdit* m_remaining_time;
-		QTimeEdit* m_elapsed_time;
+		widgets::TimeLabel* m_remaining_time;
+		widgets::TimeLabel* m_elapsed_time;
 
 		QPushButton* m_reset_times_button;
 
@@ -81,8 +82,6 @@ namespace noises
 		QTimeEdit* m_end_time;
 		QTimeEdit* m_fade_in_time;
 		QTimeEdit* m_fade_out_time;
-
-		QSlider* m_pan_slider;
 
 		widgets::Matrix* m_matrix;
 

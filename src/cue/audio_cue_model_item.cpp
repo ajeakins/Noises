@@ -1,5 +1,6 @@
 
 #include <QPixmap>
+#include <QMessageBox>
 
 #include <audio/manager.h>
 
@@ -59,6 +60,13 @@ AudioCueModelItem::AudioCueModelItem(
 	connect(
 		m_player.data(), &audio::Player::timeUpdated,
 		this, &AudioCueModelItem::playerTimeChanged );
+
+	connect(
+		m_player.data(), &audio::AudioPlayer::onError,
+		this, []( const QString& title, const QString& message )
+		{
+			QMessageBox::critical( nullptr, title, message );
+		} );
 }
 
 AudioCueModelItem::~AudioCueModelItem()
