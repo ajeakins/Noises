@@ -43,7 +43,7 @@ AudioCueDialog::AudioCueDialog(
 		m_player.data(), &audio::Player::timeUpdated,
 		this, &AudioCueDialog::playerTimeChanged );
 
-	setWindowTitle( "Edit Audio Cue" );
+	setDialogTitle( cue->getType() );
 	setWindowIcon( QIcon( ":images/audio_cue.png" ) );
 
 	createCueWidgets();

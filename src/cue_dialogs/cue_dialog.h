@@ -3,6 +3,8 @@
 #include <QDialog>
 #include <QLineEdit>
 
+#include <cue/types.h>
+
 class QDataWidgetMapper;
 class QLayout;
 
@@ -30,6 +32,8 @@ namespace noises
 
 	protected:
 		void createWidgets();
+
+		void setDialogTitle( CueType type );
 
 		QLineEdit* getEditor( int section );
 

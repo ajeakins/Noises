@@ -118,12 +118,7 @@ void CueDialog::createWidgets()
 	generic_data_group_box->setLayout( generic_data_layout );
 
 	// buttons
-	QDialogButtonBox::StandardButtons available_buttons = QDialogButtonBox::Ok;
-	if ( !m_create )
-	{
-		available_buttons |= QDialogButtonBox::Cancel;
-	}
-	QDialogButtonBox* buttons = new QDialogButtonBox( available_buttons );
+	QDialogButtonBox* buttons = new QDialogButtonBox( QDialogButtonBox::Ok | QDialogButtonBox::Cancel );
 
 	connect(
 		buttons, SIGNAL( accepted() ),
@@ -142,6 +137,18 @@ void CueDialog::createWidgets()
 	wrapping_layout->addWidget( buttons );
 
 	setLayout( wrapping_layout );
+}
+
+void CueDialog::setDialogTitle( CueType type )
+{
+	if (m_create)
+	{
+		setWindowTitle(QString("New %1 Cue").arg(typeToString(type)));
+	}
+	else
+	{
+		setWindowTitle(QString("Edit %1 Cue").arg(typeToString(type)));
+	}
 }
 
 QLineEdit* CueDialog::getEditor( int section )
