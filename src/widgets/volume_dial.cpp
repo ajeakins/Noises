@@ -11,7 +11,7 @@
 
 #include "volume_dial.h"
 
-#define MINIMUM_DB -60
+#define MINIMUM_DB -90
 #define MAXIMUM_DB 10
 #define STEP 0.1f
 
@@ -126,6 +126,7 @@ void VolumeDial::createWidgets()
 	m_spin_box = new QDoubleSpinBox( this );
 	m_spin_box->setMinimum( MINIMUM_DB );
 	m_spin_box->setMaximum( MAXIMUM_DB );
+
 	// TODO: extract from define somehow?
 	m_spin_box->setDecimals( 1 );
 	m_spin_box->setSuffix( "dB" );
