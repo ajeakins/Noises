@@ -5,6 +5,8 @@
 #include <QJsonArray>
 #include <QJsonValue>
 
+#include <widgets/volume_dial.h>
+
 #include "volume_matrix.h"
 
 namespace noises
@@ -18,8 +20,7 @@ VolumeMatrix::VolumeMatrix(
 :
 	m_inputs( inputs ),
 	m_outputs( outputs ),
-	// m_minimum_value( VolumeDial::getMinimumVolume() ),
-	m_minimum_value( -60 ), // TODO
+	m_minimum_value( noises::widgets::VolumeDial::getMinimumVolume() ),
 	m_stereo_link( false )
 {
 	m_volumes.resize( inputs );
@@ -102,7 +103,7 @@ void VolumeMatrix::initialiseVolumes()
 
 		for ( unsigned int j = 0; j != m_outputs; ++j )
 		{
-			m_volumes[i][j] = m_minimum_value;
+			m_volumes[i][j] = (i == j) ? 0 : m_minimum_value;
 		}
 	}
 }
