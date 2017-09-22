@@ -29,5 +29,5 @@ void TimeLabel::updateTime()
 	setText( m_prefix + m_time.toString( m_display_format ) );
 }
 
-}
-}
+} /* namespace widgets */
+} /* namespace noises */

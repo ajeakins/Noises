@@ -33,5 +33,6 @@ namespace widgets
 		QString 	m_display_format;
 		QString 	m_prefix;
 	};
-}
-}
+
+} /* namespace widgets */
+} /* namespace noises */
