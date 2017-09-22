@@ -45,6 +45,9 @@ namespace audio
 	Q_SIGNALS:
 		void onError( const QString& title, const QString& message);
 
+	public Q_SLOTS:
+		void setPan( int pan ); // set pan as a percentage
+
 	private:
 		friend class Manager;
 		friend class Engine;
@@ -79,6 +82,9 @@ namespace audio
 
 		// volumes
 		VolumeMatrix m_volumes;
+
+		// pan
+		int m_pan;
 
 		// Current volumes taking into account fades
 		// converted to a multiplier

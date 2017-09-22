@@ -48,6 +48,15 @@ void AudioPlayer::setVolume( const VolumeMatrix& settings )
 	resetVolumes();
 }
 
+void AudioPlayer::setPan( int pan )
+{
+	// ASSERT( pan <= 100 );
+	// ASSERT( pan >= -100 );
+
+	float value = ( ( float )pan + 100.0 ) / 200.0;
+	qDebug("setPan %f", value);
+}
+
 void AudioPlayer::resetVolumes()
 {
 	m_current_volumes.resize( m_volumes.getInputs() );
