@@ -83,12 +83,20 @@ void MainWindow::closeEvent( QCloseEvent* event )
 void MainWindow::saveSettings()
 {
 	QSettings settings( "Noises", "Noises" );
+
+	settings.setValue("window-geometry", saveGeometry());
+	settings.setValue("window-state", saveState());
+
 	settings.setValue( "filename", m_current_file_name );
 }
 
 void MainWindow::loadSettings()
 {
 	QSettings settings( "Noises", "Noises" );
+
+	restoreGeometry(settings.value("window-geometry").toByteArray());
+	restoreState(settings.value("window-state").toByteArray());
+
 	QString file_name = settings.value( "filename", "" ).toString();
 	if ( !file_name.isEmpty() )
 	{
