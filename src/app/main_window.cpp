@@ -407,7 +407,7 @@ void MainWindow::createActions()
 		m_delete_cue_action, &QAction::triggered,
 		this, &MainWindow::deleteCue );
 
-	m_stop_all_cues_action = new QAction( "Play Cue", m_cue_list );
+	m_stop_all_cues_action = new QAction( "Stop All Cues", m_cue_list );
 	m_stop_all_cues_action->setShortcut( QKeySequence( Qt::Key_Escape ) );
 	connect(
 		m_stop_all_cues_action, &QAction::triggered,
