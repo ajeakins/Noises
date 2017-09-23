@@ -76,6 +76,8 @@ void AudioCueDialog::onFilenameChanged()
 	m_player->setFilename( filepath );
 	m_duration = m_player->getDuration();
 
+	setTimeDisplayFormat(utils::timeFormat(m_duration));
+
 	resetTimes();
 	playerTimeChanged( QTime( 0, 0, 0 ) );
 }
@@ -164,6 +166,8 @@ void AudioCueDialog::readSettings()
 
 	volumeChanged();
 	m_duration = m_player->getDuration();
+
+	setTimeDisplayFormat(utils::timeFormat(m_duration));
 
 	QTime time(0, 0, 0);
 	playerTimeChanged(time);
