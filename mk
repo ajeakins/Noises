@@ -1,3 +1,3 @@
 #!/bin/sh
 
-cd build && cmake ../src && make -j 6
+mkdir -p build && cd build && cmake ../src && make -j 6
