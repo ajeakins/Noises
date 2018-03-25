@@ -29,12 +29,12 @@ TODO 0.1
 - Add show mode.
   - Disable editing.
   - Giant warning on loss of focus.
-- Sample rate management
-- Profile memory usage.
-- Valgrind testing.
 - Better interaction between running state and edit dialogs.
 - Audio cue start and end times and fades need implementing.
 - About dialog, attributions icon source: "Open Iconic — www.useiconic.com/open"
+- Check behaviour inserting cue before first in list
+- Add but do not edit mode?
+- Name/number editing from main view (for ease of build skeletons)?
 
 - Put application into class inheriting from QApplication?
 
