@@ -252,7 +252,12 @@ void MainWindow::createCue( CueType type )
 {
 	CueModelItem* item = m_cue_list->createCue( type );
 	// TODO need to figure out handling cancel
-	showCueEditDialog( item, m_cue_list->getDataMapperForSelection(), true, this );
+
+	bool ctrlHeld = QApplication::keyboardModifiers() & Qt::ControlModifier;
+	if (!ctrlHeld)
+	{
+		showCueEditDialog( item, m_cue_list->getDataMapperForSelection(), true, this );
+	}
 }
 
 void MainWindow::about()
