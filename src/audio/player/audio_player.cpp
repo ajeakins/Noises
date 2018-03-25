@@ -5,6 +5,8 @@
 
 #include <sndfile.h>
 
+#include <samplerate.h>
+
 #include <app/application.h>
 #include <utils/audio.h>
 #include <utils/math.h>
@@ -135,7 +137,7 @@ QTime AudioPlayer::getDuration() const
 		return QTime();
 	}
 
-	return timeFromFrames( m_audio_info->frames );
+	return timeFromFrames( m_frames );
 }
 
 void AudioPlayer::addFade( FadePlayer::Ptr fade_player )
@@ -158,10 +160,13 @@ QTime AudioPlayer::timeFromFrames( int frames ) const
 		return time;
 	}
 
+	//  sounds should always be in app sample rate, TODO could cache this
+	int app_sample_rate = Application::getPreferences().getSampleRate();
+
 	// calculate in floating point
 	float timeInMSecs = ( float )frames;
 	timeInMSecs *= 1000.0f;
-	timeInMSecs /= m_audio_info->samplerate;
+	timeInMSecs /= app_sample_rate;
 
 	time = time.addMSecs( ( int )timeInMSecs );
 
@@ -184,6 +189,7 @@ void AudioPlayer::readData()
 		return;
 	}
 
+	m_frames = m_audio_info->frames;
 	m_length = m_audio_info->channels * m_audio_info->frames;
 	if ( !m_audio_data )
 	{
@@ -214,6 +220,44 @@ void AudioPlayer::readData()
 
 	sf_readf_float( file, m_audio_data, m_audio_info->frames );
 	sf_close( file );
+
+	// check sample rate, if it does not match we need to resample
+	int app_sample_rate = Application::getPreferences().getSampleRate();
+	if (m_audio_info->samplerate != app_sample_rate)
+	{
+		SRC_DATA data;
+		data.data_in = m_audio_data;
+		data.input_frames = m_audio_info->frames;
+		data.src_ratio = (double)app_sample_rate / (double)m_audio_info->samplerate;
+		data.output_frames = data.src_ratio * data.input_frames;
+
+		int new_length = data.output_frames * m_audio_info->channels;
+
+		float * resampled_buffer = ( float* )malloc( new_length * sizeof( float ) );
+		if (!resampled_buffer)
+		{
+			onError(
+				"Unable to Resample File",
+				"Unable to resample audio file, memory allocation failed.");
+			return;
+		}
+
+		data.data_out = resampled_buffer;
+
+		int res = src_simple(&data, SRC_SINC_MEDIUM_QUALITY, m_audio_info->channels);
+		if (res != 0)
+		{
+			onError(
+				"Unable Resample File",
+				src_strerror(res));
+			return;
+		}
+
+		free(m_audio_data);
+		m_audio_data = resampled_buffer;
+		m_length = new_length;
+		m_frames = data.output_frames;
+	}
 
 	// TODO: get rid of this... maybe
 	m_volumes.setInputs( m_audio_info->channels );

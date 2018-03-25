@@ -41,4 +41,5 @@ TARGET_LINK_LIBRARIES( noises
 	${QT_LIBRARIES}
 	${Qt5Widgets_LIBRARIES}
 	${PORTAUDIO_LIBRARIES}
-	sndfile )
+	sndfile
+	samplerate )

@@ -76,9 +76,18 @@ namespace audio
 		int m_pos = 0 ;
 
 		// audio
-		float* m_audio_data = nullptr;
+
+		// Data about the audio we read from the file
 		QSharedPointer< SF_INFO > m_audio_info;
+
+		// Data pointer
+		float* m_audio_data = nullptr;
+
+		// Data buffer length
 		int m_length;
+
+		// Audio frames held (potentially after resampling)
+		int m_frames;
 
 		// volumes
 		VolumeMatrix m_volumes;
