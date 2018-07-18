@@ -2,6 +2,11 @@ CMAKE_MINIMUM_REQUIRED( VERSION 2.8 )
 
 SET( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/" )
 
+if(APPLE)
+	# Add path for homebrew, TODO: this could be more generic...
+	SET( CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} /usr/local/Cellar/qt/5.10.1/ )
+endif()
+
 PROJECT( noises )
 
 FIND_PACKAGE( Qt5 REQUIRED COMPONENTS Widgets )
